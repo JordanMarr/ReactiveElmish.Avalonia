@@ -9,7 +9,7 @@ There is a sample project here to get you started, but there are a plethora of [
 Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.Avalonia port?
 
 ### Benefits
-* Some people may prefer using xaml (and it can be an easier sell for some teams)
+* Some people may prefer using xaml, and it can be an easier sell for some teams due to the immediate availability of all community controls.
 * Bindings have to be created for controls. Some controls (such as the DataGrid) are too "OOP" and are difficult or impossible to create bindings for. This makes a library like Elmish.Avalonia very useful.
 * There is not currently a reliable design preview tool (there is a very experimental project, but the author has stopped working on it and it's way too complex for me to want to mess with it). For me to do any kind of real project work with Avalonia and F#, I feel that a design preview is a necessity. After recently trying Elmish.WPF, I fell in love with the designVM preview functionality.
 
