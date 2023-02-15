@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaXaml Remove="Models\**" />
+        <EmbeddedResource Remove="Models\**" />
+        <None Remove=".gitignore" />
+    </ItemGroup>
+
+    <ItemGroup>        
+        <Compile Include="ViewModels\IStart.fs" />        
+        <Compile Include="ViewModels\CounterViewModel.fs" />        
+        <Compile Include="ViewModels\MainViewModel.fs" />        
+        <Compile Include="Views\CounterView.fs" />
+        <Compile Include="Views\MainView.axaml.fs" />
+        <Compile Include="App.axaml.fs" />
+        <Compile Include="ViewLocator.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <TrimmerRootDescriptor Include="Roots.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-preview5" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Elmish.Avalonia\Elmish.Avalonia.fsproj" />
+    </ItemGroup>
+
+    <!--<ItemGroup>
+        <Reference Include="PresentationCore" />
+        <Reference Include="PresentationFramework" />
+        <Reference Include="WindowsBase" />
+    </ItemGroup>-->
+</Project>
