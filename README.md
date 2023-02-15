@@ -35,8 +35,8 @@ As of now, the easiest way to get started is to copy the included `AvaloniaExamp
 
 Here are some key differences from the default F# MVVM template in the `AvaloniaExample` project:
 
-1) `Avalonia.ReactiveUI` package should be replaced with `Elmish.Avalonia`.
+1) The `Avalonia.ReactiveUI` package has been replaced with the `Elmish.Avalonia` package.
 2) In `Program.fs`, `.UseReactiveUI()` has been replaced with `.UseElmishBindings()`.
-3) The template `ViewLocator` has code has been modified to work with a custom provided `IStart` that makes it easier to bind the view/viewmodel and start the Elmish loop.
-4) The `MainView.axaml` file `Content` utilizes the `ViewLocator` to create the appropriate view.
+3) The template `ViewLocator` has code has been modified to work with a custom `IStart` that makes it easier to bind the view/viewmodel and start the Elmish loop.
+4) The `MainView.axaml` `Content` property binding utilizes the `ViewLocator` to locate the appropriate view and start the Elmish loop.
 
