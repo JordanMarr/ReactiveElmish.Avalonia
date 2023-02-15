@@ -30,6 +30,9 @@ The included sample app shows a obligatory Elmish counter app, and also the Aval
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
 
+## View Model
+![image](https://user-images.githubusercontent.com/1030435/219173496-2c10fc75-933a-4ca0-9825-ba62e5e24d8e.png)
+
 # Project Setup
 As of now, the easiest way to get started is to copy the included `AvaloniaExample` project.
 
