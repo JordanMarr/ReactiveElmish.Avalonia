@@ -29,3 +29,14 @@ The included sample app shows a obligatory Elmish counter app, and also the Aval
 
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
+
+# Project Setup
+As of now, the easiest way to get started is to copy the included `AvaloniaExample` project.
+
+Here are some key differences from the default F# MVVM template in the `AvaloniaExample` project:
+
+1) `Avalonia.ReactiveUI` package should be replaced with `Elmish.Avalonia`.
+2) In `Program.fs`, `.UseReactiveUI()` has been replaced with `.UseElmishBindings()`.
+3) The template `ViewLocator` has code has been modified to work with a custom provided `IStart` that makes it easier to bind the view/viewmodel and start the Elmish loop.
+4) The `MainView.axaml` file `Content` utilizes the `ViewLocator` to create the appropriate view.
+
