@@ -15,11 +15,10 @@
     <Authors>jsacks, cmeeren, TysonMN, JordanMarr</Authors>
     <Description>F# bindings for using Elmish in Avalonia</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/elmish/Elmish.WPF</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/JordanMarr/Elmish.Avalonia</PackageProjectUrl>
     <PackageTags>Avalonia F# fsharp Elmish Elm</PackageTags>
     <!--<PackageIcon>elmish-avalonia-logo-128x128.png</PackageIcon>-->
     <Version>1.0.0-alpha-2</Version>
-    <PackageReleaseNotes>https://github.com/elmish/Elmish.WPF/blob/master/RELEASE_NOTES.md</PackageReleaseNotes>
     <!--Turn on warnings for unused values (arguments and let bindings) -->
     <OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
   </PropertyGroup>
