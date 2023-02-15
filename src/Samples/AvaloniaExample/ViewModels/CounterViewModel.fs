@@ -19,7 +19,6 @@ type Msg =
     | Increment
     | Decrement
     | Reset
-    | SetActions of Action list
 
 let init() = 
     { 
@@ -41,12 +40,10 @@ let update (msg: Msg) (model: Model) =
         }
     | Reset ->
         init()
-    | SetActions actions ->
-        { model with Actions = actions }
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Count" |> Binding.oneWay (fun m -> m.Count)
-    "Actions" |> Binding.twoWay ((fun m -> m.Actions), SetActions)
+    "Actions" |> Binding.oneWay (fun m -> m.Actions)
     "Increment" |> Binding.cmd Increment
     "Decrement" |> Binding.cmd Decrement
     "Reset" |> Binding.cmd Reset
