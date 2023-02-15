@@ -20,3 +20,12 @@ Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.A
 * The "Avalonia UI for Visual Studio 2022" extension provides a xaml preview pane that works with F#! 😄 (Also not possible with WPF!)
 * The Elmish.WPF "designVM" concept works with this extension very well. This allows you populate your "Design Preview" window with the defaults from your Elmish `init` function!
 * Keeping with tradition that the F# community will [provide important libraries, developer tools and workload support](https://learn.microsoft.com/en-us/dotnet/fsharp/strategy).
+
+# Sample App
+The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
+
+## Design View
+![image](https://user-images.githubusercontent.com/1030435/219144094-79155085-6b5c-43e4-a0ea-c5087e68a6bc.png)
+
+## Runtime View
+![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
