@@ -25,7 +25,7 @@ Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.A
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
 
 ## Design View
-![image](https://user-images.githubusercontent.com/1030435/219144094-79155085-6b5c-43e4-a0ea-c5087e68a6bc.png)
+![image](https://user-images.githubusercontent.com/1030435/219173023-a47d5d9b-8926-4f9d-833b-1406661e1c82.png)
 
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
