@@ -25,10 +25,13 @@ Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.A
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
 
 ## Design View
-![image](https://user-images.githubusercontent.com/1030435/219144094-79155085-6b5c-43e4-a0ea-c5087e68a6bc.png)
+![image](https://user-images.githubusercontent.com/1030435/219173023-a47d5d9b-8926-4f9d-833b-1406661e1c82.png)
 
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
+
+## View Model
+![image](https://user-images.githubusercontent.com/1030435/219173496-2c10fc75-933a-4ca0-9825-ba62e5e24d8e.png)
 
 # Project Setup
 As of now, the easiest way to get started is to copy the included `AvaloniaExample` project.
@@ -38,5 +41,5 @@ Here are some key differences from the default F# MVVM template in the `Avalonia
 1) The `Avalonia.ReactiveUI` package has been replaced with the `Elmish.Avalonia` package.
 2) In `Program.fs`, `.UseReactiveUI()` has been replaced with `.UseElmishBindings()`.
 3) The template `ViewLocator` has code has been modified to work with a custom `IStart` that makes it easier to bind the view/viewmodel and start the Elmish loop.
-4) The `MainView.axaml` `Content` property binding utilizes the `ViewLocator` to locate the appropriate view and start the Elmish loop.
+   This allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
 
