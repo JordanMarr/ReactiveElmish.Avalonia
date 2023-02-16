@@ -25,6 +25,10 @@ Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.A
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
 
 ## Design View
+Don't forget to install the "Avalonia for Visual Studio 2022" extension.
+JetBrains Rider also supports Avalonia previews out-of-the-box!
+https://docs.avaloniaui.net/docs/getting-started/ide-support
+
 ![image](https://user-images.githubusercontent.com/1030435/219173023-a47d5d9b-8926-4f9d-833b-1406661e1c82.png)
 
 ## Runtime View
