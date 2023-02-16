@@ -3,7 +3,7 @@ Static Avalonia views for Elmish programs
 
 This project is a port of the awesome [Elmish.WPF](https://github.com/elmish/Elmish.WPF) library.
 Most of the codebase is directly copied, but the WPF bits have been replaced with Avalonia bits and adapted where necessary.
-There is a sample project here to get you started, but there are a plethora of [Elmish.WPF examples](https://github.com/elmish/Elmish.WPF/tree/master/src/Samples) that you can also refer to.
+There is a sample project here to get you started, but there is a plethora of [Elmish.WPF examples](https://github.com/elmish/Elmish.WPF/tree/master/src/Samples) that you can also refer to.
 
 ## Why?
 Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.Avalonia port?
