@@ -34,6 +34,9 @@ The included sample app shows a obligatory Elmish counter app, and also the Aval
 ![image](https://user-images.githubusercontent.com/1030435/219173496-2c10fc75-933a-4ca0-9825-ba62e5e24d8e.png)
 
 ## Master View
+The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
+Since the design preview is set for both the `MasterView` and the `CounterView`, we are able to see the counter on the `MasterView` design preview!
+
 ![image](https://user-images.githubusercontent.com/1030435/219421157-cfa2254c-a1aa-417c-9a8b-69a5bc4ef038.png)
 
 
