@@ -1,7 +1,5 @@
 ﻿module AvaloniaExample.ViewModels.MainViewModel
 
-open System
-open Elmish
 open Elmish.Avalonia
 
 type Model = 
