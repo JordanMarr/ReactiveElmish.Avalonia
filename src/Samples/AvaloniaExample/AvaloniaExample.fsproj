@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows</TargetFramework>
-        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
 
@@ -33,7 +32,7 @@
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
         <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
-        <PackageReference Include="Elmish.Avalonia" Version="1.0.0-alpha-2" />
+        <ProjectReference Include="..\..\Elmish.Avalonia\Elmish.Avalonia.fsproj" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     </ItemGroup>
 

@@ -19,7 +19,8 @@ type internal Command(execute, canExecute) =
   let mutable _handler = Unchecked.defaultof<EventHandler>
   member this.AddRequeryHandler () =
     let handler = EventHandler(fun _ _ -> this.RaiseCanExecuteChanged())
-    CommandManager.RequerySuggested.AddHandler handler
+    // CommandManager doesn't seem to be available outside of Windows, sample works without it but I suppose I can't just remove it :^)
+    // CommandManager.RequerySuggested.AddHandler handler
     _handler <- handler
 
   member this.RaiseCanExecuteChanged () = canExecuteChanged.Trigger(this, EventArgs.Empty)
