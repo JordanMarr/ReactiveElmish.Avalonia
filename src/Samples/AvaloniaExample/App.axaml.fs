@@ -10,7 +10,7 @@ type App() =
 
     override this.Initialize() =
         // Initialize Avalonia controls from NuGet packages:
-        let dataGridType = typeof<System.Windows.Controls.DataGrid>
+        let _ = typeof<Avalonia.Controls.DataGrid>
 
         AvaloniaXamlLoader.Load(this)
 
