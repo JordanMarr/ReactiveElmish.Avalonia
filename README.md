@@ -10,8 +10,9 @@ Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.A
 
 ### Benefits
 * Some people may prefer using xaml, and it can be an easier sell for some teams due to the immediate availability of all community controls.
-* Bindings have to be created for controls. Some controls (such as the DataGrid) are too "OOP" and are difficult or impossible to create bindings for. This makes a library like Elmish.Avalonia very useful.
-* There is not currently a reliable design preview tool (there is a very experimental project, but the author has stopped working on it and it's way too complex for me to want to mess with it). For me to do any kind of real project work with Avalonia and F#, I feel that a design preview is a necessity. After recently trying Elmish.WPF, I fell in love with the `ViewModel.designInstance` preview functionality that lets you preview your `init` values in the design preview panel.
+* Bindings have to be created for controls in FuncUI. While most of the controls have bindings provided, some controls (such as the DataGrid) are "too OOP" and are difficult or impossible to create bindings for. This makes a library like Elmish.Avalonia very useful as it sidesteps this problem altogether by using xaml.
+* There is not currently a reliable design preview tool for FuncUI (there is a very experimental project, but the author has stopped working on it and it's way too complex for me to want to mess with it). For me to do any kind of real project work with Avalonia and F#, a design preview is a necessity, and using xaml allows you to utilize the custom Avalonia design preview extension. After recently trying Elmish.WPF, I fell in love with the `ViewModel.designInstance` preview functionality that lets you preview your `init` values in the design preview panel, and this also works with Elmish.Avalonia!
+* You can use Avalonia.FuncUI and Elmish.Avalonia side-by-side to have the best of both worlds!
 
 ### Other reasons
 * Avalonia UI is a big deal in the .NET OSS community; it is always nice for F# community to be able to participate in the latest and greatest with as many options as possible.
