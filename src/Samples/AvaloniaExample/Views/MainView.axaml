@@ -8,9 +8,17 @@
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaExample.ViewModels"
         Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
-        Content="{Binding ContentVM}"
         Title="AvaloniaExample">
 
-    <!-- Content is resolved via the ViewLocator -->
+	<DockPanel LastChildFill="true">
+
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
+		    <Button Content="Counter View" Command="{Binding ShowCounter}" />
+		    <Button Content="About" Command="{Binding ShowAbout}" />
+		</StackPanel>
+		
+		<ContentControl Content="{Binding ContentVM}" />
+		
+	</DockPanel>
     
 </Window>

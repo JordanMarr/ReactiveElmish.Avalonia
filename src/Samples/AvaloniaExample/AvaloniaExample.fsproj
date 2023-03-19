@@ -14,8 +14,10 @@
 
     <ItemGroup>        
         <Compile Include="ViewModels\IStart.fs" />        
+        <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
         <Compile Include="ViewModels\MainViewModel.fs" />        
+        <Compile Include="Views\AboutView.axaml.fs" />        
         <Compile Include="Views\CounterView.fs" />
         <Compile Include="Views\MainView.axaml.fs" />
         <Compile Include="App.axaml.fs" />

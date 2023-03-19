@@ -13,12 +13,12 @@ type ViewLocator() =
             let viewName = t.FullName.Replace("ViewModels", "Views").Replace("ViewModel", "View")
             let parts = viewName.Split([|'['; '+'|], StringSplitOptions.RemoveEmptyEntries)
             let name = parts[1]
-            let typ = Type.GetType(name)
-            if isNull typ then
+            let viewType = Type.GetType(name)
+            if isNull viewType then
                 upcast TextBlock(Text = sprintf "Not Found: %s" name)
             else
                 let vm = data :?> IStart
-                let view = downcast Activator.CreateInstance(typ)
+                let view = downcast Activator.CreateInstance(viewType)
                 vm.Start(view)
                 view
                 

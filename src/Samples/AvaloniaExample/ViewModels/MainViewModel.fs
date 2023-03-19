@@ -8,7 +8,8 @@ type Model =
     }
 
 type Msg = 
-    | Msg
+    | ShowCounter
+    | ShowAbout
 
 let init() = 
     { 
@@ -16,11 +17,17 @@ let init() =
     }
 
 let update (msg: Msg) (model: Model) = 
-    model
+    match msg with
+    | ShowCounter -> 
+        { model with ContentVM = CounterViewModel.vm }
+    | ShowAbout ->
+        { model with ContentVM = AboutViewModel.vm }
 
-let bindings() : Binding<Model, Msg> list = [
+let bindings() : Binding<Model, Msg> list = [ 
     // Properties
     "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM)
+    "ShowCounter" |> Binding.cmdIf (ShowCounter, fun m -> m.ContentVM <> CounterViewModel.vm)
+    "ShowAbout" |> Binding.cmdIf (ShowAbout, fun m -> m.ContentVM <> AboutViewModel.vm)
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())
