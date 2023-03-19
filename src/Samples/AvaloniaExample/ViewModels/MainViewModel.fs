@@ -4,7 +4,7 @@ open Elmish.Avalonia
 
 type Model = 
     {
-        ContentVM: IStart
+        ContentVM: IElmishViewModel
     }
 
 type Msg = 
@@ -32,4 +32,4 @@ let bindings() : Binding<Model, Msg> list = [
 
 let designVM = ViewModel.designInstance (init()) (bindings())
 
-let vm : IStart = Start(AvaloniaProgram.mkSimple init update bindings)
+let vm : IElmishViewModel = ElmishViewModel(AvaloniaProgram.mkSimple init update bindings)

@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>        
-        <Compile Include="ViewModels\IStart.fs" />        
+        <Compile Include="ViewModels\IElmishViewModel.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
         <Compile Include="ViewModels\MainViewModel.fs" />        
