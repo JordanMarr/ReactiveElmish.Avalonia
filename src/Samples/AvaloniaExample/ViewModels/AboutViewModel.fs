@@ -12,7 +12,7 @@ type Msg = | Msg
 
 let init() = 
     { 
-        Version = "---"
+        Version = "1.0"
     }
 
 let update (msg: Msg) (model: Model) = 
