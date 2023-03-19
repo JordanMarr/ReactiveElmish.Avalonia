@@ -6,8 +6,11 @@
 			 xmlns:vm="using:AvaloniaExample.ViewModels"
 			 Design.DataContext="{Binding Source={x:Static vm:AboutViewModel.designVM}}"
              x:Class="AvaloniaExample.Views.AboutView">
-	<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-		<TextBlock Text="Version:" />
-		<TextBlock Text="{Binding Version}" />
+	<StackPanel HorizontalAlignment="Center" Margin="10">
+		<StackPanel Orientation="Horizontal" Margin="10">
+			<TextBlock Text="Version:" />
+			<TextBlock Text="{Binding Version}" />
+		</StackPanel>
+		<Button Content="Ok" Command="{Binding Ok}" />		
 	</StackPanel>
 </UserControl>

@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>        
+        <Compile Include="ViewModels\Messaging.fs" />        
         <Compile Include="ViewModels\IElmishViewModel.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
@@ -34,6 +35,7 @@
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
         <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
+        <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
         <ProjectReference Include="..\..\Elmish.Avalonia\Elmish.Avalonia.fsproj" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     </ItemGroup>
