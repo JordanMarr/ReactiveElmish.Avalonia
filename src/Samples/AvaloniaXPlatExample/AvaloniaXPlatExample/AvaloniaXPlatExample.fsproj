@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>    
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ViewModels\IElmishViewModel.fs" />        
+    <Compile Include="ViewModels\CounterViewModel.fs" />        
+    <Compile Include="ViewModels\MainViewModel.fs" />        
+    <Compile Include="Views\CounterView.fs" />
+    <Compile Include="Views\MainWindow.axaml.fs" />
+    <Compile Include="Views\MainView.axaml.fs" />
+    <Compile Include="App.axaml.fs" />
+    <Compile Include="ViewLocator.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />    
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+
+    <PackageReference Include="Elmish.Avalonia" Version="$(AvaloniaElmishVersion)" />
+  </ItemGroup>
+</Project>
