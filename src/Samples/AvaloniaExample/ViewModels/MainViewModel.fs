@@ -27,8 +27,8 @@ let update (msg: Msg) (model: Model) =
 let bindings() : Binding<Model, Msg> list = [ 
     // Properties
     "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM)
-    "ShowCounter" |> Binding.cmdIf (ShowCounter, fun m -> m.ContentVM <> CounterViewModel.vm)
-    "ShowAbout" |> Binding.cmdIf (ShowAbout, fun m -> m.ContentVM <> AboutViewModel.vm)
+    "ShowCounter" |> Binding.cmd ShowCounter
+    "ShowAbout" |> Binding.cmd ShowAbout
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())

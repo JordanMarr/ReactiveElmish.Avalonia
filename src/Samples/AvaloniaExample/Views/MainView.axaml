@@ -10,15 +10,61 @@
         Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
         Title="AvaloniaExample">
 
+	<Window.Styles>
+
+		<Style Selector="Button.tab">
+			<Setter Property="Height" Value="120"/>
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="StackPanel.nav">
+			<Setter Property="Background" Value="#2B579A"/>
+		</Style>
+		<Style Selector="Button.tab">
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="Height" Value="34"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Background" Value="#2B579A"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Margin" Value="0 0 0 0"/>
+			<Setter Property="Padding" Value="10 0"/>
+		</Style>
+		<Style Selector="Button.tab:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4C90CD"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+
+		<Style Selector="Button.tab:focus">
+			<Setter Property="Background" Value="#4C90CD"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Margin" Value="0 0 0 0"/>
+			<Setter Property="Padding" Value="10 0"/>
+		</Style>
+		<Style Selector="Button.tab:focus /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4C90CD"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+
+		<Style Selector="Button.tab:selected">
+			<Setter Property="Background" Value="#4C90CD"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Margin" Value="0 0 0 0"/>
+			<Setter Property="Padding" Value="10 0"/>
+		</Style>
+		<Style Selector="Button.tab:selected /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="White"/>
+		</Style>
+	</Window.Styles>
+
+
 	<DockPanel LastChildFill="true">
 
-		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
-		    <Button Content="Counter View" Command="{Binding ShowCounter}" />
-		    <Button Content="About" Command="{Binding ShowAbout}" />
+		<StackPanel Classes="nav" Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch">
+			<Button Classes="tab" Content="Counter" Command="{Binding ShowCounter}" />
+		    <Button Classes="tab" Content="About" Command="{Binding ShowAbout}" />
 		</StackPanel>
 		
 		<ContentControl Content="{Binding ContentVM}" />
 		
 	</DockPanel>
-    
+	
 </Window>
