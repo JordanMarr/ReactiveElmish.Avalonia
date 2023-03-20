@@ -1,4 +1,4 @@
-# Elmish.Avalonia
+# Elmish.Avalonia ![NuGet version (Elmish.Avalonia)](https://img.shields.io/nuget/v/Elmish.Avalonia.svg?style=flat-square)
 Static Avalonia views for Elmish programs
 
 This project is a port of the awesome [Elmish.WPF](https://github.com/elmish/Elmish.WPF) library.
