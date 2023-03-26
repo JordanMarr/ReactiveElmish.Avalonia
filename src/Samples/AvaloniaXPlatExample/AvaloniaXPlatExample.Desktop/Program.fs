@@ -27,5 +27,4 @@ module Program =
     [<EntryPoint; STAThread>]
     let main argv =
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(argv) |> ignore
-        printfn $"YYY: before main thread exit"
         0

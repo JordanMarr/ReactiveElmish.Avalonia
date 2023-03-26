@@ -8,7 +8,6 @@ type Model =
     }
 
 type Msg =
-    | Msg
     | ShowHome
     | ShowCounter
     | ShowListBox
@@ -31,8 +30,8 @@ let rec update (msg: Msg) (model: Model) =
 and bindings() : Binding<Model, Msg> list =
     [
     // Properties
-    "CounterVM" |> Binding.oneWay (fun m -> CounterViewModel.vm)
-    "ListBoxVM" |> Binding.oneWay (fun m -> ListBoxViewModel.vm)
+    "CounterVM" |> Binding.oneWay (fun _ -> CounterViewModel.vm)
+    "ListBoxVM" |> Binding.oneWay (fun _ -> ListBoxViewModel.vm)
     ]
 
 and designVM = ViewModel.designInstance (init()) (bindings())
