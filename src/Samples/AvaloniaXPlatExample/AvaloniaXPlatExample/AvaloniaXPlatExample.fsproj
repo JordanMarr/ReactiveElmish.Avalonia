@@ -7,8 +7,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ViewModels\IElmishViewModel.fs" />        
+    <Compile Include="ViewModels\Messaging.fs" />        
+    <Compile Include="ViewModels\ListBoxViewModel.fs" />        
     <Compile Include="ViewModels\CounterViewModel.fs" />        
     <Compile Include="ViewModels\MainViewModel.fs" />        
+    <Compile Include="Views\ListBoxView.fs" />
     <Compile Include="Views\CounterView.fs" />
     <Compile Include="Views\MainWindow.axaml.fs" />
     <Compile Include="Views\MainView.axaml.fs" />
@@ -25,5 +28,7 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
 
     <PackageReference Include="Elmish.Avalonia" Version="$(AvaloniaElmishVersion)" />
+    <!-- behaviors support for converting doubleclicks into commands -->
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 </Project>
