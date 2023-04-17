@@ -21,21 +21,27 @@ type Msg =
     | Reset
 
 let init() = 
+    let count = 100
+    Messaging.bus.OnNext(Messaging.GlobalMsg.SetCount count)
     { 
-        Count = 100
+        Count = count
         Actions = [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
     }
 
 let update (msg: Msg) (model: Model) = 
     match msg with
     | Increment ->
+        let count = model.Count + 1
+        Messaging.bus.OnNext(Messaging.GlobalMsg.SetCount count)
         { model with 
-            Count = model.Count + 1 
+            Count = count
             Actions = model.Actions @ [ { Description = "Incremented"; Timestamp = DateTime.Now } ]
         }
     | Decrement ->
+        let count = model.Count - 1
+        Messaging.bus.OnNext(Messaging.GlobalMsg.SetCount count)
         { model with 
-            Count = model.Count - 1 
+            Count = count
             Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ]
         }
     | Reset ->

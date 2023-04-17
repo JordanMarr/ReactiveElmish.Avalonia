@@ -8,15 +8,17 @@ open Messaging
 type Model = 
     {
         Version: string
+        CurrentCount: int
     }
 
 type Msg = 
     | Ok
     | MsgSent of unit
 
-let init() = 
+let init currentCount = 
     { 
         Version = "1.0"
+        CurrentCount = currentCount
     }, Cmd.none
 
 let update (msg: Msg) (model: Model) = 
@@ -31,8 +33,9 @@ let update (msg: Msg) (model: Model) =
 let bindings ()  : Binding<Model, Msg> list = [
     "Version" |> Binding.oneWay (fun m -> m.Version)
     "Ok" |> Binding.cmd Ok
+    "CurrentCount" |> Binding.oneWay (fun m -> m.CurrentCount)
 ]
 
-let designVM = ViewModel.designInstance (fst (init())) (bindings())
+let designVM = ViewModel.designInstance (fst (init 0)) (bindings())
 
-let vm = ElmishViewModel(AvaloniaProgram.mkProgram init update bindings)
+let vm currentCount = ElmishViewModel(AvaloniaProgram.mkProgram (fun () -> init currentCount) update bindings)
