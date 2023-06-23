@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:vm="using:AvaloniaExample.ViewModels"
+             Design.DataContext="{Binding Source={x:Static vm:ChartViewModel.designVM}}"
+             x:Class="AvaloniaExample.Views.ChartView">
+
+    <StackPanel HorizontalAlignment="Center" Margin="10">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button Margin="6" Command="{Binding AddItemCommand}">Add</Button>
+                <Button Margin="6" Command="{Binding RemoveItemCommand}">Remove</Button>
+                <Button Margin="6" Command="{Binding UpdateItemCommand}">Update</Button>
+                <Button Margin="6" Command="{Binding ReplaceItemCommand}">Replace</Button>
+
+            </StackPanel>
+            <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}"></lvc:CartesianChart>
+        </Grid>
+    </StackPanel>
+</UserControl>
