@@ -2,6 +2,7 @@ module AvaloniaExample.ViewModels.ChartViewModel
 
 open System
 open System.Collections.ObjectModel
+open CommunityToolkit.Mvvm.Input
 open Elmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.Defaults
@@ -43,19 +44,19 @@ let Series =
 //         } 
 //         |> ObservableCollection<_>
       
-
+[RelayCommand]
 let AddItem() =
     _observableValues.Add(ObservableValue(_random.Next(0, 10)))
     
-
+[RelayCommand]
 let RemoveItem() =
     _observableValues.RemoveAt(_observableValues.Count - 1)
 
-
+[RelayCommand]
 let UpdateItem() =
     _observableValues.[_observableValues.Count - 1] <- ObservableValue(_random.Next(0, 10))
 
-
+[RelayCommand]
 let ReplaceItem() =
     _observableValues.[_observableValues.Count - 1] <- ObservableValue(_random.Next(0, 10))
 
