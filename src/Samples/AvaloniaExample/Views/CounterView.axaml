@@ -15,9 +15,10 @@
         </StackPanel>
         
         <StackPanel Orientation="Horizontal" Margin="0 20 0 20">
-            <Button Command="{Binding Increment}">+</Button>
-            <Button Command="{Binding Decrement}">-</Button>
-            <Button Command="{Binding Reset}" Margin="5 0">Reset</Button>
+            <Button Command="{Binding AddItem}">Add</Button>
+            <Button Command="{Binding RemoveItem}">Remove</Button>
+            <Button Command="{Binding UpdateItem}">Update</Button>
+            <Button Command="{Binding ReplaceItem}">Replace</Button>
         </StackPanel>
 
         <!-- <DataGrid Items="{Binding Actions}" AutoGenerateColumns="True" Height="400">             -->

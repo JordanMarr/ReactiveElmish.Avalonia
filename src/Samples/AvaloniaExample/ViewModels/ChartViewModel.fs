@@ -1,11 +1,8 @@
 module AvaloniaExample.ViewModels.ChartViewModel
 
 open System
-open System.Collections.ObjectModel
-open CommunityToolkit.Mvvm.Input
 open Elmish.Avalonia
 open LiveChartsCore
-open LiveChartsCore.Defaults
 open LiveChartsCore.SkiaSharpView
 
 let _random = Random()
@@ -23,6 +20,9 @@ and Action =
 
 type Msg = 
     | AddItem
+    | RemoveItem
+    | UpdateItem
+    | ReplaceItem
 
 let init() = 
     { 
@@ -37,9 +37,28 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = "AddItem" } ]            
             Data = model.Data @ [ _random.Next(0, 10) ]
         }
+    | RemoveItem ->
+        { model with 
+            Actions = model.Actions @ [ { Description = "RemoveItem" } ]            
+            Data = model.Data |> List.rev |> List.tail |> List.rev
+        }
+    | UpdateItem ->
+        { model with 
+            Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
+            Data = model.Data |> List.rev |> List.tail |> List.rev |> List.map (fun x -> x + 1)
+        }
+    | ReplaceItem ->
+        { model with 
+            Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
+            Data = model.Data |> List.rev |> List.tail |> List.rev |> List.map (fun x -> _random.Next(0, 10))
+        }
 
 let bindings ()  : Binding<Model, Msg> list = [
+    "Actions" |> Binding.oneWay (fun m -> m.Actions)
     "AddItem" |> Binding.cmd AddItem
+    "RemoveItem" |> Binding.cmd RemoveItem
+    "UpdateItem" |> Binding.cmd UpdateItem
+    "ReplaceItem" |> Binding.cmd ReplaceItem
     "Series" |> Binding.oneWay (fun m -> 
         [|
             LineSeries<int>(Values = m.Data, Fill = null, Name = "Income") :> ISeries
