@@ -20,8 +20,8 @@
             <Button Command="{Binding Reset}" Margin="5 0">Reset</Button>
         </StackPanel>
 
-        <DataGrid Items="{Binding Actions}" AutoGenerateColumns="True" Height="400">            
-        </DataGrid>
+        <!-- <DataGrid Items="{Binding Actions}" AutoGenerateColumns="True" Height="400">             -->
+        <!-- </DataGrid> -->
         
     </StackPanel>
 </UserControl>

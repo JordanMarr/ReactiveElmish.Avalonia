@@ -23,7 +23,7 @@ let update (msg: Msg) (model: Model) =
     | ShowCounter -> 
         { model with ContentVM = CounterViewModel.vm }  
     | ShowChart -> 
-        { model with ContentVM = CounterViewModel.vm }
+        { model with ContentVM = ChartViewModel.vm }
     | ShowAbout ->
         { model with ContentVM = AboutViewModel.vm }
 

@@ -22,7 +22,12 @@
                 <Button Margin="6" Command="{Binding ReplaceItemCommand}">Replace</Button>
 
             </StackPanel>
-            <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}"></lvc:CartesianChart>
+            <lvc:CartesianChart 
+                Grid.Row="1" 
+                MinHeight="300"
+                MinWidth="600"
+                Series="{Binding Series}">
+            </lvc:CartesianChart>
         </Grid>
     </StackPanel>
 </UserControl>

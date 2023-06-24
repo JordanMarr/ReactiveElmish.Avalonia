@@ -10,62 +10,12 @@ open LiveChartsCore.SkiaSharpView
 
 let _random = Random()
 
-let _observableValues = ObservableCollection<ObservableValue>([
-        ObservableValue(2)
-        ObservableValue(5)
-        ObservableValue(4)
-        ObservableValue(5)
-        ObservableValue(2)
-        ObservableValue(6)
-        ObservableValue(6)
-        ObservableValue(6)
-        ObservableValue(4)
-        ObservableValue(2)
-        ObservableValue(3)
-        ObservableValue(4)
-        ObservableValue(3)
-    ])
-
-type ChartData() =
-    member val collection = ObservableCollection<ISeries>() with get, set
-let Series =
-    let lineSeries =
-        LineSeries<ObservableValue>(Values = _observableValues, Fill = null) :> ISeries
-    let series =
-        seq {
-            lineSeries
-        } 
-        |> ObservableCollection<_>
-    ChartData(collection = series)
-    
-// let Series =
-//         seq {
-//             LineSeries<ObservableValue>(Values = _observableValues, Fill = null) :> ISeries
-//         } 
-//         |> ObservableCollection<_>
-      
-[RelayCommand]
-let AddItem() =
-    _observableValues.Add(ObservableValue(_random.Next(0, 10)))
-    
-[RelayCommand]
-let RemoveItem() =
-    _observableValues.RemoveAt(_observableValues.Count - 1)
-
-[RelayCommand]
-let UpdateItem() =
-    _observableValues.[_observableValues.Count - 1] <- ObservableValue(_random.Next(0, 10))
-
-[RelayCommand]
-let ReplaceItem() =
-    _observableValues.[_observableValues.Count - 1] <- ObservableValue(_random.Next(0, 10))
-
-
 type Model = 
     {
+        Data: int list
         Actions: Action list
     }
-
+    
 and Action = 
     {
         Description: string
@@ -73,41 +23,28 @@ and Action =
 
 type Msg = 
     | AddItem
-    | RemoveItem
-    | UpdateItem
-    | ReplaceItem
 
 let init() = 
     { 
-        Actions = [ { Description = "Initialized count."} ]
+        Data = []
+        Actions = [ { Description = "AddItem"} ]
     }
 
 let update (msg: Msg) (model: Model) = 
     match msg with
     | AddItem ->
         { model with 
-            Actions = model.Actions @ [ { Description = "AddItem" } ]
+            Actions = model.Actions @ [ { Description = "AddItem" } ]            
+            Data = model.Data @ [ _random.Next(0, 10) ]
         }
-    | RemoveItem ->
-        { model with 
-            Actions = model.Actions @ [ { Description = "RemoveItem" } ]
-        }
-    | UpdateItem ->
-        { model with 
-            Actions = model.Actions @ [ { Description = "UpdateItem" } ]
-        }
-    | ReplaceItem ->
-        { model with 
-            Actions = model.Actions @ [ { Description = "ReplaceItem" } ]
-        }
-
 
 let bindings ()  : Binding<Model, Msg> list = [
-    "Actions" |> Binding.oneWay (fun m -> m.Actions)
     "AddItem" |> Binding.cmd AddItem
-    "RemoveItem" |> Binding.cmd RemoveItem
-    "UpdateItem" |> Binding.cmd UpdateItem
-    "ReplaceItem" |> Binding.cmd ReplaceItem
+    "Series" |> Binding.oneWay (fun m -> 
+        [|
+            LineSeries<int>(Values = m.Data, Fill = null, Name = "Income") :> ISeries
+        |]
+    )
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())
