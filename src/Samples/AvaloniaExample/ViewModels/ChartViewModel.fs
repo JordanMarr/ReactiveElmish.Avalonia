@@ -2,7 +2,6 @@ module AvaloniaExample.ViewModels.ChartViewModel
 
 open System
 open System.Collections.ObjectModel
-open System.Threading.Tasks
 open Elmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.SkiaSharpView
@@ -45,25 +44,8 @@ let rec init() =
         Actions = [ { Description = "Initialized"} ]
     }
     
-
+let mutable isContinuing = false
 let update (msg: Msg) (model: Model) =
-    // new section
-    let mutable isContinuing = false
-    let runContinuous () =
-        async {
-            let rec streamingLoop () =
-                if isContinuing then
-                    let values = model.Series.[0].Values :?> ObservableCollection<ObservableValue>
-                    values.RemoveAt(0)
-                    values.Add(ObservableValue(_random.Next(1, 11)))
-                    Task.Delay(1000) |> Async.AwaitTask |> ignore
-                    streamingLoop ()
-
-            streamingLoop ()
-        }
-    runContinuous () |> Async.StartImmediate
-    // end new section
-    
     match msg with
     | AddItem ->
         let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
@@ -117,4 +99,25 @@ let bindings ()  : Binding<Model, Msg> list = [
 
 let designVM = ViewModel.designInstance (init()) (bindings())
 
-let vm = ElmishViewModel(AvaloniaProgram.mkSimple init update bindings)
+open Elmish
+open System.Timers
+
+let subscriptions (model: Model) : Sub<Msg> =
+
+    let valueChangedSubscription (dispatch: Msg -> unit) = 
+        let timer = new Timer(1000) 
+        timer.Elapsed.Add(fun _ -> 
+            dispatch AddItem
+            dispatch RemoveItem
+        )
+        timer.Start()
+        timer :> IDisposable
+
+    [
+        [ nameof valueChangedSubscription ], valueChangedSubscription
+    ]
+
+let vm = ElmishViewModel(
+    AvaloniaProgram.mkSimple init update bindings
+    |> AvaloniaProgram.withSubscription subscriptions
+)
