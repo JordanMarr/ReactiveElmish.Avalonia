@@ -8,25 +8,17 @@ open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
 
 let _random = Random()
-let observableValues = ObservableCollection<ObservableValue>()
-let series = 
-    ObservableCollection<ISeries> 
-        [ 
-            LineSeries<ObservableValue>(Values = observableValues) :> ISeries 
-        ]
-        
-let createNewSeries =
+  
+let newSeries : ObservableCollection<ObservableValue> =
+    let newCollection = ObservableCollection<ObservableValue>()
     for _ in 1 .. 10 do
-        let randomValue = _random.Next(1, 11)
-        let observableValue = ObservableValue(randomValue)
-        observableValues.Add(observableValue)
-        
-let replaceItemAtPosition (position: int) (newValue: ObservableValue) =
-    if position >= 0 && position < observableValues.Count then
-        observableValues.[position] <- newValue
+        newCollection.Add(ObservableValue(_random.Next(1, 11)))
+    newCollection
+    
 
 type Model = 
     {
+        Series: ObservableCollection<ISeries> 
         Actions: Action list
     }
     
@@ -40,47 +32,73 @@ type Msg =
     | RemoveItem
     | UpdateItem
     | ReplaceItem
-    | Reset
+    | Continue
 
-let init() =
-    createNewSeries
-    { 
-        Actions = [ { Description = "AddItem"} ]
+let rec init() =
+    {
+        Series = 
+            ObservableCollection<ISeries> 
+                [ 
+                    LineSeries<ObservableValue>(Values = newSeries) :> ISeries 
+                ]
+        Actions = [ { Description = "Initialized"} ]
     }
+    
+let mutable isContinuing = false
+let runContinuous = 
+    task {
+        while true do
+            while isContinuing do
+                Model.Series[0].Values :?> ObservableCollection<ObservableValue>
+                    |> fun values -> values.RemoveAt(0)
+                    |> fun values -> Add(ObservableValue(_random.Next(1, 11)))
+                do! Async.Sleep(1000)
+    }
+    
+runContinuous |> Async.Start
 
 let update (msg: Msg) (model: Model) = 
     match msg with
     | AddItem ->
-        observableValues.Add(ObservableValue(_random.Next(0, 11)))
+        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        values.Add(ObservableValue(_random.Next(1, 11)))
         { model with 
             Actions = model.Actions @ [ { Description = "AddItem" } ]    
         }
     | RemoveItem ->
-        observableValues.RemoveAt(0)
+        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        values.RemoveAt(0)
         { model with 
             Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
         }
     | UpdateItem ->
-        replaceItemAtPosition (_random.Next(0, observableValues.Count-1)) (ObservableValue(_random.Next(0, 11)))
+        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        let len = values.Count
+        let item = _random.Next(0, len)
+        values[item] <- ObservableValue(_random.Next(1, 11))
         { model with 
             Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
         }
     | ReplaceItem ->
-        observableValues.RemoveAt(observableValues.Count-1)
-        observableValues.Add(ObservableValue(_random.Next(0, 10)))
+        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        let lstValue = values.Count-1
+        values[lstValue] <- ObservableValue(_random.Next(1, 11))
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
-    | Reset ->
-        // why can I not just call "createNewSeries" here?
-        observableValues.Clear()
-        for _ in 1 .. 10 do
-            let randomValue = _random.Next(1, 11)
-            let observableValue = ObservableValue(randomValue)
-            observableValues.Add(observableValue)
-        { model with 
-            Actions = model.Actions @ [ { Description = "Reset" } ]            
-        }
+    | Continue ->
+        match isContinuing with
+            | false ->
+                isContinuing <- true
+                { model with 
+                    Actions = model.Actions @ [ { Description = "Continue" } ]            
+                }
+            | _ ->
+                isContinuing <- false
+                { model with 
+                    Actions = model.Actions @ [ { Description = "Continue" } ]            
+                }
+        
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Actions" |> Binding.oneWay (fun m -> m.Actions)
@@ -88,8 +106,8 @@ let bindings ()  : Binding<Model, Msg> list = [
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
-    "Reset" |> Binding.cmd Reset
-    "Series" |> Binding.oneWayLazy ((fun _ -> series), (fun _ _ -> true), id)
+    "Continue" |> Binding.cmd Continue
+    "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())

@@ -19,7 +19,7 @@
                 <Button Margin="6" Command="{Binding RemoveItem}">Remove</Button>
                 <Button Margin="6" Command="{Binding UpdateItem}">Update</Button>
                 <Button Margin="6" Command="{Binding ReplaceItem}">Replace</Button>
-                <Button Margin="6" Command="{Binding Reset}">Reset</Button>
+                <Button Margin="6" Command="{Binding Continue}">Reset</Button>
 
             </StackPanel>
             <lvc:CartesianChart 
