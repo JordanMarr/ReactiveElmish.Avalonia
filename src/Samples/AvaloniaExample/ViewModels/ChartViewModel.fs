@@ -29,7 +29,7 @@ let observableValues = ObservableCollection<ObservableValue>()
 let series = 
     ObservableCollection<ISeries> 
         [ 
-            ColumnSeries<ObservableValue>(Values = observableValues) :> ISeries 
+            LineSeries<ObservableValue>(Values = observableValues) :> ISeries 
         ]
        
         
