@@ -7,26 +7,28 @@
              xmlns:vm="using:AvaloniaExample.ViewModels"
              Design.DataContext="{Binding Source={x:Static vm:ChartViewModel.designVM}}"
              x:Class="AvaloniaExample.Views.ChartView">
-
     <StackPanel HorizontalAlignment="Center" Margin="10">
-
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Margin="6" Command="{Binding AddItemCommand}">Add</Button>
-                <Button Margin="6" Command="{Binding RemoveItemCommand}">Remove</Button>
-                <Button Margin="6" Command="{Binding UpdateItemCommand}">Update</Button>
-                <Button Margin="6" Command="{Binding ReplaceItemCommand}">Replace</Button>
+                <Button Margin="6" Command="{Binding AddItem}">Add</Button>
+                <Button Margin="6" Command="{Binding RemoveItem}">Remove</Button>
+                <Button Margin="6" Command="{Binding UpdateItem}">Update</Button>
+                <Button Margin="6" Command="{Binding ReplaceItem}">Replace</Button>
+                <Button Margin="6" Command="{Binding Reset}">Reset</Button>
 
             </StackPanel>
             <lvc:CartesianChart 
                 Grid.Row="1" 
                 MinHeight="300"
+                MaxHeight="1200"
                 MinWidth="600"
-                Series="{Binding Series}">
+                MaxWidth="2400"
+                Series="{Binding Series}"
+                EasingFunction="{Binding Source={x:Null}}">
             </lvc:CartesianChart>
         </Grid>
     </StackPanel>

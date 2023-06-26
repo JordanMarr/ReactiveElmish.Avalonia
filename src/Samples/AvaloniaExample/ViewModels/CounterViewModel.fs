@@ -22,7 +22,7 @@ type Msg =
 
 let init() = 
     { 
-        Count = 100
+        Count = 0
         Actions = [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
     }
 

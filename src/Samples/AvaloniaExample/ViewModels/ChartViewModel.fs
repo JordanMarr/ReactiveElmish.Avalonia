@@ -1,15 +1,16 @@
 module AvaloniaExample.ViewModels.ChartViewModel
 
 open System
+open System.Collections.ObjectModel
 open Elmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.SkiaSharpView
+open LiveChartsCore.Defaults
 
 let _random = Random()
 
 type Model = 
     {
-        Data: int list
         Actions: Action list
     }
     
@@ -24,33 +25,45 @@ type Msg =
     | UpdateItem
     | ReplaceItem
 
+let observableValues = ObservableCollection<ObservableValue>()
+let series = 
+    ObservableCollection<ISeries> 
+        [ 
+            ColumnSeries<ObservableValue>(Values = observableValues) :> ISeries 
+        ]
+       
+        
+let replaceItemAtPosition (position: int) (newValue: ObservableValue) =
+    if position >= 0 && position < observableValues.Count then
+        observableValues.[position] <- newValue
+
 let init() = 
     { 
-        Data = []
         Actions = [ { Description = "AddItem"} ]
     }
 
 let update (msg: Msg) (model: Model) = 
     match msg with
     | AddItem ->
+        observableValues.Add(ObservableValue(_random.Next(0, 10)))
         { model with 
-            Actions = model.Actions @ [ { Description = "AddItem" } ]            
-            Data = model.Data @ [ _random.Next(0, 10) ]
+            Actions = model.Actions @ [ { Description = "AddItem" } ]    
         }
     | RemoveItem ->
+        observableValues.RemoveAt(0)
         { model with 
-            Actions = model.Actions @ [ { Description = "RemoveItem" } ]            
-            Data = model.Data |> List.rev |> List.tail |> List.rev
+            Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
         }
     | UpdateItem ->
+        replaceItemAtPosition (_random.Next(0, observableValues.Count-1)) (ObservableValue(_random.Next(0, 10)))
         { model with 
             Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
-            Data = model.Data |> List.rev |> List.tail |> List.rev |> List.map (fun x -> x + 1)
         }
     | ReplaceItem ->
+        observableValues.RemoveAt(observableValues.Count-1)
+        observableValues.Add(ObservableValue(_random.Next(0, 10)))
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
-            Data = model.Data |> List.rev |> List.tail |> List.rev |> List.map (fun x -> _random.Next(0, 10))
         }
 
 let bindings ()  : Binding<Model, Msg> list = [
@@ -59,11 +72,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
-    "Series" |> Binding.oneWay (fun m -> 
-        [|
-            LineSeries<int>(Values = m.Data, Fill = null, Name = "Income") :> ISeries
-        |]
-    )
+    "Series" |> Binding.oneWayLazy ((fun m -> series), (fun a b -> true), id)
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())

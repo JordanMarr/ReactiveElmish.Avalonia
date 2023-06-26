@@ -2,7 +2,6 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,13 +32,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
         <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-preview5" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
         <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.801" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.801" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.800-11.0.0-rc1.1" />
