@@ -2,6 +2,7 @@ module AvaloniaExample.ViewModels.ChartViewModel
 
 open System
 open System.Collections.ObjectModel
+open System.Threading.Tasks
 open Elmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.SkiaSharpView
@@ -44,23 +45,25 @@ let rec init() =
         Actions = [ { Description = "Initialized"} ]
     }
     
-    
-let mutable isContinuing = false
 
 let update (msg: Msg) (model: Model) =
-    // this is new
-    let runContinuous = 
-        task {
-            let rec streamingLoop =
+    // new section
+    let mutable isContinuing = false
+    let runContinuous () =
+        async {
+            let rec streamingLoop () =
                 if isContinuing then
-                    let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+                    let values = model.Series.[0].Values :?> ObservableCollection<ObservableValue>
                     values.RemoveAt(0)
                     values.Add(ObservableValue(_random.Next(1, 11)))
                     Task.Delay(1000) |> Async.AwaitTask |> ignore
-                    streamingLoop
+                    streamingLoop ()
+
+            streamingLoop ()
         }
-    runContinuous |> Async.StartImmediate
+    runContinuous () |> Async.StartImmediate
     // end new section
+    
     match msg with
     | AddItem ->
         let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
@@ -100,8 +103,7 @@ let update (msg: Msg) (model: Model) =
                 isContinuing <- false
                 { model with 
                     Actions = model.Actions @ [ { Description = "Continue" } ]            
-                }
-        
+                } 
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Actions" |> Binding.oneWay (fun m -> m.Actions)
