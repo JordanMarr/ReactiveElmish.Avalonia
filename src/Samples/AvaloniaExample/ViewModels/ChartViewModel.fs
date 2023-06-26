@@ -44,20 +44,23 @@ let rec init() =
         Actions = [ { Description = "Initialized"} ]
     }
     
-let mutable isContinuing = false
-let runContinuous = 
-    task {
-        while true do
-            while isContinuing do
-                Model.Series[0].Values :?> ObservableCollection<ObservableValue>
-                    |> fun values -> values.RemoveAt(0)
-                    |> fun values -> Add(ObservableValue(_random.Next(1, 11)))
-                do! Async.Sleep(1000)
-    }
     
-runContinuous |> Async.Start
+let mutable isContinuing = false
 
-let update (msg: Msg) (model: Model) = 
+let update (msg: Msg) (model: Model) =
+    // this is new
+    let runContinuous = 
+        task {
+            let rec streamingLoop =
+                if isContinuing then
+                    let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+                    values.RemoveAt(0)
+                    values.Add(ObservableValue(_random.Next(1, 11)))
+                    Task.Delay(1000) |> Async.AwaitTask |> ignore
+                    streamingLoop
+        }
+    runContinuous |> Async.StartImmediate
+    // end new section
     match msg with
     | AddItem ->
         let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
