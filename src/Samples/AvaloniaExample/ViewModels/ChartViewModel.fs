@@ -9,7 +9,7 @@ open LiveChartsCore.Defaults
 
 let _random = Random()
   
-let newSeries : ObservableCollection<ObservableValue> =
+let newSeries =
     let newCollection = ObservableCollection<ObservableValue>()
     for _ in 1 .. 10 do
         newCollection.Add(ObservableValue(_random.Next(1, 11)))
@@ -32,6 +32,7 @@ type Msg =
     | RemoveItem
     | UpdateItem
     | ReplaceItem
+    | Reset
     | Continue
 
 let rec init() =
@@ -74,6 +75,17 @@ let update (msg: Msg) (model: Model) =
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
+    | Reset ->
+        // I do not know why I can't just use newSeries here
+        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        let newCollection = ObservableCollection<ObservableValue>()
+        for _ in 1 .. values.Count - 1 do
+            newCollection.Add(ObservableValue(_random.Next(1, 11)))
+        model.Series[0].Values <- newCollection
+        // end newSeries complaint
+        { model with 
+            Actions = model.Actions @ [ { Description = "Reset" } ]            
+        }
     | Continue ->
         match isContinuing with
             | false ->
@@ -93,6 +105,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
+    "Reset" |> Binding.cmd Reset
     "Continue" |> Binding.cmd Continue
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
 ]
@@ -107,8 +120,9 @@ let subscriptions (model: Model) : Sub<Msg> =
     let valueChangedSubscription (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
-            dispatch AddItem
-            dispatch RemoveItem
+            if isContinuing then
+                dispatch AddItem
+                dispatch RemoveItem
         )
         timer.Start()
         timer :> IDisposable
