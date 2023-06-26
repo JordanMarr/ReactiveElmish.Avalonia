@@ -8,6 +8,22 @@ open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
 
 let _random = Random()
+let observableValues = ObservableCollection<ObservableValue>()
+let series = 
+    ObservableCollection<ISeries> 
+        [ 
+            LineSeries<ObservableValue>(Values = observableValues) :> ISeries 
+        ]
+        
+let createNewSeries =
+    for _ in 1 .. 10 do
+        let randomValue = _random.Next(1, 11)
+        let observableValue = ObservableValue(randomValue)
+        observableValues.Add(observableValue)
+        
+let replaceItemAtPosition (position: int) (newValue: ObservableValue) =
+    if position >= 0 && position < observableValues.Count then
+        observableValues.[position] <- newValue
 
 type Model = 
     {
@@ -24,24 +40,10 @@ type Msg =
     | RemoveItem
     | UpdateItem
     | ReplaceItem
-
-let observableValues = ObservableCollection<ObservableValue>()
-let series = 
-    ObservableCollection<ISeries> 
-        [ 
-            LineSeries<ObservableValue>(Values = observableValues) :> ISeries 
-        ]
-       
-        
-let replaceItemAtPosition (position: int) (newValue: ObservableValue) =
-    if position >= 0 && position < observableValues.Count then
-        observableValues.[position] <- newValue
+    | Reset
 
 let init() =
-    for _ in 1 .. 5 do
-        let randomValue = _random.Next(1, 10)
-        let observableValue = new ObservableValue(randomValue)
-        observableValues.Add(observableValue)
+    createNewSeries
     { 
         Actions = [ { Description = "AddItem"} ]
     }
@@ -49,7 +51,7 @@ let init() =
 let update (msg: Msg) (model: Model) = 
     match msg with
     | AddItem ->
-        observableValues.Add(ObservableValue(_random.Next(0, 10)))
+        observableValues.Add(ObservableValue(_random.Next(0, 11)))
         { model with 
             Actions = model.Actions @ [ { Description = "AddItem" } ]    
         }
@@ -59,7 +61,7 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
         }
     | UpdateItem ->
-        replaceItemAtPosition (_random.Next(0, observableValues.Count-1)) (ObservableValue(_random.Next(0, 10)))
+        replaceItemAtPosition (_random.Next(0, observableValues.Count-1)) (ObservableValue(_random.Next(0, 11)))
         { model with 
             Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
         }
@@ -69,6 +71,16 @@ let update (msg: Msg) (model: Model) =
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
+    | Reset ->
+        // why can I not just call "createNewSeries" here?
+        observableValues.Clear()
+        for _ in 1 .. 10 do
+            let randomValue = _random.Next(1, 11)
+            let observableValue = ObservableValue(randomValue)
+            observableValues.Add(observableValue)
+        { model with 
+            Actions = model.Actions @ [ { Description = "Reset" } ]            
+        }
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Actions" |> Binding.oneWay (fun m -> m.Actions)
@@ -76,7 +88,8 @@ let bindings ()  : Binding<Model, Msg> list = [
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
-    "Series" |> Binding.oneWayLazy ((fun m -> series), (fun a b -> true), id)
+    "Reset" |> Binding.cmd Reset
+    "Series" |> Binding.oneWayLazy ((fun _ -> series), (fun _ _ -> true), id)
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())

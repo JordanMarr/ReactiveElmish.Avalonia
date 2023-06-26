@@ -5,6 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
              xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              xmlns:vm="using:AvaloniaExample.ViewModels"
+             xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
              Design.DataContext="{Binding Source={x:Static vm:ChartViewModel.designVM}}"
              x:Class="AvaloniaExample.Views.ChartView">
     <StackPanel HorizontalAlignment="Center" Margin="10">
