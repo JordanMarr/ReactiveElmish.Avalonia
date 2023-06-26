@@ -37,7 +37,11 @@ let replaceItemAtPosition (position: int) (newValue: ObservableValue) =
     if position >= 0 && position < observableValues.Count then
         observableValues.[position] <- newValue
 
-let init() = 
+let init() =
+    for _ in 1 .. 5 do
+        let randomValue = _random.Next(1, 10)
+        let observableValue = new ObservableValue(randomValue)
+        observableValues.Add(observableValue)
     { 
         Actions = [ { Description = "AddItem"} ]
     }
