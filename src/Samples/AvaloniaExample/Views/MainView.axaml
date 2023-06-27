@@ -53,6 +53,9 @@
 		<Style Selector="Button.tab:selected /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="Background" Value="White"/>
 		</Style>
+		<Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#2B579A" />
+		</Style>
 	</Window.Styles>
 
 

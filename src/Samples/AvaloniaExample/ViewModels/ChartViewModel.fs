@@ -4,16 +4,24 @@ open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
 open Elmish.Avalonia
+open Avalonia.Controls.Primitives
 open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
 
 let _random = Random()
+
   
-let newSeries =
+let newSeries (count: option<int>)  =
     let newCollection = ObservableCollection<DateTimePoint>()
-    for i = 30 downto 0 do
+    let mutable seriesCount = 0
+    match count with
+    | None ->
+        seriesCount <- 30
+    | _ -> 
+        seriesCount <- count.Value - 1
+    for i = seriesCount downto 0 do
         let past = DateTimeOffset.Now.AddSeconds(-i).LocalDateTime
         let _randomNull = _random.Next(0, 99)
         match _randomNull with
@@ -56,7 +64,7 @@ let rec init() =
         Series = 
             ObservableCollection<ISeries> 
                 [ 
-                    LineSeries<DateTimePoint>(Values = newSeries, Fill = null, Name = "Luck By Second") :> ISeries 
+                    LineSeries<DateTimePoint>(Values = newSeries(None), Fill = null, Name = "Luck By Second") :> ISeries 
                 ]
         Actions = [ { Description = "Initialized"} ]
     }
@@ -94,17 +102,11 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
     | Reset ->
-        // I do not know why I can't just use newSeries here
-        let newCollection = ObservableCollection<DateTimePoint>()
-        for i = values.Count - 1 downto 0 do
-            let past = DateTimeOffset.Now.AddSeconds(-i).LocalDateTime
-            let _randomNull = _random.Next(0, 99)
-            match _randomNull with
-                | i when i <=  4 ->
-                    newCollection.Add(DateTimePoint(past, System.Nullable()))
-                | _ -> newCollection.Add(DateTimePoint(past, _random.Next(0, 10)))
-        model.Series[0].Values <- newCollection
-        // end newSeries complaint
+        model.Series[0].Values <- newSeries(Some values.Count)
+        // this is a hack to get the toggle button to update
+        // let toggleButton = parentControl.FindControl("AutoUpdate") :?> ToggleButton
+        // toggleButton.IsChecked <- false
+        isAutoUpdating <- false
         { model with 
             Actions = model.Actions @ [ { Description = "Reset" } ]            
         }

@@ -20,7 +20,7 @@
                 <Button Margin="6" Command="{Binding UpdateItem}">Update Random</Button>
                 <Button Margin="6" Command="{Binding ReplaceItem}">Replace Last</Button>
                 <Button Margin="6" Command="{Binding Reset}">Reset All</Button>
-                <ToggleButton Margin="6" Command="{Binding AutoUpdate}">AutoUpdate</ToggleButton>
+                <ToggleButton Name="AutoUpdate" Margin="6" Command="{Binding AutoUpdate}">AutoUpdate</ToggleButton>
 
             </StackPanel>
             <lvc:CartesianChart 
@@ -35,9 +35,4 @@
             </lvc:CartesianChart>
         </Grid>
     </StackPanel>
-    <Control.Styles>
-        <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#2B579A" />
-        </Style>
-    </Control.Styles>
 </UserControl>
