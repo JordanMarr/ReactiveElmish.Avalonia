@@ -14,10 +14,14 @@ let _random = Random()
   
 let newSeries =
     let newCollection = ObservableCollection<DateTimePoint>()
-    for i = 10 downto 0 do
+    for i = 30 downto 0 do
         let now = DateTimeOffset.Now
         let past = now.AddSeconds(-i).LocalDateTime
-        newCollection.Add(DateTimePoint(past, _random.Next(1, 11)))
+        let _randomNull = _random.Next(0, 99)
+        match _randomNull with
+            | i when i <=  4 ->
+                newCollection.Add(DateTimePoint(past, System.Nullable()))
+            | _ -> newCollection.Add(DateTimePoint(past, _random.Next(0, 10)))
     newCollection
     
 let XAxes : IEnumerable<ICartesianAxis> =
@@ -42,6 +46,7 @@ and Action =
 
 type Msg = 
     | AddItem
+    | AddNull
     | RemoveItem
     | UpdateItem
     | ReplaceItem
@@ -63,9 +68,15 @@ let update (msg: Msg) (model: Model) =
     match msg with
     | AddItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        values.Insert(values.Count, (DateTimePoint(DateTime.Now, _random.Next(1, 11))))
+        values.Insert(values.Count, (DateTimePoint(DateTime.Now, _random.Next(0, 10))))
         { model with 
             Actions = model.Actions @ [ { Description = "AddItem" } ]    
+        }
+    | AddNull ->
+        let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
+        values.Insert(values.Count, (DateTimePoint(DateTime.Now, System.Nullable())))
+        { model with 
+            Actions = model.Actions @ [ { Description = "AddNull" } ]    
         }
     | RemoveItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
@@ -75,16 +86,16 @@ let update (msg: Msg) (model: Model) =
         }
     | UpdateItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        let item = _random.Next(0, values.Count)
+        let item = _random.Next(0, values.Count - 1)
         let fstValueTime = values.[item].DateTime
-        values[item] <- DateTimePoint(fstValueTime, _random.Next(1, 11))
+        values[item] <- DateTimePoint(fstValueTime, _random.Next(0, 10))
         { model with 
             Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
         }
     | ReplaceItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
         let lastValueTime = values[values.Count - 1].DateTime
-        values[0] <- DateTimePoint(lastValueTime, _random.Next(1, 11))
+        values[values.Count - 1] <- DateTimePoint(lastValueTime, _random.Next(0, 10))
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
@@ -92,10 +103,14 @@ let update (msg: Msg) (model: Model) =
         // I do not know why I can't just use newSeries here
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
         let newCollection = ObservableCollection<DateTimePoint>()
-        for i = values.Count downto 0 do
+        for i = values.Count - 1 downto 0 do
             let now = DateTimeOffset.Now
             let past = now.AddSeconds(-i).LocalDateTime
-            newCollection.Add(DateTimePoint(past, _random.Next(1, 11)))
+            let _randomNull = _random.Next(0, 99)
+            match _randomNull with
+                | i when i <=  4 ->
+                    newCollection.Add(DateTimePoint(past, System.Nullable()))
+                | _ -> newCollection.Add(DateTimePoint(past, _random.Next(0, 10)))
         model.Series[0].Values <- newCollection
         // end newSeries complaint
         { model with 
@@ -137,7 +152,11 @@ let subscriptions (model: Model) : Sub<Msg> =
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
             if isAutoUpdating then
-                dispatch AddItem
+                let _randomNull = _random.Next(0, 99)
+                match _randomNull with
+                | i when i <=  4 ->
+                    dispatch AddNull
+                | _ -> dispatch AddItem
                 dispatch RemoveItem
         )
         timer.Start()
