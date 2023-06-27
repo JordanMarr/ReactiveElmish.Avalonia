@@ -1,10 +1,12 @@
 module AvaloniaExample.ViewModels.ChartViewModel
 
 open System
+open System.Collections.Generic
 open System.Collections.ObjectModel
 open System.Runtime.Serialization
 open Elmish.Avalonia
 open LiveChartsCore
+open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
 
@@ -18,7 +20,7 @@ let newSeries =
         newCollection.Add(DateTimePoint(past, _random.Next(1, 11)))
     newCollection
     
-let xAxes =
+let XAxes : IEnumerable<ICartesianAxis> =
     [| Axis (
             Labeler = (fun value -> DateTime(int64 value).ToString("hh:mm:ss")),
             LabelsRotation = 15,
@@ -29,7 +31,7 @@ let xAxes =
 
 type Model = 
     {
-        Series: ObservableCollection<ISeries> 
+        Series: ObservableCollection<ISeries>
         Actions: Action list
     }
     
@@ -119,6 +121,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "Reset" |> Binding.cmd Reset
     "AutoUpdate" |> Binding.cmd AutoUpdate
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
+    "XAxes" |> Binding.oneWayLazy ((fun _ -> XAxes), (fun _ _ -> true), id)
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())
