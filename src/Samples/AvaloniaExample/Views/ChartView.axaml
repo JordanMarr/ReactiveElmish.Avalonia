@@ -35,4 +35,9 @@
             </lvc:CartesianChart>
         </Grid>
     </StackPanel>
+    <Control.Styles>
+        <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2B579A" />
+        </Style>
+    </Control.Styles>
 </UserControl>

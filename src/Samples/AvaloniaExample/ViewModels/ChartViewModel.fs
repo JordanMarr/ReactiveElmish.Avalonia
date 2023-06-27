@@ -3,7 +3,6 @@ module AvaloniaExample.ViewModels.ChartViewModel
 open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
-open System.Runtime.Serialization
 open Elmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
