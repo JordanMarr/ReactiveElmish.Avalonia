@@ -29,7 +29,8 @@
                 MaxHeight="1200"
                 MinWidth="600"
                 MaxWidth="2400"
-                Series="{Binding Series}"
+                Series="{Binding Series}" 
+                XAxes="{Binding xAxes}"
                 EasingFunction="{Binding Source={x:Null}}">
             </lvc:CartesianChart>
         </Grid>

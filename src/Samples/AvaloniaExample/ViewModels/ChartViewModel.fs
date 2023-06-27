@@ -2,6 +2,7 @@ module AvaloniaExample.ViewModels.ChartViewModel
 
 open System
 open System.Collections.ObjectModel
+open System.Runtime.Serialization
 open Elmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.SkiaSharpView
@@ -10,11 +11,21 @@ open LiveChartsCore.Defaults
 let _random = Random()
   
 let newSeries =
-    let newCollection = ObservableCollection<ObservableValue>()
-    for _ in 1 .. 10 do
-        newCollection.Add(ObservableValue(_random.Next(1, 11)))
+    let newCollection = ObservableCollection<DateTimePoint>()
+    for i in 1 .. 10 do
+        let now = DateTimeOffset.Now
+        let past = now.AddSeconds(-i).LocalDateTime
+        newCollection.Add(DateTimePoint(past, _random.Next(1, 11)))
     newCollection
     
+let xAxes =
+    [| Axis (
+            Labeler = (fun value -> DateTime(int64 value).ToString("hh:mm:ss")),
+            LabelsRotation = 15,
+            UnitWidth = float(TimeSpan.FromSeconds(1).Ticks),
+            MinStep = float(TimeSpan.FromSeconds(1).Ticks)
+        )
+    |]
 
 type Model = 
     {
@@ -40,7 +51,7 @@ let rec init() =
         Series = 
             ObservableCollection<ISeries> 
                 [ 
-                    ColumnSeries<ObservableValue>(Values = newSeries, Fill = null, Name = "Luck Index") :> ISeries 
+                    ColumnSeries<DateTimePoint>(Values = newSeries, Fill = null, Name = "Luck By Second") :> ISeries 
                 ]
         Actions = [ { Description = "Initialized"} ]
     }
@@ -49,38 +60,38 @@ let mutable isAutoUpdating = false
 let update (msg: Msg) (model: Model) =
     match msg with
     | AddItem ->
-        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
-        values.Add(ObservableValue(_random.Next(1, 11)))
+        let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
+        values.Add(DateTimePoint(DateTime.Now, _random.Next(1, 11)))
         { model with 
             Actions = model.Actions @ [ { Description = "AddItem" } ]    
         }
     | RemoveItem ->
-        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
         values.RemoveAt(0)
         { model with 
             Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
         }
     | UpdateItem ->
-        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
         let len = values.Count
         let item = _random.Next(0, len)
-        values[item] <- ObservableValue(_random.Next(1, 11))
+        values[item] <- DateTimePoint(DateTime.Now, _random.Next(1, 11))
         { model with 
             Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
         }
     | ReplaceItem ->
-        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
+        let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
         let lstValue = values.Count-1
-        values[lstValue] <- ObservableValue(_random.Next(1, 11))
+        values[lstValue] <- DateTimePoint(DateTime.Now, _random.Next(1, 11))
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
     | Reset ->
         // I do not know why I can't just use newSeries here
-        let values = model.Series[0].Values :?> ObservableCollection<ObservableValue>
-        let newCollection = ObservableCollection<ObservableValue>()
+        let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
+        let newCollection = ObservableCollection<DateTimePoint>()
         for _ in 1 .. values.Count - 1 do
-            newCollection.Add(ObservableValue(_random.Next(1, 11)))
+            newCollection.Add(DateTimePoint(DateTime.Now, _random.Next(1, 11)))
         model.Series[0].Values <- newCollection
         // end newSeries complaint
         { model with 
