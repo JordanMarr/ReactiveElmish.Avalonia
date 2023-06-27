@@ -103,7 +103,7 @@ let update (msg: Msg) (model: Model) =
         }
     | Reset ->
         model.Series[0].Values <- newSeries(Some values.Count)
-        // this is a hack to get the toggle button to update
+        // todo: update toggle button state in the UI
         // let toggleButton = parentControl.FindControl("AutoUpdate") :?> ToggleButton
         // toggleButton.IsChecked <- false
         isAutoUpdating <- false
