@@ -40,7 +40,7 @@ let rec init() =
         Series = 
             ObservableCollection<ISeries> 
                 [ 
-                    LineSeries<ObservableValue>(Values = newSeries) :> ISeries 
+                    ColumnSeries<ObservableValue>(Values = newSeries, Fill = null, Name = "Luck Index") :> ISeries 
                 ]
         Actions = [ { Description = "Initialized"} ]
     }

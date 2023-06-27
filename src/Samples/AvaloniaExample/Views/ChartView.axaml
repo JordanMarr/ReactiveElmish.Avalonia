@@ -15,11 +15,11 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Margin="6" Command="{Binding AddItem}">Add</Button>
-                <Button Margin="6" Command="{Binding RemoveItem}">Remove</Button>
-                <Button Margin="6" Command="{Binding UpdateItem}">Update</Button>
-                <Button Margin="6" Command="{Binding ReplaceItem}">Replace</Button>
-                <Button Margin="6" Command="{Binding Reset}">Reset</Button>
+                <Button Margin="6" Command="{Binding AddItem}">Add Last</Button>
+                <Button Margin="6" Command="{Binding RemoveItem}">Remove First</Button>
+                <Button Margin="6" Command="{Binding UpdateItem}">Update Random</Button>
+                <Button Margin="6" Command="{Binding ReplaceItem}">Replace Last</Button>
+                <Button Margin="6" Command="{Binding Reset}">Reset All</Button>
                 <Button Margin="6" Command="{Binding AutoUpdate}">AutoUpdate</Button>
 
             </StackPanel>
