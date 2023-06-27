@@ -20,7 +20,7 @@
                 <Button Margin="6" Command="{Binding UpdateItem}">Update Random</Button>
                 <Button Margin="6" Command="{Binding ReplaceItem}">Replace Last</Button>
                 <Button Margin="6" Command="{Binding Reset}">Reset All</Button>
-                <Button Margin="6" Command="{Binding AutoUpdate}">AutoUpdate</Button>
+                <ToggleButton Margin="6" Command="{Binding AutoUpdate}">AutoUpdate</ToggleButton>
 
             </StackPanel>
             <lvc:CartesianChart 
