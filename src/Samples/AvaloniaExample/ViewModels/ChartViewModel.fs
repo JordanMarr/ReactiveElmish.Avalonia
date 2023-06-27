@@ -14,7 +14,7 @@ let _random = Random()
   
 let newSeries =
     let newCollection = ObservableCollection<DateTimePoint>()
-    for i in 1 .. 10 do
+    for i = 10 downto 0 do
         let now = DateTimeOffset.Now
         let past = now.AddSeconds(-i).LocalDateTime
         newCollection.Add(DateTimePoint(past, _random.Next(1, 11)))
@@ -63,13 +63,13 @@ let update (msg: Msg) (model: Model) =
     match msg with
     | AddItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        values.Insert(0, (DateTimePoint(DateTime.Now, _random.Next(1, 11))))
+        values.Insert(values.Count, (DateTimePoint(DateTime.Now, _random.Next(1, 11))))
         { model with 
             Actions = model.Actions @ [ { Description = "AddItem" } ]    
         }
     | RemoveItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        values.RemoveAt(values.Count - 1)
+        values.RemoveAt(0)
         { model with 
             Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
         }
@@ -83,7 +83,7 @@ let update (msg: Msg) (model: Model) =
         }
     | ReplaceItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        let lastValueTime = values[0].DateTime
+        let lastValueTime = values[values.Count - 1].DateTime
         values[0] <- DateTimePoint(lastValueTime, _random.Next(1, 11))
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
@@ -92,7 +92,7 @@ let update (msg: Msg) (model: Model) =
         // I do not know why I can't just use newSeries here
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
         let newCollection = ObservableCollection<DateTimePoint>()
-        for i in 1 .. values.Count - 1 do
+        for i = values.Count downto 0 do
             let now = DateTimeOffset.Now
             let past = now.AddSeconds(-i).LocalDateTime
             newCollection.Add(DateTimePoint(past, _random.Next(1, 11)))
@@ -137,8 +137,8 @@ let subscriptions (model: Model) : Sub<Msg> =
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
             if isAutoUpdating then
-                dispatch RemoveItem
                 dispatch AddItem
+                dispatch RemoveItem
         )
         timer.Start()
         timer :> IDisposable
