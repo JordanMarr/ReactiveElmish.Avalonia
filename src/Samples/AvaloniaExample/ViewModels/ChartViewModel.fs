@@ -33,7 +33,7 @@ type Msg =
     | UpdateItem
     | ReplaceItem
     | Reset
-    | Continue
+    | AutoUpdate
 
 let rec init() =
     {
@@ -45,7 +45,7 @@ let rec init() =
         Actions = [ { Description = "Initialized"} ]
     }
     
-let mutable isContinuing = false
+let mutable isAutoUpdating = false
 let update (msg: Msg) (model: Model) =
     match msg with
     | AddItem ->
@@ -86,15 +86,15 @@ let update (msg: Msg) (model: Model) =
         { model with 
             Actions = model.Actions @ [ { Description = "Reset" } ]            
         }
-    | Continue ->
-        match isContinuing with
+    | AutoUpdate ->
+        match isAutoUpdating with
             | false ->
-                isContinuing <- true
+                isAutoUpdating <- true
                 { model with 
                     Actions = model.Actions @ [ { Description = "Continue" } ]            
                 }
             | _ ->
-                isContinuing <- false
+                isAutoUpdating <- false
                 { model with 
                     Actions = model.Actions @ [ { Description = "Continue" } ]            
                 } 
@@ -106,7 +106,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
     "Reset" |> Binding.cmd Reset
-    "Continue" |> Binding.cmd Continue
+    "AutoUpdate" |> Binding.cmd AutoUpdate
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
 ]
 
@@ -120,7 +120,7 @@ let subscriptions (model: Model) : Sub<Msg> =
     let valueChangedSubscription (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
-            if isContinuing then
+            if isAutoUpdating then
                 dispatch AddItem
                 dispatch RemoveItem
         )
