@@ -53,7 +53,7 @@ let rec init() =
         Series = 
             ObservableCollection<ISeries> 
                 [ 
-                    ColumnSeries<DateTimePoint>(Values = newSeries, Fill = null, Name = "Luck By Second") :> ISeries 
+                    LineSeries<DateTimePoint>(Values = newSeries, Fill = null, Name = "Luck By Second") :> ISeries 
                 ]
         Actions = [ { Description = "Initialized"} ]
     }
@@ -63,28 +63,28 @@ let update (msg: Msg) (model: Model) =
     match msg with
     | AddItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        values.Add(DateTimePoint(DateTime.Now, _random.Next(1, 11)))
+        values.Insert(0, (DateTimePoint(DateTime.Now, _random.Next(1, 11))))
         { model with 
             Actions = model.Actions @ [ { Description = "AddItem" } ]    
         }
     | RemoveItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        values.RemoveAt(0)
+        values.RemoveAt(values.Count - 1)
         { model with 
             Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
         }
     | UpdateItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        let len = values.Count
-        let item = _random.Next(0, len)
-        values[item] <- DateTimePoint(DateTime.Now, _random.Next(1, 11))
+        let item = _random.Next(0, values.Count)
+        let fstValueTime = values.[item].DateTime
+        values[item] <- DateTimePoint(fstValueTime, _random.Next(1, 11))
         { model with 
             Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
         }
     | ReplaceItem ->
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
-        let lstValue = values.Count-1
-        values[lstValue] <- DateTimePoint(DateTime.Now, _random.Next(1, 11))
+        let lastValueTime = values[0].DateTime
+        values[0] <- DateTimePoint(lastValueTime, _random.Next(1, 11))
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
@@ -92,8 +92,10 @@ let update (msg: Msg) (model: Model) =
         // I do not know why I can't just use newSeries here
         let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
         let newCollection = ObservableCollection<DateTimePoint>()
-        for _ in 1 .. values.Count - 1 do
-            newCollection.Add(DateTimePoint(DateTime.Now, _random.Next(1, 11)))
+        for i in 1 .. values.Count - 1 do
+            let now = DateTimeOffset.Now
+            let past = now.AddSeconds(-i).LocalDateTime
+            newCollection.Add(DateTimePoint(past, _random.Next(1, 11)))
         model.Series[0].Values <- newCollection
         // end newSeries complaint
         { model with 
@@ -135,8 +137,8 @@ let subscriptions (model: Model) : Sub<Msg> =
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
             if isAutoUpdating then
-                dispatch AddItem
                 dispatch RemoveItem
+                dispatch AddItem
         )
         timer.Start()
         timer :> IDisposable
