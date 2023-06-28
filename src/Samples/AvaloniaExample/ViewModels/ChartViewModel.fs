@@ -59,9 +59,9 @@ type Msg =
     | RemoveItem
     | UpdateItem
     | ReplaceItem
-    | IsAutoUpdateChecked of bool
     | Reset
     | AutoUpdate
+    | SetIsAutoUpdateChecked of bool
 
 let rec init() =
     {
@@ -106,14 +106,18 @@ let update (msg: Msg) (model: Model) =
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
-    | IsAutoUpdateChecked isChecked ->
-        { model with IsAutoUpdateChecked = isChecked }
     | Reset ->
         // pass up the current length of the series to the newSeries function
+        isAutoUpdating <- false
         model.Series[0].Values <- newSeries(Some values.Count)
         { model with 
-            Actions = model.Actions @ [ { Description = "Reset" } ]
             IsAutoUpdateChecked = false 
+            Actions = model.Actions @ [ { Description = "Reset" } ]
+        }
+    | SetIsAutoUpdateChecked isChecked ->
+        { model with 
+            IsAutoUpdateChecked = isChecked
+            Actions = model.Actions @ [ { Description = $"IsAutoUpdateChecked: {isChecked}" } ]
         }
     | AutoUpdate ->
         match isAutoUpdating with
@@ -136,7 +140,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
-    "IsAutoUpdateChecked" |> Binding.oneWayLazy ((fun m -> m.IsAutoUpdateChecked), (fun _ _ -> true), id)
+    "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
     "Reset" |> Binding.cmd Reset
     "AutoUpdate" |> Binding.cmd AutoUpdate
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
