@@ -125,13 +125,11 @@ let update (msg: Msg) (model: Model) =
                 isAutoUpdating <- true
                 { model with 
                     Actions = model.Actions @ [ { Description = "AutoUpdate" } ]
-                    IsAutoUpdateChecked = true 
                 }
             | _ ->
                 isAutoUpdating <- false
                 { model with 
                     Actions = model.Actions @ [ { Description = "AutoUpdate" } ]
-                    IsAutoUpdateChecked = false 
                 }
 
 let bindings ()  : Binding<Model, Msg> list = [
@@ -140,9 +138,9 @@ let bindings ()  : Binding<Model, Msg> list = [
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
-    "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
     "Reset" |> Binding.cmd Reset
     "AutoUpdate" |> Binding.cmd AutoUpdate
+    "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
     "XAxes" |> Binding.oneWayLazy ((fun _ -> XAxes), (fun _ _ -> true), id)
 ]
