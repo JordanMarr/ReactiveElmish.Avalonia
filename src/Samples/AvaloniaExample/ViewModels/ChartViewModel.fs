@@ -4,7 +4,6 @@ open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
 open Elmish.Avalonia
-open Avalonia.Controls.Primitives
 open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
@@ -46,6 +45,7 @@ type Model =
     {
         Series: ObservableCollection<ISeries>
         Actions: Action list
+        IsAutoUpdateChecked: bool
     }
     
 and Action = 
@@ -59,6 +59,7 @@ type Msg =
     | RemoveItem
     | UpdateItem
     | ReplaceItem
+    | SetIsAutoUpdateChecked of bool
     | Reset
     | AutoUpdate
 
@@ -70,6 +71,7 @@ let rec init() =
                     LineSeries<DateTimePoint>(Values = newSeries(None), Fill = null, Name = "Luck By Second") :> ISeries 
                 ]
         Actions = [ { Description = "Initialized"} ]
+        IsAutoUpdateChecked = false 
     }
     
 let mutable isAutoUpdating = false
@@ -104,28 +106,29 @@ let update (msg: Msg) (model: Model) =
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
+    | SetIsAutoUpdateChecked isChecked ->
+        { model with IsAutoUpdateChecked = isChecked }
     | Reset ->
         // pass up the current length of the series to the newSeries function
         model.Series[0].Values <- newSeries(Some values.Count)
-        // todo: update toggle button state in the UI and reset isAutoUpdating
-        // let toggleButton = parentControl.FindControl("AutoUpdate") :?> ToggleButton
-        // toggleButton.IsChecked <- false
-        // isAutoUpdating <- false
         { model with 
-            Actions = model.Actions @ [ { Description = "Reset" } ]            
+            Actions = model.Actions @ [ { Description = "Reset" } ]
+            IsAutoUpdateChecked = false 
         }
     | AutoUpdate ->
         match isAutoUpdating with
             | false ->
                 isAutoUpdating <- true
                 { model with 
-                    Actions = model.Actions @ [ { Description = "Continue" } ]            
+                    Actions = model.Actions @ [ { Description = "Continue" } ]
+                    IsAutoUpdateChecked = true 
                 }
             | _ ->
                 isAutoUpdating <- false
                 { model with 
-                    Actions = model.Actions @ [ { Description = "Continue" } ]            
-                } 
+                    Actions = model.Actions @ [ { Description = "Continue" } ]
+                    IsAutoUpdateChecked = false 
+                }
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Actions" |> Binding.oneWay (fun m -> m.Actions)
