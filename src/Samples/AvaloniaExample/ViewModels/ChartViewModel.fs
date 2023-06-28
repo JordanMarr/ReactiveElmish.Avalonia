@@ -9,7 +9,7 @@ open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
 
-let _random = Random()
+let rnd = Random()
 
   
 let newSeries (count: int option)  =
@@ -24,12 +24,12 @@ let newSeries (count: int option)  =
     for i = seriesCount downto 0 do
         // backdate the time in seconds by the index to create a series of points in the past
         let past = DateTimeOffset.Now.AddSeconds(-i).LocalDateTime
-        let _randomNull = _random.Next(0, 99)
+        let randomNull = rnd.Next(0, 99)
         // in 1% of cases produce a null value to show an "empty" spot in the series
-        match _randomNull with
+        match randomNull with
             | i when i = 0 ->
                 newCollection.Add(DateTimePoint(past, System.Nullable()))
-            | _ -> newCollection.Add(DateTimePoint(past, _random.Next(0, 10)))
+            | _ -> newCollection.Add(DateTimePoint(past, rnd.Next(0, 10)))
     newCollection
     
 let XAxes : IEnumerable<ICartesianAxis> =
@@ -59,7 +59,7 @@ type Msg =
     | RemoveItem
     | UpdateItem
     | ReplaceItem
-    | SetIsAutoUpdateChecked of bool
+    | IsAutoUpdateChecked of bool
     | Reset
     | AutoUpdate
 
@@ -79,7 +79,7 @@ let update (msg: Msg) (model: Model) =
     let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
     match msg with
     | AddItem ->
-        values.Insert(values.Count, (DateTimePoint(DateTime.Now, _random.Next(0, 10))))
+        values.Insert(values.Count, (DateTimePoint(DateTime.Now, rnd.Next(0, 10))))
         { model with 
             Actions = model.Actions @ [ { Description = "AddItem" } ]    
         }
@@ -94,19 +94,19 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
         }
     | UpdateItem ->
-        let item = _random.Next(0, values.Count - 1)
+        let item = rnd.Next(0, values.Count - 1)
         let fstValueTime = values.[item].DateTime
-        values[item] <- DateTimePoint(fstValueTime, _random.Next(0, 10))
+        values[item] <- DateTimePoint(fstValueTime, rnd.Next(0, 10))
         { model with 
             Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
         }
     | ReplaceItem ->
         let lastValueTime = values[values.Count - 1].DateTime
-        values[values.Count - 1] <- DateTimePoint(lastValueTime, _random.Next(0, 10))
+        values[values.Count - 1] <- DateTimePoint(lastValueTime, rnd.Next(0, 10))
         { model with 
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
-    | SetIsAutoUpdateChecked isChecked ->
+    | IsAutoUpdateChecked isChecked ->
         { model with IsAutoUpdateChecked = isChecked }
     | Reset ->
         // pass up the current length of the series to the newSeries function
@@ -120,13 +120,13 @@ let update (msg: Msg) (model: Model) =
             | false ->
                 isAutoUpdating <- true
                 { model with 
-                    Actions = model.Actions @ [ { Description = "Continue" } ]
+                    Actions = model.Actions @ [ { Description = "AutoUpdate" } ]
                     IsAutoUpdateChecked = true 
                 }
             | _ ->
                 isAutoUpdating <- false
                 { model with 
-                    Actions = model.Actions @ [ { Description = "Continue" } ]
+                    Actions = model.Actions @ [ { Description = "AutoUpdate" } ]
                     IsAutoUpdateChecked = false 
                 }
 
@@ -136,6 +136,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
+    "IsAutoUpdateChecked" |> Binding.oneWayLazy ((fun m -> m.IsAutoUpdateChecked), (fun _ _ -> true), id)
     "Reset" |> Binding.cmd Reset
     "AutoUpdate" |> Binding.cmd AutoUpdate
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
@@ -154,7 +155,7 @@ let subscriptions (model: Model) : Sub<Msg> =
         timer.Elapsed.Add(fun _ -> 
             if isAutoUpdating then
                 // similar to newSeries create null entries in 1% of cases
-                let _randomNull = _random.Next(0, 99)
+                let _randomNull = rnd.Next(0, 99)
                 match _randomNull with
                 | i when i = 0 ->
                     dispatch AddNull
