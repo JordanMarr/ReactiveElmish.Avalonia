@@ -13,7 +13,7 @@ open LiveChartsCore.Defaults
 let _random = Random()
 
   
-let newSeries (count: option<int>)  =
+let newSeries (count: int option)  =
     let newCollection = ObservableCollection<DateTimePoint>()
     let mutable seriesCount = 0
     match count with
