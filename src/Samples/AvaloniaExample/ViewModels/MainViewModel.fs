@@ -9,29 +9,29 @@ type Model =
     }
 
 type Msg = 
-    | ShowCounter
     | ShowChart
+    | ShowCounter
     | ShowAbout
 
 let init() = 
     { 
-        ContentVM = CounterViewModel.vm
+        ContentVM = ChartViewModel.vm
     }
 
 let update (msg: Msg) (model: Model) = 
     match msg with
-    | ShowCounter -> 
-        { model with ContentVM = CounterViewModel.vm }  
     | ShowChart -> 
         { model with ContentVM = ChartViewModel.vm }
+    | ShowCounter -> 
+        { model with ContentVM = CounterViewModel.vm }  
     | ShowAbout ->
         { model with ContentVM = AboutViewModel.vm }
 
 let bindings() : Binding<Model, Msg> list = [ 
     // Properties
     "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM)
-    "ShowCounter" |> Binding.cmd ShowCounter
     "ShowChart" |> Binding.cmd ShowChart
+    "ShowCounter" |> Binding.cmd ShowCounter
     "ShowAbout" |> Binding.cmd ShowAbout
 ]
 

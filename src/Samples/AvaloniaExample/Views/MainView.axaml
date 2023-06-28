@@ -62,8 +62,8 @@
 	<DockPanel LastChildFill="true">
 
 		<StackPanel Classes="nav" Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch">
-			<Button Classes="tab" Content="Counter" Command="{Binding ShowCounter}" />
 			<Button Classes="tab" Content="Chart" Command="{Binding ShowChart}" />
+			<Button Classes="tab" Content="Counter" Command="{Binding ShowCounter}" />
 		    <Button Classes="tab" Content="About" Command="{Binding ShowAbout}" />
 		</StackPanel>
 		

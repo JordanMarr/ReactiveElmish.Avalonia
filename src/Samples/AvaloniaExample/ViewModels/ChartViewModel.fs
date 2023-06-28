@@ -15,24 +15,27 @@ let _random = Random()
   
 let newSeries (count: int option)  =
     let newCollection = ObservableCollection<DateTimePoint>()
+    // use seriesCount to either 1) set a default 15 at init or 2) use the count passed in from the reset button
     let mutable seriesCount = 0
     match count with
     | None ->
-        seriesCount <- 30
+        seriesCount <- 15
     | _ -> 
         seriesCount <- count.Value - 1
     for i = seriesCount downto 0 do
+        // backdate the time in seconds by the index to create a series of points in the past
         let past = DateTimeOffset.Now.AddSeconds(-i).LocalDateTime
         let _randomNull = _random.Next(0, 99)
+        // in 1% of cases produce a null value to show an "empty" spot in the series
         match _randomNull with
-            | i when i <=  4 ->
+            | i when i = 0 ->
                 newCollection.Add(DateTimePoint(past, System.Nullable()))
             | _ -> newCollection.Add(DateTimePoint(past, _random.Next(0, 10)))
     newCollection
     
 let XAxes : IEnumerable<ICartesianAxis> =
     [| Axis (
-            Labeler = (fun value -> DateTime(int64 value).ToString("hh:mm:ss")),
+            Labeler = (fun value -> DateTime(int64 value).ToString("HH:mm:ss")),
             LabelsRotation = 15,
             UnitWidth = float(TimeSpan.FromSeconds(1).Ticks),
             MinStep = float(TimeSpan.FromSeconds(1).Ticks)
@@ -102,11 +105,12 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
     | Reset ->
+        // pass up the current length of the series to the newSeries function
         model.Series[0].Values <- newSeries(Some values.Count)
-        // todo: update toggle button state in the UI
+        // todo: update toggle button state in the UI and reset isAutoUpdating
         // let toggleButton = parentControl.FindControl("AutoUpdate") :?> ToggleButton
         // toggleButton.IsChecked <- false
-        isAutoUpdating <- false
+        // isAutoUpdating <- false
         { model with 
             Actions = model.Actions @ [ { Description = "Reset" } ]            
         }
@@ -146,9 +150,10 @@ let subscriptions (model: Model) : Sub<Msg> =
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
             if isAutoUpdating then
+                // similar to newSeries create null entries in 1% of cases
                 let _randomNull = _random.Next(0, 99)
                 match _randomNull with
-                | i when i <=  4 ->
+                | i when i = 0 ->
                     dispatch AddNull
                 | _ -> dispatch AddItem
                 dispatch RemoveItem
