@@ -14,7 +14,7 @@ let rnd = Random()
   
 let newSeries (count: int option)  =
     let newCollection = ObservableCollection<DateTimePoint>()
-    // use seriesCount to either 1) set a default 15 at init or 2) use the count passed in from the reset button
+    // use seriesCount to either 1) set a default 15 at init or 2) use the count passed in from Reset 
     let mutable seriesCount = 0
     match count with
     | None ->
@@ -32,6 +32,7 @@ let newSeries (count: int option)  =
             | _ -> newCollection.Add(DateTimePoint(past, rnd.Next(0, 10)))
     newCollection
     
+// create time labeling for the X axis in the Chart visual
 let XAxes : IEnumerable<ICartesianAxis> =
     [| Axis (
             Labeler = (fun value -> DateTime(int64 value).ToString("HH:mm:ss")),
@@ -68,13 +69,18 @@ let rec init() =
         Series = 
             ObservableCollection<ISeries> 
                 [ 
-                    LineSeries<DateTimePoint>(Values = newSeries(None), Fill = null, Name = "Luck By Second") :> ISeries 
+                    LineSeries<DateTimePoint>(Values = newSeries(None),
+                                                Fill = null,
+                                                Name = "Luck By Second")
+                    :> ISeries 
                 ]
         Actions = [ { Description = "Initialized"} ]
         IsAutoUpdateChecked = false 
     }
     
+// used to hold the state of the AutoUpdate ToggleButton into autoUpdateSubscription
 let mutable isAutoUpdating = false
+
 let update (msg: Msg) (model: Model) =
     let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
     match msg with
@@ -107,10 +113,12 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
         }
     | Reset ->
-        // pass up the current length of the series to the newSeries function
-        isAutoUpdating <- false
+        // insert new Series - send the current series length to the newSeries function
         model.Series[0].Values <- newSeries(Some values.Count)
-        { model with 
+        // disable autoUpdateSubscription
+        isAutoUpdating <- false
+        { model with
+            // deactivate the AutoUpdate ToggleButton in the UI
             IsAutoUpdateChecked = false 
             Actions = model.Actions @ [ { Description = "Reset" } ]
         }
@@ -120,16 +128,17 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = $"IsAutoUpdateChecked: {isChecked}" } ]
         }
     | AutoUpdate ->
+        // toggle the isAutoUpdating flag to switch the autoUpdateSubscription behavior
         match isAutoUpdating with
             | false ->
                 isAutoUpdating <- true
                 { model with 
-                    Actions = model.Actions @ [ { Description = "AutoUpdate" } ]
+                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}" } ]
                 }
             | _ ->
                 isAutoUpdating <- false
                 { model with 
-                    Actions = model.Actions @ [ { Description = "AutoUpdate" } ]
+                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}" } ]
                 }
 
 let bindings ()  : Binding<Model, Msg> list = [
@@ -152,13 +161,13 @@ open System.Timers
 
 let subscriptions (model: Model) : Sub<Msg> =
 
-    let valueChangedSubscription (dispatch: Msg -> unit) = 
+    let autoUpdateSubscription (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
             if isAutoUpdating then
-                // similar to newSeries create null entries in 1% of cases
-                let _randomNull = rnd.Next(0, 99)
-                match _randomNull with
+                // similar to newSeries create null entry in 1% of cases
+                let randomNull = rnd.Next(0, 99)
+                match randomNull with
                 | i when i = 0 ->
                     dispatch AddNull
                 | _ -> dispatch AddItem
@@ -168,7 +177,7 @@ let subscriptions (model: Model) : Sub<Msg> =
         timer :> IDisposable
 
     [
-        [ nameof valueChangedSubscription ], valueChangedSubscription
+        [ nameof autoUpdateSubscription ], autoUpdateSubscription
     ]
 
 let vm = ElmishViewModel(
