@@ -46,7 +46,9 @@ Since the design preview is set for both the `MasterView` and the `CounterView`,
 
 
 # Project Setup
-As of now, the easiest way to get started is to copy the included `AvaloniaExample` project.
+~~As of now, the easiest way to get started is to copy the included `AvaloniaExample` project.~~
+Elmish.Avalonia is now available on NuGet.
+
 
 Here are some key differences from the default F# MVVM template in the `AvaloniaExample` project:
 
