@@ -36,7 +36,7 @@ let update (msg: Msg) (model: Model) =
     | Decrement ->
         { model with 
             Count = model.Count - 1 
-            Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ]
+            Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ] 
         }
     | Reset ->
         init()

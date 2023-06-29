@@ -52,6 +52,7 @@ type Model =
 and Action = 
     {
         Description: string
+        Timestamp: DateTime
     }
 
 type Msg = 
@@ -74,7 +75,7 @@ let rec init() =
                                                 Name = "Luck By Second")
                     :> ISeries 
                 ]
-        Actions = [ { Description = "Initialized"} ]
+        Actions = [ { Description = "Initialized Chart"; Timestamp = DateTime.Now } ]
         IsAutoUpdateChecked = false 
     }
     
@@ -87,30 +88,30 @@ let update (msg: Msg) (model: Model) =
     | AddItem ->
         values.Insert(values.Count, (DateTimePoint(DateTime.Now, rnd.Next(0, 10))))
         { model with 
-            Actions = model.Actions @ [ { Description = "AddItem" } ]    
+            Actions = model.Actions @ [ { Description = "AddItem"; Timestamp = DateTime.Now } ]    
         }
     | AddNull ->
         values.Insert(values.Count, (DateTimePoint(DateTime.Now, System.Nullable())))
         { model with 
-            Actions = model.Actions @ [ { Description = "AddNull" } ]    
+            Actions = model.Actions @ [ { Description = "AddNull"; Timestamp = DateTime.Now } ]    
         }
     | RemoveItem ->
         values.RemoveAt(0)
         { model with 
-            Actions = model.Actions @ [ { Description = "RemoveItem" } ]    
+            Actions = model.Actions @ [ { Description = "RemoveItem"; Timestamp = DateTime.Now } ]    
         }
     | UpdateItem ->
         let item = rnd.Next(0, values.Count - 1)
         let fstValueTime = values.[item].DateTime
         values[item] <- DateTimePoint(fstValueTime, rnd.Next(0, 10))
         { model with 
-            Actions = model.Actions @ [ { Description = "UpdateItem" } ]            
+            Actions = model.Actions @ [ { Description = "UpdateItem"; Timestamp = DateTime.Now } ]            
         }
     | ReplaceItem ->
         let lastValueTime = values[values.Count - 1].DateTime
         values[values.Count - 1] <- DateTimePoint(lastValueTime, rnd.Next(0, 10))
         { model with 
-            Actions = model.Actions @ [ { Description = "ReplaceItem" } ]            
+            Actions = model.Actions @ [ { Description = "ReplaceItem"; Timestamp = DateTime.Now } ]            
         }
     | Reset ->
         // insert new Series - send the current series length to the newSeries function
@@ -120,12 +121,12 @@ let update (msg: Msg) (model: Model) =
         { model with
             // deactivate the AutoUpdate ToggleButton in the UI
             IsAutoUpdateChecked = false 
-            Actions = model.Actions @ [ { Description = "Reset" } ]
+            Actions = [ { Description = "Reset"; Timestamp = DateTime.Now } ]
         }
     | SetIsAutoUpdateChecked isChecked ->
         { model with 
             IsAutoUpdateChecked = isChecked
-            Actions = model.Actions @ [ { Description = $"IsAutoUpdateChecked: {isChecked}" } ]
+            Actions = model.Actions @ [ { Description = $"IsAutoUpdateChecked: {isChecked}"; Timestamp = DateTime.Now } ]
         }
     | AutoUpdate ->
         // toggle the isAutoUpdating flag to switch the autoUpdateSubscription behavior
@@ -133,12 +134,12 @@ let update (msg: Msg) (model: Model) =
             | false ->
                 isAutoUpdating <- true
                 { model with 
-                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}" } ]
+                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
                 }
             | _ ->
                 isAutoUpdating <- false
                 { model with 
-                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}" } ]
+                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
                 }
 
 let bindings ()  : Binding<Model, Msg> list = [

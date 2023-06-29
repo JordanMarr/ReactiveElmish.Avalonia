@@ -35,8 +35,9 @@
         <PackageReference Include="Elmish" Version="4.0.1" />
         <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.0-rc1.1" />
         <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
         <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.802" />
