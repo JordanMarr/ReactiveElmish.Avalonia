@@ -15,23 +15,23 @@ type Msg =
 
 let init() = 
     { 
-        ContentVM = ChartViewModel.vm
+        ContentVM = CounterViewModel.vm
     }
 
 let update (msg: Msg) (model: Model) = 
     match msg with
-    | ShowChart -> 
-        { model with ContentVM = ChartViewModel.vm }
     | ShowCounter -> 
-        { model with ContentVM = CounterViewModel.vm }  
+        { model with ContentVM = CounterViewModel.vm }
+    | ShowChart -> 
+        { model with ContentVM = ChartViewModel.vm }  
     | ShowAbout ->
         { model with ContentVM = AboutViewModel.vm }
 
 let bindings() : Binding<Model, Msg> list = [ 
     // Properties
     "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM)
-    "ShowChart" |> Binding.cmd ShowChart
     "ShowCounter" |> Binding.cmd ShowCounter
+    "ShowChart" |> Binding.cmd ShowChart
     "ShowAbout" |> Binding.cmd ShowAbout
 ]
 
@@ -45,7 +45,7 @@ let vm : IElmishViewModel =
                 Messaging.bus.Subscribe(fun msg -> 
                     match msg with
                     | Messaging.GlobalMsg.GoHome -> 
-                        dispatch ShowChart
+                        dispatch ShowCounter
                 )
 
             [ 

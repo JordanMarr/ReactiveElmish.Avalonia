@@ -36,5 +36,6 @@
         </Grid>
         <DataGrid ItemsSource="{Binding Actions}" AutoGenerateColumns="True" Height="200">
         </DataGrid>
+        <Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center"/>	
     </StackPanel>
 </UserControl>

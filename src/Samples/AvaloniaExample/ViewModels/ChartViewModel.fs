@@ -3,6 +3,7 @@ module AvaloniaExample.ViewModels.ChartViewModel
 open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
+open Elmish
 open Elmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
@@ -86,32 +87,32 @@ let update (msg: Msg) (model: Model) =
     let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
     match msg with
     | AddItem ->
-        values.Insert(values.Count, (DateTimePoint(DateTime.Now, rnd.Next(0, 10))))
+        values.Insert(values.Count, DateTimePoint(DateTime.Now, rnd.Next(0, 10)))
         { model with 
-            Actions = model.Actions @ [ { Description = "AddItem"; Timestamp = DateTime.Now } ]    
+            Actions = model.Actions @ [ { Description = $"Added Item"; Timestamp = DateTime.Now } ]    
         }
     | AddNull ->
-        values.Insert(values.Count, (DateTimePoint(DateTime.Now, System.Nullable())))
+        values.Insert(values.Count, DateTimePoint(DateTime.Now, System.Nullable()))
         { model with 
-            Actions = model.Actions @ [ { Description = "AddNull"; Timestamp = DateTime.Now } ]    
+            Actions = model.Actions @ [ { Description = $"Added Null"; Timestamp = DateTime.Now } ]    
         }
     | RemoveItem ->
         values.RemoveAt(0)
         { model with 
-            Actions = model.Actions @ [ { Description = "RemoveItem"; Timestamp = DateTime.Now } ]    
+            Actions = model.Actions @ [ { Description = "Removed Item"; Timestamp = DateTime.Now } ]    
         }
     | UpdateItem ->
         let item = rnd.Next(0, values.Count - 1)
-        let fstValueTime = values.[item].DateTime
+        let fstValueTime = values[item].DateTime
         values[item] <- DateTimePoint(fstValueTime, rnd.Next(0, 10))
         { model with 
-            Actions = model.Actions @ [ { Description = "UpdateItem"; Timestamp = DateTime.Now } ]            
+            Actions = model.Actions @ [ { Description = $"Updated Item: {item + 1}"; Timestamp = DateTime.Now } ]            
         }
     | ReplaceItem ->
         let lastValueTime = values[values.Count - 1].DateTime
         values[values.Count - 1] <- DateTimePoint(lastValueTime, rnd.Next(0, 10))
         { model with 
-            Actions = model.Actions @ [ { Description = "ReplaceItem"; Timestamp = DateTime.Now } ]            
+            Actions = model.Actions @ [ { Description = $"Replaced Item: {values.Count}"; Timestamp = DateTime.Now } ]           
         }
     | Reset ->
         // insert new Series - send the current series length to the newSeries function
@@ -121,12 +122,12 @@ let update (msg: Msg) (model: Model) =
         { model with
             // deactivate the AutoUpdate ToggleButton in the UI
             IsAutoUpdateChecked = false 
-            Actions = [ { Description = "Reset"; Timestamp = DateTime.Now } ]
+            Actions = [ { Description = "Reset Chart"; Timestamp = DateTime.Now } ]
         }
     | SetIsAutoUpdateChecked isChecked ->
         { model with 
             IsAutoUpdateChecked = isChecked
-            Actions = model.Actions @ [ { Description = $"IsAutoUpdateChecked: {isChecked}"; Timestamp = DateTime.Now } ]
+            Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
         }
     | AutoUpdate ->
         // toggle the isAutoUpdating flag to switch the autoUpdateSubscription behavior
@@ -134,16 +135,16 @@ let update (msg: Msg) (model: Model) =
             | false ->
                 isAutoUpdating <- true
                 { model with 
-                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
+                    Actions = model.Actions @ [ { Description = $"Is Auto Updating: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
                 }
             | _ ->
                 isAutoUpdating <- false
                 { model with 
-                    Actions = model.Actions @ [ { Description = $"AutoUpdate: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
+                    Actions = model.Actions @ [ { Description = $"Is Auto Updating: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
                 }
 
 let bindings ()  : Binding<Model, Msg> list = [
-    "Actions" |> Binding.oneWay (fun m -> m.Actions)
+    "Actions" |> Binding.oneWay (fun m -> List.rev m.Actions)
     "AddItem" |> Binding.cmd AddItem
     "RemoveItem" |> Binding.cmd RemoveItem
     "UpdateItem" |> Binding.cmd UpdateItem
@@ -157,11 +158,9 @@ let bindings ()  : Binding<Model, Msg> list = [
 
 let designVM = ViewModel.designInstance (init()) (bindings())
 
-open Elmish
 open System.Timers
 
 let subscriptions (model: Model) : Sub<Msg> =
-
     let autoUpdateSubscription (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 

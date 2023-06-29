@@ -16,7 +16,7 @@ type Msg =
 
 let init() = 
     { 
-        Version = "1.0"
+        Version = "1.1"
     }, Cmd.none
 
 let update (msg: Msg) (model: Model) = 
