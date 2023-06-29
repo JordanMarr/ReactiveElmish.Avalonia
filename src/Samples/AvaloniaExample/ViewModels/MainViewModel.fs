@@ -45,7 +45,7 @@ let vm : IElmishViewModel =
                 Messaging.bus.Subscribe(fun msg -> 
                     match msg with
                     | Messaging.GlobalMsg.GoHome -> 
-                        dispatch ShowCounter
+                        dispatch ShowChart
                 )
 
             [ 
