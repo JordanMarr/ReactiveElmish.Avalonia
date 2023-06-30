@@ -9,10 +9,10 @@ open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
+open Messaging
 
 let rnd = Random()
 
-  
 let newSeries (count: int option)  =
     let newCollection = ObservableCollection<DateTimePoint>()
     // use seriesCount to either 1) set a default 15 at init or 2) use the count passed in from Reset 
@@ -65,6 +65,8 @@ type Msg =
     | Reset
     | AutoUpdate
     | SetIsAutoUpdateChecked of bool
+    | Ok
+
 
 let rec init() =
     {
@@ -75,7 +77,7 @@ let rec init() =
                     :> ISeries 
                 ]
         Actions = [ { Description = "Initialized Chart"; Timestamp = DateTime.Now } ]
-        IsAutoUpdateChecked = false 
+        IsAutoUpdateChecked = false
     }
     
 // used to hold the state of the AutoUpdate ToggleButton into autoUpdateSubscription
@@ -140,6 +142,9 @@ let update (msg: Msg) (model: Model) =
                 { model with 
                     Actions = model.Actions @ [ { Description = $"Is Auto Updating: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
                 }
+    | Ok ->
+        bus.OnNext(GlobalMsg.GoHome)
+        { model with IsAutoUpdateChecked = false }
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Actions" |> Binding.oneWay (fun m -> List.rev m.Actions)
@@ -152,6 +157,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
     "XAxes" |> Binding.oneWayLazy ((fun _ -> XAxes), (fun _ _ -> true), id)
+    "Ok" |> Binding.cmd Ok
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())
