@@ -71,9 +71,7 @@ let rec init() =
         Series = 
             ObservableCollection<ISeries> 
                 [ 
-                    LineSeries<DateTimePoint>(Values = newSeries(None),
-                                                Fill = null,
-                                                Name = "Luck By Second")
+                    LineSeries<DateTimePoint>(Values = newSeries(None), Name = "Luck By Second")
                     :> ISeries 
                 ]
         Actions = [ { Description = "Initialized Chart"; Timestamp = DateTime.Now } ]
