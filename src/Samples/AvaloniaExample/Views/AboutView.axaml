@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
 			 xmlns:vm="using:AvaloniaExample.ViewModels"
 			 Design.DataContext="{Binding Source={x:Static vm:AboutViewModel.designVM}}"
              x:Class="AvaloniaExample.Views.AboutView">
@@ -11,6 +11,6 @@
 			<TextBlock Text="Version:" />
 			<TextBlock Text="{Binding Version}" />
 		</StackPanel>
-		<Button Content="Ok" Command="{Binding Ok}" />		
+		<Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />		
 	</StackPanel>
 </UserControl>

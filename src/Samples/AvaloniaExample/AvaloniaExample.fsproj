@@ -2,7 +2,6 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,9 +16,11 @@
         <Compile Include="ViewModels\IElmishViewModel.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
+        <Compile Include="ViewModels\ChartViewModel.fs" />        
         <Compile Include="ViewModels\MainViewModel.fs" />        
         <Compile Include="Views\AboutView.axaml.fs" />        
-        <Compile Include="Views\CounterView.axaml.fs" />
+        <Compile Include="Views\CounterView.axaml.fs" />        
+        <Compile Include="Views\ChartView.axaml.fs" />
         <Compile Include="Views\MainView.axaml.fs" />
         <Compile Include="App.axaml.fs" />
         <Compile Include="ViewLocator.fs" />
@@ -31,11 +32,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-preview5" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
+        <PackageReference Include="Elmish" Version="4.0.1" />
         <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
+        <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.802" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.802" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.802-11.0.0-rc1.1" />
         <ProjectReference Include="..\..\Elmish.Avalonia\Elmish.Avalonia.fsproj" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     </ItemGroup>

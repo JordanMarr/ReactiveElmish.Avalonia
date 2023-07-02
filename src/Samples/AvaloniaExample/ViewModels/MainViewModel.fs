@@ -9,6 +9,7 @@ type Model =
     }
 
 type Msg = 
+    | ShowChart
     | ShowCounter
     | ShowAbout
 
@@ -21,6 +22,8 @@ let update (msg: Msg) (model: Model) =
     match msg with
     | ShowCounter -> 
         { model with ContentVM = CounterViewModel.vm }
+    | ShowChart -> 
+        { model with ContentVM = ChartViewModel.vm }  
     | ShowAbout ->
         { model with ContentVM = AboutViewModel.vm }
 
@@ -28,6 +31,7 @@ let bindings() : Binding<Model, Msg> list = [
     // Properties
     "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM)
     "ShowCounter" |> Binding.cmd ShowCounter
+    "ShowChart" |> Binding.cmd ShowChart
     "ShowAbout" |> Binding.cmd ShowAbout
 ]
 

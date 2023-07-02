@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1;net480</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1;net48</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
     <PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[6.0.1, 99]" />
   </ItemGroup>
