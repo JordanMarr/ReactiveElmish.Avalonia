@@ -17,7 +17,7 @@
     <PackageProjectUrl>https://github.com/JordanMarr/Elmish.Avalonia</PackageProjectUrl>
     <PackageTags>Avalonia F# fsharp Elmish Elm</PackageTags>
     <!--<PackageIcon>elmish-avalonia-logo-128x128.png</PackageIcon>-->
-    <Version>1.0.0-alpha-3</Version>
+    <Version>1.0.0-alpha-4</Version>
     <!--Turn on warnings for unused values (arguments and let bindings) -->
     <OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
   </PropertyGroup>
