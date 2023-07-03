@@ -12,7 +12,6 @@ type Model =
 
 type Msg = 
     | Ok
-    | MsgSent of unit
 
 let init() = 
     { 
@@ -22,11 +21,7 @@ let init() =
 let update (msg: Msg) (model: Model) = 
     match msg with
     | Ok -> 
-        let sendMessage () = bus.OnNext(GlobalMsg.GoHome)
-        model, Cmd.OfFunc.perform sendMessage () MsgSent
-
-    | MsgSent _ -> 
-        model, Cmd.none
+        model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Version" |> Binding.oneWay (fun m -> m.Version)
