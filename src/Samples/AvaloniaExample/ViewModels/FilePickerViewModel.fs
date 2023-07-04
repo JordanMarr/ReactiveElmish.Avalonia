@@ -20,12 +20,12 @@ let init () =
         FilePath = None
     }, Cmd.none
 
-let update openFile (msg: Msg) (model: Model) = 
+let update tryPickFile (msg: Msg) (model: Model) = 
     match msg with
     | Ok -> 
         model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
     | PickFile  -> 
-        model, Cmd.OfTask.perform openFile () SetFilePath
+        model, Cmd.OfTask.perform tryPickFile () SetFilePath
     | SetFilePath path ->
         { model with FilePath = path }, Cmd.none
 
@@ -39,11 +39,8 @@ let designVM =
     ViewModel.designInstance (fst (init ())) (bindings())
 
 let vm () = 
-    let openFile () = 
-        task {
-            let fileProvider = Services.Get<FileService>()
-            let! files = fileProvider.OpenFilePicker()
-            return files |> Seq.tryHead |> Option.map (fun file -> file.Path.AbsolutePath)
-        }
+    let tryPickFile () = 
+        let fileProvider = Services.Get<FileService>()
+        fileProvider.TryPickFile()
 
-    ElmishViewModel(AvaloniaProgram.mkProgram init (update openFile) bindings)
+    ElmishViewModel(AvaloniaProgram.mkProgram init (update tryPickFile) bindings)
