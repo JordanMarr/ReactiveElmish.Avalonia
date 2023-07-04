@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
+			 xmlns:vm="using:AvaloniaExample.ViewModels"
+			 Design.DataContext="{Binding Source={x:Static vm:FilePickerViewModel.designVM}}"
+             x:Class="AvaloniaExample.Views.FilePickerView">
+	<StackPanel HorizontalAlignment="Center" Margin="10">
+		<StackPanel Orientation="Horizontal" Margin="10" Spacing="6">
+			<TextBlock Text="File Path:" />
+			<TextBox Text="{Binding FilePath}" IsReadOnly="True" Width="500" Background="Silver" />
+			<Button Content="..." Command="{Binding PickFile}"  />
+		</StackPanel>
+		<Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />
+	</StackPanel>
+</UserControl>

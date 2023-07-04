@@ -12,6 +12,7 @@ type Msg =
     | ShowChart
     | ShowCounter
     | ShowAbout
+    | ShowFilePicker
 
 let init() = 
     { 
@@ -26,6 +27,8 @@ let update (msg: Msg) (model: Model) =
         { model with ContentVM = ChartViewModel.vm }  
     | ShowAbout ->
         { model with ContentVM = AboutViewModel.vm }
+    | ShowFilePicker ->
+       { model with ContentVM = FilePickerViewModel.vm () }
 
 let bindings() : Binding<Model, Msg> list = [ 
     // Properties
@@ -33,10 +36,10 @@ let bindings() : Binding<Model, Msg> list = [
     "ShowCounter" |> Binding.cmd ShowCounter
     "ShowChart" |> Binding.cmd ShowChart
     "ShowAbout" |> Binding.cmd ShowAbout
+    "ShowFilePicker" |> Binding.cmd ShowFilePicker
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())
-
 
 let vm : IElmishViewModel = 
     let program =
