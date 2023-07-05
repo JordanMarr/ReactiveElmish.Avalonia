@@ -10,8 +10,8 @@ Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.A
 
 ### Benefits
 * Some people may prefer using xaml, and it can be an easier sell for some teams due to the immediate availability of all community controls.
-* Bindings have to be created for controls in FuncUI. While most of the controls have bindings provided, some controls (such as the DataGrid) are "too OOP" and are difficult or impossible to create bindings for. This makes a library like Elmish.Avalonia very useful as it sidesteps this problem altogether by using xaml.
-* There is not currently a reliable design preview tool for FuncUI (there is a very experimental project, but the author has stopped working on it and it's way too complex for me to want to mess with it). For me to do any kind of real project work with Avalonia and F#, a design preview is a necessity, and using xaml allows you to utilize the custom Avalonia design preview extension. After recently trying Elmish.WPF, I fell in love with the `ViewModel.designInstance` preview functionality that lets you preview your `init` values in the design preview panel, and this also works with Elmish.Avalonia!
+* Bindings have to be created for controls in FuncUI. While most of the controls have bindings provided, third party will not have bindings out-of-the-box. Elmish.Avalonia sidesteps this problem by using xaml directly.
+* There is not currently a reliable design preview tool for FuncUI (although there is currently a project, [Avalonia.FuncUI.LiveView](https://github.com/SilkyFowl/Avalonia.FuncUI.LiveView), that is working to solve this problem). For me to do any kind of real project work with Avalonia and F#, a design preview is a necessity, and using xaml allows you to utilize the custom Avalonia design preview extension. After recently trying Elmish.WPF, I fell in love with the `ViewModel.designInstance` preview functionality that lets you preview your `init` values in the design preview panel, and this also works with Elmish.Avalonia!
 * You can use Avalonia.FuncUI and Elmish.Avalonia side-by-side to have the best of both worlds!
 
 ### Other reasons
@@ -46,14 +46,12 @@ Since the design preview is set for both the `MasterView` and the `CounterView`,
 
 
 # Project Setup
-~~As of now, the easiest way to get started is to copy the included `AvaloniaExample` project.~~
-Elmish.Avalonia is now available on NuGet.
-
+[Elmish.Avalonia](https://www.nuget.org/packages/Elmish.Avalonia/) is available on NuGet!
 
 Here are some key differences from the default F# MVVM template in the `AvaloniaExample` project:
 
 1) The `Avalonia.ReactiveUI` package has been replaced with the `Elmish.Avalonia` package.
 2) In `Program.fs`, `.UseReactiveUI()` has been replaced with `.UseElmishBindings()`.
-3) The template `ViewLocator` has code has been modified to work with a custom `IStart` that makes it easier to bind the view/viewmodel and start the Elmish loop.
+3) The template `ViewLocator` has code has been modified to work with a custom `IElmishViewModel` that makes it easier to bind the view/viewmodel and start the Elmish loop.
    This allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
 
