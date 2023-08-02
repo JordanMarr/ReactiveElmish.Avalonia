@@ -48,6 +48,7 @@ type Model =
         Series: ObservableCollection<ISeries>
         Actions: Action list
         IsAutoUpdateChecked: bool
+        IsAutoUpdating: bool
     }
     
 and Action = 
@@ -78,10 +79,8 @@ let rec init() =
                 ]
         Actions = [ { Description = "Initialized Chart"; Timestamp = DateTime.Now } ]
         IsAutoUpdateChecked = false
+        IsAutoUpdating = false 
     }
-    
-// used to hold the state of the AutoUpdate ToggleButton into autoUpdateSubscription
-let mutable isAutoUpdating = false
 
 let update (msg: Msg) (model: Model) =
     let values = model.Series[0].Values :?> ObservableCollection<DateTimePoint>
@@ -117,12 +116,11 @@ let update (msg: Msg) (model: Model) =
     | Reset ->
         // insert new Series - send the current series length to the newSeries function
         model.Series[0].Values <- newSeries(Some values.Count)
-        // disable autoUpdateSubscription
-        isAutoUpdating <- false
         { model with
             // deactivate the AutoUpdate ToggleButton in the UI
             IsAutoUpdateChecked = false 
             Actions = [ { Description = "Reset Chart"; Timestamp = DateTime.Now } ]
+            IsAutoUpdating = false 
         }
     | SetIsAutoUpdateChecked isChecked ->
         { model with 
@@ -130,18 +128,11 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
         }
     | AutoUpdate ->
-        // toggle the isAutoUpdating flag to switch the autoUpdateSubscription behavior
-        match isAutoUpdating with
-            | false ->
-                isAutoUpdating <- true
-                { model with 
-                    Actions = model.Actions @ [ { Description = $"Is Auto Updating: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
-                }
-            | _ ->
-                isAutoUpdating <- false
-                { model with 
-                    Actions = model.Actions @ [ { Description = $"Is Auto Updating: {isAutoUpdating}"; Timestamp = DateTime.Now } ]
-                }
+        let autoUpdateStatus = not model.IsAutoUpdating
+        { model with
+            IsAutoUpdating = autoUpdateStatus
+            Actions = model.Actions @ [ { Description = $"Is Auto Updating: {autoUpdateStatus}"; Timestamp = DateTime.Now } ]
+        }
     | Ok ->
         bus.OnNext(GlobalMsg.GoHome)
         { model with IsAutoUpdateChecked = false }
@@ -168,20 +159,20 @@ let subscriptions (model: Model) : Sub<Msg> =
     let autoUpdateSubscription (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         timer.Elapsed.Add(fun _ -> 
-            if isAutoUpdating then
-                // similar to newSeries create null entry in 1% of cases
-                let randomNull = rnd.Next(0, 99)
-                match randomNull with
-                | i when i = 0 ->
-                    dispatch AddNull
-                | _ -> dispatch AddItem
-                dispatch RemoveItem
+            // similar to newSeries create null entry in 1% of cases
+            let randomNull = rnd.Next(0, 99)
+            match randomNull with
+            | i when i = 0 ->
+                dispatch AddNull
+            | _ -> dispatch AddItem
+            dispatch RemoveItem
         )
         timer.Start()
         timer :> IDisposable
 
     [
-        [ nameof autoUpdateSubscription ], autoUpdateSubscription
+        if model.IsAutoUpdating then
+            [ nameof autoUpdateSubscription ], autoUpdateSubscription
     ]
 
 let vm = ElmishViewModel(
