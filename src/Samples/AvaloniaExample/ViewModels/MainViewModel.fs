@@ -22,15 +22,19 @@ let init() =
 let update (msg: Msg) (model: Model) = 
     match msg with
     | ShowCounter -> 
+        Messaging.bus.OnNext(Messaging.TabChanged)
         { model with ContentVM = CounterViewModel.vm }
     | ShowChart -> 
+        Messaging.bus.OnNext(Messaging.TabChanged)
         { model with ContentVM = ChartViewModel.vm }  
     | ShowAbout ->
+        Messaging.bus.OnNext(Messaging.TabChanged)
         { model with ContentVM = AboutViewModel.vm }
     | ShowFilePicker ->
-       { model with ContentVM = FilePickerViewModel.vm () }
+        Messaging.bus.OnNext(Messaging.TabChanged)
+        { model with ContentVM = FilePickerViewModel.vm () }
 
-let bindings() : Binding<Model, Msg> list = [ 
+let bindings() : Binding<Model, Msg> list = [   
     // Properties
     "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM)
     "ShowCounter" |> Binding.cmd ShowCounter
@@ -49,6 +53,7 @@ let vm : IElmishViewModel =
                     match msg with
                     | Messaging.GlobalMsg.GoHome -> 
                         dispatch ShowCounter
+                    | _ -> ()
                 )
 
             [ 

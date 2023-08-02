@@ -161,9 +161,18 @@ let subscriptions (model: Model) : Sub<Msg> =
         timer.Start()
         disposable
 
+    let messageBusSubscription (dispatch: Msg -> unit) = 
+        Messaging.bus.Subscribe(fun msg -> 
+            match msg with
+            | Messaging.GlobalMsg.TabChanged -> 
+                dispatch (SetIsAutoUpdateChecked false)
+            | _ -> ()
+        )
+
     [
         if model.IsAutoUpdateChecked then
             [ nameof autoUpdateSubscription ], autoUpdateSubscription
+        [ nameof messageBusSubscription ], messageBusSubscription
     ]
 
 let vm = ElmishViewModel(
