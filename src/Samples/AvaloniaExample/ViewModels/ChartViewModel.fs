@@ -48,7 +48,6 @@ type Model =
         Series: ObservableCollection<ISeries>
         Actions: Action list
         IsAutoUpdateChecked: bool
-        IsAutoUpdating: bool
     }
     
 and Action = 
@@ -64,12 +63,11 @@ type Msg =
     | UpdateItem
     | ReplaceItem
     | Reset
-    | AutoUpdate
     | SetIsAutoUpdateChecked of bool
     | Ok
 
 
-let rec init() =
+let init() =
     {
         Series = 
             ObservableCollection<ISeries> 
@@ -79,7 +77,6 @@ let rec init() =
                 ]
         Actions = [ { Description = "Initialized Chart"; Timestamp = DateTime.Now } ]
         IsAutoUpdateChecked = false
-        IsAutoUpdating = false 
     }
 
 let update (msg: Msg) (model: Model) =
@@ -120,18 +117,11 @@ let update (msg: Msg) (model: Model) =
             // deactivate the AutoUpdate ToggleButton in the UI
             IsAutoUpdateChecked = false 
             Actions = [ { Description = "Reset Chart"; Timestamp = DateTime.Now } ]
-            IsAutoUpdating = false 
         }
     | SetIsAutoUpdateChecked isChecked ->
         { model with 
             IsAutoUpdateChecked = isChecked
             Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
-        }
-    | AutoUpdate ->
-        let autoUpdateStatus = not model.IsAutoUpdating
-        { model with
-            IsAutoUpdating = autoUpdateStatus
-            Actions = model.Actions @ [ { Description = $"Is Auto Updating: {autoUpdateStatus}"; Timestamp = DateTime.Now } ]
         }
     | Ok ->
         bus.OnNext(GlobalMsg.GoHome)
@@ -144,7 +134,6 @@ let bindings ()  : Binding<Model, Msg> list = [
     "UpdateItem" |> Binding.cmd UpdateItem
     "ReplaceItem" |> Binding.cmd ReplaceItem
     "Reset" |> Binding.cmd Reset
-    "AutoUpdate" |> Binding.cmd AutoUpdate
     "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
     "XAxes" |> Binding.oneWayLazy ((fun _ -> XAxes), (fun _ _ -> true), id)
@@ -158,20 +147,22 @@ open System.Timers
 let subscriptions (model: Model) : Sub<Msg> =
     let autoUpdateSubscription (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
-        timer.Elapsed.Add(fun _ -> 
-            // similar to newSeries create null entry in 1% of cases
-            let randomNull = rnd.Next(0, 99)
-            match randomNull with
-            | i when i = 0 ->
-                dispatch AddNull
-            | _ -> dispatch AddItem
-            dispatch RemoveItem
-        )
+        let disposable = 
+            timer.Elapsed.Subscribe(fun _ -> 
+                // similar to newSeries create null entry in 1% of cases
+                let randomNull = rnd.Next(0, 99)
+                match randomNull with
+                | i when i = 0 -> 
+                    dispatch AddNull
+                | _ -> 
+                    dispatch AddItem
+                dispatch RemoveItem
+            )
         timer.Start()
-        timer :> IDisposable
+        disposable
 
     [
-        if model.IsAutoUpdating then
+        if model.IsAutoUpdateChecked then
             [ nameof autoUpdateSubscription ], autoUpdateSubscription
     ]
 
