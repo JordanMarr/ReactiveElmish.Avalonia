@@ -64,7 +64,7 @@ type Msg =
     | ReplaceItem
     | Reset
     | SetIsAutoUpdateChecked of bool
-    | Ok
+    | Terminate
 
 
 let init() =
@@ -123,7 +123,7 @@ let update (msg: Msg) (model: Model) =
             IsAutoUpdateChecked = isChecked
             Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
         }
-    | Ok ->
+    | Terminate ->
         bus.OnNext(GlobalMsg.GoHome)
         { model with IsAutoUpdateChecked = false }
 
@@ -137,7 +137,7 @@ let bindings ()  : Binding<Model, Msg> list = [
     "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
     "XAxes" |> Binding.oneWayLazy ((fun _ -> XAxes), (fun _ _ -> true), id)
-    "Ok" |> Binding.cmd Ok
+    "Ok" |> Binding.cmd Terminate
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())
@@ -145,7 +145,7 @@ let designVM = ViewModel.designInstance (init()) (bindings())
 open System.Timers
 
 let subscriptions (model: Model) : Sub<Msg> =
-    let autoUpdateSubscription (dispatch: Msg -> unit) = 
+    let autoUpdateSub (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         let disposable = 
             timer.Elapsed.Subscribe(fun _ -> 
@@ -160,22 +160,15 @@ let subscriptions (model: Model) : Sub<Msg> =
             )
         timer.Start()
         disposable
-
-    let messageBusSubscription (dispatch: Msg -> unit) = 
-        Messaging.bus.Subscribe(fun msg -> 
-            match msg with
-            | Messaging.GlobalMsg.TabChanged -> 
-                dispatch (SetIsAutoUpdateChecked false)
-            | _ -> ()
-        )
-
+        
     [
         if model.IsAutoUpdateChecked then
-            [ nameof autoUpdateSubscription ], autoUpdateSubscription
-        [ nameof messageBusSubscription ], messageBusSubscription
+            [ nameof autoUpdateSub ], autoUpdateSub
     ]
 
-let vm = ElmishViewModel(
-    AvaloniaProgram.mkSimple init update bindings
-    |> AvaloniaProgram.withSubscription subscriptions
-)
+let vm = 
+    ElmishViewModel(
+        AvaloniaProgram.mkSimple init update bindings
+        |> AvaloniaProgram.withSubscription subscriptions
+        , stopLoopWhenViewIsHidden = true
+    )

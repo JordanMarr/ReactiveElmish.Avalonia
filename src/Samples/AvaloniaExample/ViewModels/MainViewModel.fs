@@ -22,16 +22,12 @@ let init() =
 let update (msg: Msg) (model: Model) = 
     match msg with
     | ShowCounter -> 
-        Messaging.bus.OnNext(Messaging.TabChanged)
         { model with ContentVM = CounterViewModel.vm }
     | ShowChart -> 
-        Messaging.bus.OnNext(Messaging.TabChanged)
         { model with ContentVM = ChartViewModel.vm }  
     | ShowAbout ->
-        Messaging.bus.OnNext(Messaging.TabChanged)
         { model with ContentVM = AboutViewModel.vm }
     | ShowFilePicker ->
-        Messaging.bus.OnNext(Messaging.TabChanged)
         { model with ContentVM = FilePickerViewModel.vm () }
 
 let bindings() : Binding<Model, Msg> list = [   
