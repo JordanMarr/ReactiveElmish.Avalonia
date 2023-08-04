@@ -47,6 +47,7 @@
     <Compile Include="ViewModelModule.fs" />
     <Compile Include="AvaloniaPropertyAccessorPlugin.fs" />
     <Compile Include="AvaloniaProgram.fs" />
+    <Compile Include="ElmishViewModel.fs" />
   </ItemGroup>
 
   <ItemGroup>

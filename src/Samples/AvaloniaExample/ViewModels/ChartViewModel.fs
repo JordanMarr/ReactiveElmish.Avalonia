@@ -65,7 +65,7 @@ type Msg =
     | Reset
     | SetIsAutoUpdateChecked of bool
     | Terminate
-
+    | Ok
 
 let init() =
     {
@@ -123,6 +123,9 @@ let update (msg: Msg) (model: Model) =
             IsAutoUpdateChecked = isChecked
             Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
         }
+    | Ok -> 
+        bus.OnNext(GlobalMsg.GoHome)
+        { model with IsAutoUpdateChecked = false }
     | Terminate ->
         model
 
@@ -136,40 +139,13 @@ let bindings ()  : Binding<Model, Msg> list = [
     "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
     "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
     "XAxes" |> Binding.oneWayLazy ((fun _ -> XAxes), (fun _ _ -> true), id)
-    "Ok" |> Binding.cmd Terminate
+    "Ok" |> Binding.cmd Ok
 ]
 
 let designVM = ViewModel.designInstance (init()) (bindings())
 
 open System.Timers
 
-//let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
-//    let autoUpdateSub (dispatch: Msg -> unit) = 
-//        let timer = new Timer(1000) 
-//        let disposable = 
-//            timer.Elapsed.Subscribe(fun _ -> 
-//                // similar to newSeries create null entry in 1% of cases
-//                let randomNull = rnd.Next(0, 99)
-//                match randomNull with
-//                | i when i = 0 -> 
-//                    dispatch AddNull
-//                | _ -> 
-//                    dispatch AddItem
-//                dispatch RemoveItem
-//            )
-//        timer.Start()
-//        disposable
-
-//    let viewUnloadedSub (dispatch: Msg -> unit) = 
-//        view.Unloaded
-//        |> Observable.subscribe(fun e -> dispatch Terminate)
-        
-//    [
-//        if model.IsAutoUpdateChecked then
-//            [ nameof autoUpdateSub ], autoUpdateSub
-
-//        [ nameof viewUnloadedSub ], viewUnloadedSub
-//    ]
 let subscriptions (model: Model) : Sub<Msg> =
     let autoUpdateSub (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 

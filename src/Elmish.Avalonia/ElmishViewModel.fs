@@ -1,6 +1,5 @@
-﻿namespace AvaloniaExample.ViewModels
+﻿namespace Elmish.Avalonia
 
-open Elmish.Avalonia
 open Elmish
 
 type IElmishViewModel =
@@ -29,14 +28,16 @@ module ElmishViewModel =
         )
         vm
              
-    let terminateOnUnloaded (msg: 'msg) (vm: ElmishViewModel<'model, 'msg>) = 
+    /// Adds a subscription that terminates the Elmish loop when the view is unloaded.
+    /// NOTE: This must be called after `withViewSubscription` if both are used.
+    let terminateOnUnloaded (terminateMsg: 'msg) (vm: ElmishViewModel<'model, 'msg>) = 
         vm.ViewProgramAugmentations
             .Add(fun view program -> 
                 program 
                 |> AvaloniaProgram.mapSubscription (fun oldSubs -> 
                     fun model -> 
                         let viewUnloadedSub (dispatch: 'msg -> unit) = 
-                            view.Unloaded |> Observable.subscribe(fun e -> dispatch msg)
+                            view.Unloaded |> Observable.subscribe(fun e -> dispatch terminateMsg)
 
                         oldSubs model @
                             [
@@ -46,10 +47,10 @@ module ElmishViewModel =
             )
 
         vm.ViewProgramAugmentations
-           .Add(fun view program -> 
+           .Add(fun _ program -> 
                 program 
                 |> AvaloniaProgram.withTermination
-                    (fun m -> m = msg)
+                    (fun m -> m = terminateMsg)
                     (fun _ -> printfn "View unloaded; terminating loop.")
             )
             
