@@ -124,8 +124,7 @@ let update (msg: Msg) (model: Model) =
             Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
         }
     | Terminate ->
-        bus.OnNext(GlobalMsg.GoHome)
-        { model with IsAutoUpdateChecked = false }
+        model
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Actions" |> Binding.oneWay (fun m -> List.rev m.Actions)
@@ -144,7 +143,34 @@ let designVM = ViewModel.designInstance (init()) (bindings())
 
 open System.Timers
 
-let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
+//let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
+//    let autoUpdateSub (dispatch: Msg -> unit) = 
+//        let timer = new Timer(1000) 
+//        let disposable = 
+//            timer.Elapsed.Subscribe(fun _ -> 
+//                // similar to newSeries create null entry in 1% of cases
+//                let randomNull = rnd.Next(0, 99)
+//                match randomNull with
+//                | i when i = 0 -> 
+//                    dispatch AddNull
+//                | _ -> 
+//                    dispatch AddItem
+//                dispatch RemoveItem
+//            )
+//        timer.Start()
+//        disposable
+
+//    let viewUnloadedSub (dispatch: Msg -> unit) = 
+//        view.Unloaded
+//        |> Observable.subscribe(fun e -> dispatch Terminate)
+        
+//    [
+//        if model.IsAutoUpdateChecked then
+//            [ nameof autoUpdateSub ], autoUpdateSub
+
+//        [ nameof viewUnloadedSub ], viewUnloadedSub
+//    ]
+let subscriptions (model: Model) : Sub<Msg> =
     let autoUpdateSub (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         let disposable = 
@@ -161,22 +187,15 @@ let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
         timer.Start()
         disposable
 
-    let viewUnloadedSub (dispatch: Msg -> unit) = 
-        view.Unloaded
-        |> Observable.subscribe(fun e -> dispatch Terminate)
-        
     [
         if model.IsAutoUpdateChecked then
             [ nameof autoUpdateSub ], autoUpdateSub
-
-        [ nameof viewUnloadedSub ], viewUnloadedSub
     ]
+
 
 let vm = 
     AvaloniaProgram.mkSimple init update bindings
-    |> AvaloniaProgram.withTermination 
-        (fun msg -> msg = Terminate)
-        (fun _ -> printfn "Terminating view")
+    |> AvaloniaProgram.withSubscription subscriptions
     |> ElmishViewModel.create
-    |> ElmishViewModel.withViewSubscription subscriptions
+    |> ElmishViewModel.terminateOnUnloaded Terminate
 

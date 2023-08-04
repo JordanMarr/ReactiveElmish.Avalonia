@@ -29,4 +29,29 @@ module ElmishViewModel =
         )
         vm
              
+    let terminateOnUnloaded (msg: 'msg) (vm: ElmishViewModel<'model, 'msg>) = 
+        vm.ViewProgramAugmentations
+            .Add(fun view program -> 
+                program 
+                |> AvaloniaProgram.mapSubscription (fun oldSubs -> 
+                    fun model -> 
+                        let viewUnloadedSub (dispatch: 'msg -> unit) = 
+                            view.Unloaded |> Observable.subscribe(fun e -> dispatch msg)
+
+                        oldSubs model @
+                            [
+                                [ nameof viewUnloadedSub ], viewUnloadedSub
+                            ]
+                )
+            )
+
+        vm.ViewProgramAugmentations
+           .Add(fun view program -> 
+                program 
+                |> AvaloniaProgram.withTermination
+                    (fun m -> m = msg)
+                    (fun _ -> printfn "View unloaded; terminating loop.")
+            )
+            
+        vm
         
