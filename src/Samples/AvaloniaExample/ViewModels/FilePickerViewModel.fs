@@ -43,4 +43,5 @@ let vm () =
         let fileProvider = Services.Get<FileService>()
         fileProvider.TryPickFile()
 
-    ElmishViewModel(AvaloniaProgram.mkProgram init (update tryPickFile) bindings)
+    AvaloniaProgram.mkProgram init (update tryPickFile) bindings
+    |> ElmishViewModel.create

@@ -49,7 +49,6 @@ let vm : IElmishViewModel =
                     match msg with
                     | Messaging.GlobalMsg.GoHome -> 
                         dispatch ShowCounter
-                    | _ -> ()
                 )
 
             [ 

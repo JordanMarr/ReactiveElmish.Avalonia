@@ -30,4 +30,6 @@ let bindings ()  : Binding<Model, Msg> list = [
 
 let designVM = ViewModel.designInstance (fst (init())) (bindings())
 
-let vm = ElmishViewModel(AvaloniaProgram.mkProgram init update bindings)
+let vm = 
+    AvaloniaProgram.mkProgram init update bindings
+    |> ElmishViewModel.create
