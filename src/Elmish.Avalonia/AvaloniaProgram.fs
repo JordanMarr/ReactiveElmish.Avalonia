@@ -201,6 +201,11 @@ module AvaloniaProgram =
         { program with
             ElmishProgram = program.ElmishProgram |> Program.withSubscription subscribe }
 
+    /// Map existing subscription to external source of events.
+    let mapSubscription subscribe program =
+        { program with
+            ElmishProgram = program.ElmishProgram |> Program.mapSubscription subscribe }
+
     /// Only logs binding performance for calls taking longer than the specified number of
     /// milliseconds. The default is 1ms.
     let withPerformanceLogThreshold threshold program =

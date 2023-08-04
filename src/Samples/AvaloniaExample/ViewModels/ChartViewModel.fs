@@ -144,7 +144,7 @@ let designVM = ViewModel.designInstance (init()) (bindings())
 
 open System.Timers
 
-let subscriptions (model: Model) : Sub<Msg> =
+let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
     let autoUpdateSub (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         let disposable = 
@@ -160,15 +160,23 @@ let subscriptions (model: Model) : Sub<Msg> =
             )
         timer.Start()
         disposable
+
+    let viewUnloadedSub (dispatch: Msg -> unit) = 
+        view.Unloaded
+        |> Observable.subscribe(fun e -> dispatch Terminate)
         
     [
         if model.IsAutoUpdateChecked then
             [ nameof autoUpdateSub ], autoUpdateSub
+
+        [ nameof viewUnloadedSub ], viewUnloadedSub
     ]
 
 let vm = 
     AvaloniaProgram.mkSimple init update bindings
-    |> AvaloniaProgram.withSubscription subscriptions
+    |> AvaloniaProgram.withTermination 
+        (fun msg -> msg = Terminate)
+        (fun _ -> printfn "Terminating view")
     |> ElmishViewModel.create
-    |> ElmishViewModel.stopLoopWhenViewIsHidden
+    |> ElmishViewModel.withViewSubscription subscriptions
 
