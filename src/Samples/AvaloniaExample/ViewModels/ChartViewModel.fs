@@ -167,8 +167,8 @@ let subscriptions (model: Model) : Sub<Msg> =
     ]
 
 let vm = 
-    ElmishViewModel(
-        AvaloniaProgram.mkSimple init update bindings
-        |> AvaloniaProgram.withSubscription subscriptions
-        , stopLoopWhenViewIsHidden = true
-    )
+    AvaloniaProgram.mkSimple init update bindings
+    |> AvaloniaProgram.withSubscription subscriptions
+    |> ElmishViewModel.create
+    |> ElmishViewModel.stopLoopWhenViewIsHidden
+
