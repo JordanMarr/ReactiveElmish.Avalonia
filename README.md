@@ -80,13 +80,7 @@ let subscriptions (model: Model) : Sub<Msg> =
         let timer = new System.Timers.Timer(1000) 
         let disposable = 
             timer.Elapsed.Subscribe(fun _ -> 
-                let randomNull = rnd.Next(0, 99)
-                match randomNull with
-                | i when i = 0 -> 
-                    dispatch AddNull
-                | _ -> 
-                    dispatch AddItem
-                dispatch RemoveItem
+                dispatch AddItem
             )
         timer.Start()
         disposable
