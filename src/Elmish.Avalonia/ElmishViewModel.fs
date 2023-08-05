@@ -59,19 +59,19 @@ module ElmishViewModel =
             )            
         vm
 
-    /// Adds an Elmish subscription to a view event.
-    let onViewEvent (subscribeToEvent: Control -> ('msg -> unit) -> IDisposable) (vm: ElmishViewModel<'model, 'msg>) = 
+    /// Adds an Elmish subscription.
+    let subscribe (subscribeToEvent: Control -> 'model -> ('msg -> unit) -> IDisposable) (vm: ElmishViewModel<'model, 'msg>) = 
         vm.ViewProgramAugmentations
            .Add(fun view program -> 
                 program 
                 |> AvaloniaProgram.mapSubscription (fun oldSubs -> 
                     fun model -> 
-                        let viewEventSub (dispatch: 'msg -> unit) = 
-                            subscribeToEvent view dispatch
+                        let subsciption (dispatch: 'msg -> unit) = 
+                            subscribeToEvent view model dispatch
 
                         oldSubs model @
                             [
-                                [ $"onViewEvent_{Guid.NewGuid()}" ], viewEventSub
+                                [ $"subscription_{Guid.NewGuid()}" ], subsciption
                             ]
                 )
             )
