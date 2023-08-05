@@ -1,6 +1,5 @@
 ﻿module AvaloniaExample.ViewModels.AboutViewModel
 
-open System
 open Elmish.Avalonia
 open Elmish
 open Messaging
@@ -12,6 +11,7 @@ type Model =
 
 type Msg = 
     | Ok
+    | Terminate
 
 let init() = 
     { 
@@ -20,8 +20,9 @@ let init() =
 
 let update (msg: Msg) (model: Model) = 
     match msg with
-    | Ok -> 
-        model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
+    | Ok -> model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
+    | Terminate -> model, Cmd.none
+
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Version" |> Binding.oneWay (fun m -> m.Version)
@@ -33,3 +34,9 @@ let designVM = ViewModel.designInstance (fst (init())) (bindings())
 let vm = 
     AvaloniaProgram.mkProgram init update bindings
     |> ElmishViewModel.create
+    |> ElmishViewModel.terminateOnViewUnloaded Terminate
+    |> ElmishViewModel.onViewEvent (fun view dispatch -> 
+        view.Loaded |> Observable.subscribe (fun _ -> 
+            printfn "View Loaded!"
+        )
+    )

@@ -173,5 +173,5 @@ let vm =
     AvaloniaProgram.mkSimple init update bindings
     |> AvaloniaProgram.withSubscription subscriptions
     |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnUnloaded Terminate
+    |> ElmishViewModel.terminateOnViewUnloaded Terminate
 
