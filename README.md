@@ -120,7 +120,7 @@ let vm =
 
 ### ElmishViewModel.terminateOnViewUnloaded
 Creates an Elmish subscription when the view `Unloaded` event fires that dispatches the passed-in termination `'msg` to terminate the Elmish loop.
-NOTE: You must create a `Terminate` 'Msg` that will be registered to trigger loop termination.
+NOTE: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
 ```F#
 let vm = 
     AvaloniaProgram.mkProgram init update bindings
