@@ -131,7 +131,7 @@ let vm =
 ### ElmishViewModel.subscribe
 Adds an Elmish subscription.
 You will be passed the `view`, `model` and `dispatch`.
-NOTE: If you need the ability to toggle a subscription on and off, you will need to use `AvaloniaProgram.withSubscription` instead.
+NOTE: If you need the ability to toggle a subscription on and off, you will need to use [`AvaloniaProgram.withSubscription`](https://github.com/JordanMarr/Elmish.Avalonia#avaloniaprogramwithsubscription) instead.
 
 ```F#
 let vm = 
