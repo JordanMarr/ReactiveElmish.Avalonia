@@ -64,8 +64,8 @@ type Msg =
     | ReplaceItem
     | Reset
     | SetIsAutoUpdateChecked of bool
+    | Terminate
     | Ok
-
 
 let init() =
     {
@@ -123,9 +123,11 @@ let update (msg: Msg) (model: Model) =
             IsAutoUpdateChecked = isChecked
             Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
         }
-    | Ok ->
+    | Ok -> 
         bus.OnNext(GlobalMsg.GoHome)
         { model with IsAutoUpdateChecked = false }
+    | Terminate ->
+        model
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Actions" |> Binding.oneWay (fun m -> List.rev m.Actions)
@@ -145,7 +147,7 @@ let designVM = ViewModel.designInstance (init()) (bindings())
 open System.Timers
 
 let subscriptions (model: Model) : Sub<Msg> =
-    let autoUpdateSubscription (dispatch: Msg -> unit) = 
+    let autoUpdateSub (dispatch: Msg -> unit) = 
         let timer = new Timer(1000) 
         let disposable = 
             timer.Elapsed.Subscribe(fun _ -> 
@@ -163,10 +165,13 @@ let subscriptions (model: Model) : Sub<Msg> =
 
     [
         if model.IsAutoUpdateChecked then
-            [ nameof autoUpdateSubscription ], autoUpdateSubscription
+            [ nameof autoUpdateSub ], autoUpdateSub
     ]
 
-let vm = ElmishViewModel(
+
+let vm = 
     AvaloniaProgram.mkSimple init update bindings
     |> AvaloniaProgram.withSubscription subscriptions
-)
+    |> ElmishViewModel.create
+    |> ElmishViewModel.terminateOnViewUnloaded Terminate
+

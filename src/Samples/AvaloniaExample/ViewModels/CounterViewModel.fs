@@ -20,6 +20,7 @@ type Msg =
     | Increment
     | Decrement
     | Reset
+    | Terminate
 
 let init() = 
     { 
@@ -40,6 +41,8 @@ let update (msg: Msg) (model: Model) =
         }
     | Reset ->
         init()
+    | Terminate -> 
+        model
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Count" |> Binding.oneWay (fun m -> m.Count)
@@ -51,4 +54,7 @@ let bindings ()  : Binding<Model, Msg> list = [
 
 let designVM = ViewModel.designInstance (init()) (bindings())
 
-let vm = ElmishViewModel(AvaloniaProgram.mkSimple init update bindings)
+let vm = 
+    AvaloniaProgram.mkSimple init update bindings
+    |> ElmishViewModel.create
+    |> ElmishViewModel.terminateOnViewUnloaded Terminate

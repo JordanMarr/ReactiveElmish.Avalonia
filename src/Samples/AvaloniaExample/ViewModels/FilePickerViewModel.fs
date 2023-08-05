@@ -14,6 +14,7 @@ type Msg =
     | Ok
     | PickFile
     | SetFilePath of string option
+    | Terminate
 
 let init () = 
     { 
@@ -28,6 +29,8 @@ let update tryPickFile (msg: Msg) (model: Model) =
         model, Cmd.OfTask.perform tryPickFile () SetFilePath
     | SetFilePath path ->
         { model with FilePath = path }, Cmd.none
+    | Terminate ->
+        model, Cmd.none
 
 let bindings ()  : Binding<Model, Msg> list = [
     "Ok" |> Binding.cmd Ok
@@ -43,4 +46,6 @@ let vm () =
         let fileProvider = Services.Get<FileService>()
         fileProvider.TryPickFile()
 
-    ElmishViewModel(AvaloniaProgram.mkProgram init (update tryPickFile) bindings)
+    AvaloniaProgram.mkProgram init (update tryPickFile) bindings
+    |> ElmishViewModel.create
+    |> ElmishViewModel.terminateOnViewUnloaded Terminate
