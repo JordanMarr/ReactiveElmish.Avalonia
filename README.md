@@ -57,3 +57,18 @@ Steps to create a new project:
 5) Replace the [`ViewLocator.fs`](https://github.com/JordanMarr/Elmish.Avalonia/blob/main/src/Samples/AvaloniaExample/ViewLocator.fs) with the one from from the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample). This makes it easier to bind the view/viewmodel and start the Elmish loop using convention.
    Looking at the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample), this allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
 
+# AvaloniaProgram
+The `AvaloniaProgram` contains functions that configure an Elmish program.
+
+* `AvaloniaProgram.startElmishLoop` - Starts the Elmish loop and binds the given view to the bindings.
+
+# ElmishViewModel
+The `ElmishViewModel` contains functions that configure an `IElmishViewModel`. 
+The `IElmishViewModel` has a single method, `StartElmishLoop`, which takes an Avalonia view, binds it with the bindings and starts the Elmish loop.
+Use of the `ElmishViewModel` is optional and exists primarily to facilitate the `ViewLocator` pattern.
+
+* `ElmishViewModel.create` - Creates an `ElmishViewModel<'model, 'msg>`
+
+* `ElmishViewModel.terminateOnViewUnloaded` - Creates an Elmish subscription when the view `Unloaded` event fires that dispatches the passed-in termination `'msg` to terminate the Elmish loop.
+
+* `ElmishViewModel.subscribe` - Adds an Elmish subscription.
