@@ -41,7 +41,7 @@ module ElmishViewModel =
                 |> AvaloniaProgram.mapSubscription (fun oldSubs -> 
                     fun model -> 
                         let viewUnloadedSub (dispatch: 'msg -> unit) = 
-                            view.Unloaded |> Observable.subscribe(fun e -> dispatch terminateMsg)
+                            view.Unloaded |> Observable.subscribe(fun _ -> dispatch terminateMsg)
 
                         oldSubs model @
                             [
