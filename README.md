@@ -36,7 +36,8 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
 
 ## View Model
-![image](https://user-images.githubusercontent.com/1030435/219173496-2c10fc75-933a-4ca0-9825-ba62e5e24d8e.png)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/975bc487-b5ff-4e10-a968-a249cd11488f)
+
 
 ## Master View
 The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
