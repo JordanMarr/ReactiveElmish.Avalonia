@@ -36,7 +36,8 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
 
 ## View Model
-![image](https://user-images.githubusercontent.com/1030435/219173496-2c10fc75-933a-4ca0-9825-ba62e5e24d8e.png)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/975bc487-b5ff-4e10-a968-a249cd11488f)
+
 
 ## Master View
 The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
@@ -56,3 +57,18 @@ Steps to create a new project:
 5) Replace the [`ViewLocator.fs`](https://github.com/JordanMarr/Elmish.Avalonia/blob/main/src/Samples/AvaloniaExample/ViewLocator.fs) with the one from from the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample). This makes it easier to bind the view/viewmodel and start the Elmish loop using convention.
    Looking at the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample), this allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
 
+# AvaloniaProgram
+The `AvaloniaProgram` contains functions that configure an Elmish program.
+
+* `AvaloniaProgram.startElmishLoop` - Starts the Elmish loop and binds the given view to the bindings.
+
+# ElmishViewModel
+The `ElmishViewModel` contains functions that configure an `IElmishViewModel`. 
+The `IElmishViewModel` has a single method, `StartElmishLoop`, which takes an Avalonia view, binds it with the bindings and starts the Elmish loop.
+Use of the `ElmishViewModel` is optional and exists primarily to facilitate the `ViewLocator` pattern.
+
+* `ElmishViewModel.create` - Creates an `ElmishViewModel<'model, 'msg>`
+
+* `ElmishViewModel.terminateOnViewUnloaded` - Creates an Elmish subscription when the view `Unloaded` event fires that dispatches the passed-in termination `'msg` to terminate the Elmish loop.
+
+* `ElmishViewModel.subscribe` - Adds an Elmish subscription.
