@@ -46,12 +46,13 @@ Since the design preview is set for both the `MasterView` and the `CounterView`,
 
 
 # Project Setup
-[Elmish.Avalonia](https://www.nuget.org/packages/Elmish.Avalonia/) is available on NuGet!
 
-Here are some key differences from the default F# MVVM template in the `AvaloniaExample` project:
+Steps to create a new project:
 
-1) The `Avalonia.ReactiveUI` package has been replaced with the `Elmish.Avalonia` package.
-2) In `Program.fs`, `.UseReactiveUI()` has been replaced with `.UseElmishBindings()`.
-3) The template `ViewLocator` has code has been modified to work with a custom `IElmishViewModel` that makes it easier to bind the view/viewmodel and start the Elmish loop.
-   This allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
+1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
+2) Install the Elmish.Avalonia package from NuGet.
+3) Remove the `Avalonia.ReactiveUI` package.
+4) In `Program.fs`, replace `.UseReactiveUI()` with `.UseElmishBindings()`.
+5) Replace the [`ViewLocator.fs`](https://github.com/JordanMarr/Elmish.Avalonia/blob/main/src/Samples/AvaloniaExample/ViewLocator.fs) with the one from from the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample). This makes it easier to bind the view/viewmodel and start the Elmish loop using convention.
+   Looking at the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample), this allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
 
