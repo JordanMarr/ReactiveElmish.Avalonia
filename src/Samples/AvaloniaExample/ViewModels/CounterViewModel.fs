@@ -1,20 +1,10 @@
 ﻿module AvaloniaExample.ViewModels.CounterViewModel
 
 open System
-open Elmish
 open Elmish.Avalonia
 
-type Model = 
-    {
-        Count: int
-        Actions: Action list
-    }
-
-and Action = 
-    {
-        Description: string
-        Timestamp: DateTime
-    }
+type Model =  { Count: int; Actions: Action list }
+and Action = { Description: string; Timestamp: DateTime }
 
 type Msg = 
     | Increment
@@ -27,6 +17,7 @@ let init() =
         Count = 0
         Actions = [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
     }
+
 let update (msg: Msg) (model: Model) = 
     match msg with
     | Increment ->
