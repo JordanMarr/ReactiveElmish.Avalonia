@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"        
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
-        Width="400"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
+        Width="700" Height="650"
         x:Class="AvaloniaExample.Views.MainView"        
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaExample.ViewModels"
@@ -53,6 +53,9 @@
 		<Style Selector="Button.tab:selected /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="Background" Value="White"/>
 		</Style>
+		<Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#2B579A" />
+		</Style>
 	</Window.Styles>
 
 
@@ -60,6 +63,8 @@
 
 		<StackPanel Classes="nav" Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch">
 			<Button Classes="tab" Content="Counter" Command="{Binding ShowCounter}" />
+			<Button Classes="tab" Content="Chart" Command="{Binding ShowChart}" />
+			<Button Classes="tab" Content="File Picker" Command="{Binding ShowFilePicker}" />
 		    <Button Classes="tab" Content="About" Command="{Binding ShowAbout}" />
 		</StackPanel>
 		

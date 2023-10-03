@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1;net480</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1;net48</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -17,7 +17,7 @@
     <PackageProjectUrl>https://github.com/JordanMarr/Elmish.Avalonia</PackageProjectUrl>
     <PackageTags>Avalonia F# fsharp Elmish Elm</PackageTags>
     <!--<PackageIcon>elmish-avalonia-logo-128x128.png</PackageIcon>-->
-    <Version>1.0.0-alpha-3</Version>
+    <Version>1.0.1</Version>
     <!--Turn on warnings for unused values (arguments and let bindings) -->
     <OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
   </PropertyGroup>
@@ -47,10 +47,11 @@
     <Compile Include="ViewModelModule.fs" />
     <Compile Include="AvaloniaPropertyAccessorPlugin.fs" />
     <Compile Include="AvaloniaProgram.fs" />
+    <Compile Include="ElmishViewModel.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.0-preview5" />
+    <PackageReference Include="Avalonia" Version="11.0.2" />
     <PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[6.0.1, 99]" />
   </ItemGroup>
