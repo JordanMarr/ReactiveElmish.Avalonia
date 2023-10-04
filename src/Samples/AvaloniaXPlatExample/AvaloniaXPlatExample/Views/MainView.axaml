@@ -7,8 +7,21 @@
         x:Class="AvaloniaXPlatExample.Views.MainView"        
         xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
         Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
-        Content="{Binding ContentVM}"
         >
+    <TabControl>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">ListBox</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding ListBoxVM}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">Counter</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding CounterVM}"> </UserControl>
+        </TabItem>
+    </TabControl>
 
     <!-- Content is resolved via the ViewLocator -->
     

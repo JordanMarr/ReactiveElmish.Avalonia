@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:Interactions="using:Avalonia.Xaml.Interactions.Core"
+             xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
+             Design.DataContext="{Binding Source={x:Static vm:ListBoxViewModel.designVM}}"
+             x:Class="AvaloniaXPlatExample.Views.ListBoxView">
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal">
+            <Button Margin="5" Command="{Binding Add}">Add </Button>
+            <Button Margin="5" Command="{Binding Delete}">Delete </Button>
+            <Button Margin="5" Command="{Binding Clear}" Name="Clear">Clear </Button>
+            <TextBox Width="500" Height="20" Padding="5,5,5,5" Text="{Binding Greeting}"></TextBox>
+        </StackPanel> 
+        <ListBox Items="{Binding Items}" SelectionMode="Single" 
+                 SelectedIndex="{Binding SelectedIndex}" Name="listbox">
+            <i:Interaction.Behaviors>
+                <EventTriggerBehavior EventName="DoubleTapped" SourceObject="{Binding ElementName=listbox}">
+                    <Interactions:InvokeCommandAction Command="{Binding DoubleTapped}"/>
+                </EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Padding" Value="3"/>
+                    <Setter Property="Margin" Value="1"/>
+                </Style>
+            </ListBox.Styles>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="gray" CornerRadius="4" Padding="5,0,5,0" BorderBrush="red" Margin="0">
+                        <StackPanel Orientation="Horizontal" >
+                            <TextBlock Width = "200" VerticalAlignment="Center" Text="{Binding Name}" />
+                            <TextBlock Padding="5" Text="{Binding Count}"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate> 
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+    
+</UserControl>

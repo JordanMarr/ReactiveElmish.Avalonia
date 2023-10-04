@@ -8,24 +8,35 @@ type Model =
     }
 
 type Msg =
-    | Msg
+    | ShowHome
+    | ShowCounter
+    | ShowListBox
 
 let init() =
     {
-        ContentVM = CounterViewModel.vm
+        // ContentVM = CounterViewModel.vm
+        ContentVM = ListBoxViewModel.vm
     }
 
-let update (msg: Msg) (model: Model) =
-    model
+let rec update (msg: Msg) (model: Model) =
+    match msg with
+    | ShowHome ->
+        {model with ContentVM = vm}
+    | ShowCounter ->
+        {model with ContentVM = CounterViewModel.vm}
+    | ShowListBox ->
+        {model with ContentVM = ListBoxViewModel.vm}
 
-let bindings() : Binding<Model, Msg> list =
+and bindings() : Binding<Model, Msg> list =
     [
     // Properties
-    "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM) ]
+    "CounterVM" |> Binding.oneWay (fun _ -> CounterViewModel.vm)
+    "ListBoxVM" |> Binding.oneWay (fun _ -> ListBoxViewModel.vm)
+    ]
 
-let designVM = ViewModel.designInstance (init()) (bindings())
+and designVM = ViewModel.designInstance (init()) (bindings())
 
-let vm : IStart =
+and vm : IStart =
     ElmishViewModel(
             AvaloniaProgram.mkSimple init update bindings
             |> AvaloniaProgram.withElmishErrorHandler
