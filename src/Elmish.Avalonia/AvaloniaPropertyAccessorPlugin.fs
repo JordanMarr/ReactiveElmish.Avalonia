@@ -86,7 +86,7 @@ module AppBuilder =
 
     type Avalonia.AppBuilder with
 
-    /// Uses the Elmish.Avalonia bindings.
-    member appBuilder.UseElmishBindings() =
-        BindingPlugins.PropertyAccessors.Add(AvaloniaPropertyAccessorPlugin())
-        appBuilder
+        /// Uses the Elmish.Avalonia bindings.
+        member appBuilder.UseElmishBindings() =
+            BindingPlugins.PropertyAccessors.Add(AvaloniaPropertyAccessorPlugin())
+            appBuilder
