@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
-        Width="400"
+        Width="800"
         x:Class="AvaloniaXPlatExample.Views.MainWindow"        
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
@@ -21,6 +21,18 @@
                 <TextBlock VerticalAlignment="Center">Counter</TextBlock>
             </TabItem.Header>
             <UserControl Content="{Binding CounterVM}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">Chart</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding ChartVM}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">FilePicker</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding FilePickerVM}"> </UserControl>
         </TabItem>
         <TabItem>
             <TabItem.Header>

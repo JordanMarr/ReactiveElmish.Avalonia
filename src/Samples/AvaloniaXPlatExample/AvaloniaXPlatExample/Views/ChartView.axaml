@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
+             xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+             Design.DataContext="{Binding Source={x:Static vm:ChartViewModel.designVM}}"
+             x:Class="AvaloniaXPlatExample.Views.ChartView">
+    <StackPanel HorizontalAlignment="Center" Margin="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button Margin="6" Command="{Binding AddItem}">Add Last</Button>
+                <Button Margin="6" Command="{Binding RemoveItem}">Remove First</Button>
+                <Button Margin="6" Command="{Binding UpdateItem}">Update Random</Button>
+                <Button Margin="6" Command="{Binding ReplaceItem}">Replace Last</Button>
+                <Button Margin="6" Command="{Binding Reset}">Reset All</Button>
+                <ToggleButton Margin="6" IsChecked="{Binding IsAutoUpdateChecked}">AutoUpdate</ToggleButton>
+
+            </StackPanel>
+            <lvc:CartesianChart 
+                Grid.Row="1" 
+                MinHeight="300"
+                MaxHeight="1200"
+                MinWidth="600"
+                MaxWidth="2400"
+                Series="{Binding Series}" 
+                XAxes="{Binding XAxes}"
+                EasingFunction="{Binding Source={x:Null}}">
+            </lvc:CartesianChart>
+        </Grid>
+        <DataGrid ItemsSource="{Binding Actions}" AutoGenerateColumns="True" Height="200">
+        </DataGrid>
+        <Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />
+    </StackPanel>
+</UserControl>

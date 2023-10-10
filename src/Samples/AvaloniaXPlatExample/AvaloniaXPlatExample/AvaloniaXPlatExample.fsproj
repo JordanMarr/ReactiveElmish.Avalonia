@@ -26,17 +26,23 @@
     <Compile Include="ViewLocator.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />    
     <!-- for services, filepicker -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.5.23280.8" />
 
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />    
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
 
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.4" />
+    <!-- behaviors support for converting doubleclicks into commands -->
+    <!-- <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" /> -->
+    <!-- pinned to earlier version - no .0.4 available -->
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.2" />
+
+
     <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
 
-    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
     <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.802" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.802" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.802-11.0.0-rc1.1" />
@@ -51,9 +57,5 @@
      <ProjectReference Include="..\..\..\Elmish.Avalonia\Elmish.Avalonia.fsproj" />
 
 
-    <!-- behaviors support for converting doubleclicks into commands -->
-    <!-- <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" /> -->
-    <!-- pinned to earlier version - no .0.4 available -->
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.2" />
   </ItemGroup>
 </Project>

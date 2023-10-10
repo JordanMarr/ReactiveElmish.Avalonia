@@ -23,9 +23,21 @@
         </TabItem>
         <TabItem>
             <TabItem.Header>
-                <TextBlock VerticalAlignment="Center">About</TextBlock>
+                <TextBlock VerticalAlignment="Center">Chart</TextBlock>
             </TabItem.Header>
             <UserControl Content="{Binding AboutVM}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">Chart</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding AboutVM}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">FilePicker</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding FilePickerVM}"> </UserControl>
         </TabItem>
     </TabControl>
 
