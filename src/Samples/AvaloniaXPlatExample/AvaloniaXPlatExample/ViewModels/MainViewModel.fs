@@ -4,7 +4,8 @@ open Elmish.Avalonia
 
 type Model =
     {
-        ContentVM: IStart
+        // ContentVM: IStart // TODO
+        ContentVM: IElmishViewModel
     }
 
 type Msg =
@@ -30,13 +31,14 @@ let rec update (msg: Msg) (model: Model) =
 and bindings() : Binding<Model, Msg> list =
     [
     // Properties
+    "AboutVM" |> Binding.oneWay (fun _ -> AboutViewModel.vm)
     "CounterVM" |> Binding.oneWay (fun _ -> CounterViewModel.vm)
     "ListBoxVM" |> Binding.oneWay (fun _ -> ListBoxViewModel.vm)
     ]
 
 and designVM = ViewModel.designInstance (init()) (bindings())
 
-and vm : IStart =
+and vm : IElmishViewModel =
     ElmishViewModel(
             AvaloniaProgram.mkSimple init update bindings
             |> AvaloniaProgram.withElmishErrorHandler

@@ -15,7 +15,7 @@
             <Button Margin="5" Command="{Binding Clear}" Name="Clear">Clear </Button>
             <TextBox Width="500" Height="20" Padding="5,5,5,5" Text="{Binding Greeting}"></TextBox>
         </StackPanel> 
-        <ListBox Items="{Binding Items}" SelectionMode="Single" 
+        <ListBox ItemsSource="{Binding Items}" SelectionMode="Single" 
                  SelectedIndex="{Binding SelectedIndex}" Name="listbox">
             <i:Interaction.Behaviors>
                 <EventTriggerBehavior EventName="DoubleTapped" SourceObject="{Binding ElementName=listbox}">
