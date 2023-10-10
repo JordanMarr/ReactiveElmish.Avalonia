@@ -21,6 +21,12 @@
             </TabItem.Header>
             <UserControl Content="{Binding CounterVM}"> </UserControl>
         </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">About</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding AboutVM}"> </UserControl>
+        </TabItem>
     </TabControl>
 
     <!-- Content is resolved via the ViewLocator -->

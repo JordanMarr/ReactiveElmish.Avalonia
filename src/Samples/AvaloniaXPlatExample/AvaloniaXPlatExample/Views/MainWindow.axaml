@@ -10,18 +10,24 @@
         Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
         Title="AvaloniaXPlatExample">
     <TabControl>
-            <TabItem>
-                <TabItem.Header>
-                    <TextBlock VerticalAlignment="Center">ListBox</TextBlock>
-                </TabItem.Header>
-                <UserControl Content="{Binding ListBoxVM}"> </UserControl>
-            </TabItem>
-            <TabItem>
-                <TabItem.Header>
-                    <TextBlock VerticalAlignment="Center">Counter</TextBlock>
-                </TabItem.Header>
-                <UserControl Content="{Binding CounterVM}"> </UserControl>
-            </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">ListBox</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding ListBoxVM}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">Counter</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding CounterVM}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">About</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding AboutVM}"> </UserControl>
+        </TabItem>
     </TabControl>
 
     <!-- Content is resolved via the ViewLocator -->

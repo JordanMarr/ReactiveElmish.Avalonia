@@ -9,6 +9,7 @@ type Model =
     }
 
 type Msg =
+    | ShowAbout
     | ShowHome
     | ShowCounter
     | ShowListBox
@@ -21,6 +22,8 @@ let init() =
 
 let rec update (msg: Msg) (model: Model) =
     match msg with
+    | ShowAbout ->
+        {model with ContentVM = AboutViewModel.vm}
     | ShowHome ->
         {model with ContentVM = vm}
     | ShowCounter ->
