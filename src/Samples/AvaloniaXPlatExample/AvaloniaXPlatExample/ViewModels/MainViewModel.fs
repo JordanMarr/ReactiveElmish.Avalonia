@@ -4,12 +4,16 @@ open Elmish.Avalonia
 
 type Model =
     {
-        ContentVM: IStart
+        // ContentVM: IStart // TODO
+        ContentVM: IElmishViewModel
     }
 
 type Msg =
-    | ShowHome
+    | ShowAbout
+    | ShowChart
     | ShowCounter
+    | ShowFilePicker
+    | ShowHome
     | ShowListBox
 
 let init() =
@@ -20,6 +24,12 @@ let init() =
 
 let rec update (msg: Msg) (model: Model) =
     match msg with
+    | ShowAbout ->
+        {model with ContentVM = AboutViewModel.vm}
+    | ShowChart ->
+        {model with ContentVM = ChartViewModel.vm}
+    | ShowFilePicker ->
+        {model with ContentVM = FilePickerViewModel.vm()}
     | ShowHome ->
         {model with ContentVM = vm}
     | ShowCounter ->
@@ -30,13 +40,16 @@ let rec update (msg: Msg) (model: Model) =
 and bindings() : Binding<Model, Msg> list =
     [
     // Properties
+    "AboutVM" |> Binding.oneWay (fun _ -> AboutViewModel.vm)
     "CounterVM" |> Binding.oneWay (fun _ -> CounterViewModel.vm)
     "ListBoxVM" |> Binding.oneWay (fun _ -> ListBoxViewModel.vm)
+    "ChartVM" |> Binding.oneWay (fun _ -> ChartViewModel.vm)
+    "FilePickerVM" |> Binding.oneWay (fun _ -> FilePickerViewModel.vm())
     ]
 
 and designVM = ViewModel.designInstance (init()) (bindings())
 
-and vm : IStart =
+and vm : IElmishViewModel =
     ElmishViewModel(
             AvaloniaProgram.mkSimple init update bindings
             |> AvaloniaProgram.withElmishErrorHandler

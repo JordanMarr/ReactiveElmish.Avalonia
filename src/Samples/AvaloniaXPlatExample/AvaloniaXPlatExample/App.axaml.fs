@@ -19,6 +19,7 @@ type App() =
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
             let view = MainWindow()
             desktop.MainWindow <- view
+            Services.Init view
             try
                 ViewModels.MainViewModel.vm.StartElmishLoop(view)
             with x ->

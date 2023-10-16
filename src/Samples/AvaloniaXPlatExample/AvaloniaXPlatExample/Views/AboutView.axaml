@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
+             xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
+			 Design.DataContext="{Binding Source={x:Static vm:AboutViewModel.designVM}}"
+             x:Class="AvaloniaXPlatExample.Views.AboutView">
+	<StackPanel HorizontalAlignment="Center" Margin="10">
+		<StackPanel Orientation="Horizontal" Margin="10">
+			<TextBlock Text="Version:" />
+			<TextBlock Text="{Binding Version}" />
+		</StackPanel>
+        <!-- not needed in tab based layout -->
+		<!-- <Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />		 -->
+	</StackPanel>
+</UserControl>

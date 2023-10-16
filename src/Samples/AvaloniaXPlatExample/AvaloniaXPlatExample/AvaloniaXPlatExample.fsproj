@@ -6,29 +6,56 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Services\Services.fs" />        
     <Compile Include="ViewModels\IElmishViewModel.fs" />        
     <Compile Include="ViewModels\Messaging.fs" />        
     <Compile Include="ViewModels\ListBoxViewModel.fs" />        
     <Compile Include="ViewModels\CounterViewModel.fs" />        
+    <Compile Include="ViewModels\ChartViewModel.fs" />        
+    <Compile Include="ViewModels\FilePickerViewModel.fs" />        
+    <Compile Include="ViewModels\AboutViewModel.fs" />        
     <Compile Include="ViewModels\MainViewModel.fs" />        
     <Compile Include="Views\ListBoxView.fs" />
     <Compile Include="Views\CounterView.fs" />
+    <Compile Include="Views\ChartView.axaml.fs" />
+    <Compile Include="Views\FilePickerView.axaml.fs" />
+    <Compile Include="Views\AboutView.axaml.fs" />
     <Compile Include="Views\MainWindow.axaml.fs" />
     <Compile Include="Views\MainView.axaml.fs" />
     <Compile Include="App.axaml.fs" />
     <Compile Include="ViewLocator.fs" />
   </ItemGroup>
   <ItemGroup>
+    <!-- for services, filepicker -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.5.23280.8" />
+
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />    
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+
+    <!-- behaviors support for converting doubleclicks into commands -->
+    <!-- <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" /> -->
+    <!-- pinned to earlier version - no .0.4 available -->
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.2" />
+
+
+    <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
+
+    <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.802" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.802" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.802-11.0.0-rc1.1" />
+
 
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
 
+    <!--
     <PackageReference Include="Elmish.Avalonia" Version="$(AvaloniaElmishVersion)" />
-    <!-- behaviors support for converting doubleclicks into commands -->
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" />
+    -->
+     <ProjectReference Include="..\..\..\Elmish.Avalonia\Elmish.Avalonia.fsproj" />
+
+
   </ItemGroup>
 </Project>
