@@ -2,15 +2,19 @@
 
 open Fun.Build
 
-let root = __SOURCE_DIRECTORY__
-let configuration = "Release"
-let slnFile = "Elmish.Avalonia.sln"
+let src = __SOURCE_DIRECTORY__
 
 pipeline "CI" {
 
-    stage "Build" {
-        run $"dotnet restore {root}/{slnFile}"
-        run $"dotnet build {root}/{slnFile} --configuration {configuration}"
+    stage "Build Elmish.Avalonia" {
+        run $"dotnet restore {src}/Elmish.Avalonia.sln"
+        run $"dotnet build {src}/Elmish.Avalonia.sln --configuration Release"
+    }
+    
+    stage "Build AvaloniaXPlatExample" {
+        run $"dotnet workload restore"
+        run $"dotnet restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
+        run $"dotnet build {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln --configuration Release"
     }
 
     runIfOnlySpecified false
