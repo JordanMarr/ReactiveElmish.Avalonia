@@ -9,8 +9,8 @@ let slnFile = "Elmish.Avalonia.sln"
 pipeline "CI" {
 
     stage "Build" {
-        run $"dotnet restore {slnFile}"
-        run $"dotnet build {slnFile} --configuration {configuration}"
+        run $"dotnet restore {root}/{slnFile}"
+        run $"dotnet build {root}/{slnFile} --configuration {configuration}"
     }
 
     runIfOnlySpecified false
