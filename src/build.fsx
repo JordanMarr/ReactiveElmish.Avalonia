@@ -12,7 +12,7 @@ pipeline "CI" {
     }
     
     stage "Build AvaloniaXPlatExample" {
-        run $"dotnet workload restore"
+        run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
         run $"dotnet restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
         run $"dotnet build {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln --configuration Release"
     }
