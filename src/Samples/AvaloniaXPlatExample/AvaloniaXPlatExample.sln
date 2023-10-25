@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaXPlatExample.Web", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaXPlatExample.Android", "AvaloniaXPlatExample.Android\AvaloniaXPlatExample.Android.fsproj", "{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvaloniaXPlatExample.iOS", "AvaloniaXPlatExample.iOS\AvaloniaXPlatExample.iOS.csproj", "{877BA5C9-F03E-48D5-B141-FD5BE9618DCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +35,15 @@ Global
 		{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AD1DAC8-7FBE-49D5-8614-7321233DB82E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{877BA5C9-F03E-48D5-B141-FD5BE9618DCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{877BA5C9-F03E-48D5-B141-FD5BE9618DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{877BA5C9-F03E-48D5-B141-FD5BE9618DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{877BA5C9-F03E-48D5-B141-FD5BE9618DCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D7833E0-09FB-4D0A-9F2C-8E8AB67D9327}
 	EndGlobalSection
 EndGlobal
