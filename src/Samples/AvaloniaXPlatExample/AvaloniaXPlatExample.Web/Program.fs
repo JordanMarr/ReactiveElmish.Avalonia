@@ -18,24 +18,29 @@ module Program =
     [<EntryPoint>]
     let main argv =
         // System.Diagnostics.Trace.Listeners.Add( new System.Diagnostics.ConsoleTraceListener()) |> ignore
-        try
-            buildAvaloniaApp()
-                (*
-                .LogToTrace(Logging.LogEventLevel.Debug
-                            areas=[|
-                                //Logging.LogArea.Binding
-                                //Logging.LogArea.Win32Platform
-                                //Logging.LogArea.Control
-                                //Logging.LogArea.Property
-                                //Logging.LogArea.Visual
-                                //Logging.LogArea.Animations
-                                //Logging.LogArea.Platform
-                            |]
-                        )
-                *)
-                .UseElmishBindings()
-                .SetupBrowserApp("out")
+        task { 
+            try
+                let app = buildAvaloniaApp()
+                do! app.StartBrowserAppAsync("out")
+                app.UseElmishBindings()
                 |> ignore
-        with x ->
-            printfn $"Exception: {x.Message}\n{x.StackTrace}"
-        0
+                    (*
+                    app.LogToTrace(Logging.LogEventLevel.Debug
+                                areas=[|
+                                    //Logging.LogArea.Binding
+                                    //Logging.LogArea.Win32Platform
+                                    //Logging.LogArea.Control
+                                    //Logging.LogArea.Property
+                                    //Logging.LogArea.Visual
+                                    //Logging.LogArea.Animations
+                                    //Logging.LogArea.Platform
+                                |]
+                            )
+                    *)
+                return 0
+            with ex ->
+                printfn $"Exception: {ex.Message}\n{ex.StackTrace}"
+                return 1
+        }
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
