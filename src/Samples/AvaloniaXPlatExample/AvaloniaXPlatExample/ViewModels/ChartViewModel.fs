@@ -173,5 +173,10 @@ let vm =
     AvaloniaProgram.mkSimple init update bindings
     |> AvaloniaProgram.withSubscription subscriptions
     |> ElmishViewModel.create
+    |> ElmishViewModel.subscribe (fun view model dispatch ->
+        view.Unloaded |> Observable.subscribe (fun _ ->
+            dispatch (Msg.SetIsAutoUpdateChecked false)
+        )
+    )
     
 
