@@ -1,4 +1,4 @@
-#r "nuget: Fun.Build, 0.3.8"
+#r "nuget: Fun.Build, 1.0.2"
 
 open Fun.Build
 
@@ -16,7 +16,7 @@ pipeline "CI" {
         run "dotnet workload install wasm-tools"
         run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
         run $"dotnet restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
-        run $"dotnet build {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln --configuration Release"
+        run $"dotnet build {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln --configuration Debug"
     }
 
     runIfOnlySpecified false
