@@ -34,15 +34,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Elmish" Version="4.0.2" />
+        <PackageReference Include="Elmish" Version="4.1.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.5.23280.8" />
         <PackageReference Include="System.Reactive.Core" Version="6.0.0" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.4" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.5" />
         <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.4" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.4" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.5" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
         <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.802" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.802" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.802-11.0.0-rc1.1" />
