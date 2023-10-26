@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{7E33C4FF-FDB6-45C5-8748-743F48523213}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
+		publish.fsx = publish.fsx
 	EndProjectSection
 EndProject
 Global
