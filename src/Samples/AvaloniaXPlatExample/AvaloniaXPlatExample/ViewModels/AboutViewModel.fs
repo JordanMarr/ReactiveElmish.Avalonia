@@ -34,7 +34,6 @@ let designVM = ViewModel.designInstance (fst (init())) (bindings())
 let vm =
     AvaloniaProgram.mkProgram init update bindings
     |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
     |> ElmishViewModel.subscribe (fun view model dispatch ->
         view.Loaded |> Observable.subscribe (fun _ ->
             printfn "View Loaded!"

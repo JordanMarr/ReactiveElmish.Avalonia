@@ -48,4 +48,3 @@ let vm () =
 
     AvaloniaProgram.mkProgram init (update tryPickFile) bindings
     |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
