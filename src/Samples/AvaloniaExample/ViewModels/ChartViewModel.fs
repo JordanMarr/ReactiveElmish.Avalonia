@@ -3,6 +3,7 @@ module AvaloniaExample.ViewModels.ChartViewModel
 open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
+open System.Reactive.Linq
 open Elmish
 open Elmish.Avalonia
 open LiveChartsCore
@@ -144,13 +145,11 @@ let bindings ()  : Binding<Model, Msg> list = [
 
 let designVM = ViewModel.designInstance (init()) (bindings())
 
-open System.Timers
-
 let subscriptions (model: Model) : Sub<Msg> =
     let autoUpdateSub (dispatch: Msg -> unit) = 
-        let timer = new Timer(1000) 
-        let disposable = 
-            timer.Elapsed.Subscribe(fun _ -> 
+        Observable
+            .Interval(TimeSpan.FromSeconds(1))
+            .Subscribe(fun _ -> 
                 // similar to newSeries create null entry in 1% of cases
                 let randomNull = rnd.Next(0, 99)
                 match randomNull with
@@ -160,8 +159,6 @@ let subscriptions (model: Model) : Sub<Msg> =
                     dispatch AddItem
                 dispatch RemoveItem
             )
-        timer.Start()
-        disposable
 
     [
         if model.IsAutoUpdateChecked then
@@ -174,4 +171,3 @@ let vm =
     |> AvaloniaProgram.withSubscription subscriptions
     |> ElmishViewModel.create
     |> ElmishViewModel.terminateOnViewUnloaded Terminate
-
