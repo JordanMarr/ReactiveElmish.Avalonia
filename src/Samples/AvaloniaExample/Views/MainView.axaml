@@ -7,6 +7,7 @@
         x:Class="AvaloniaExample.Views.MainView"        
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaExample.ViewModels"
+		xmlns:local="clr-namespace:AvaloniaExample"
         Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
         Title="AvaloniaExample">
 
@@ -67,8 +68,11 @@
 			<Button Classes="tab" Content="File Picker" Command="{Binding ShowFilePicker}" />
 		    <Button Classes="tab" Content="About" Command="{Binding ShowAbout}" />
 		</StackPanel>
-		
-		<ContentControl Content="{Binding ContentVM}" />
+
+		<StackPanel Orientation="Horizontal">
+			<ContentControl Content="{Binding ContentVM}" />
+			<local:CounterComponentUC />
+		</StackPanel>
 		
 	</DockPanel>
 	

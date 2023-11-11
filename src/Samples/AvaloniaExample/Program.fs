@@ -12,6 +12,7 @@ module Program =
         AppBuilder
             .Configure<App>()
             .UsePlatformDetect()
+            .UseSkia()
             .LogToTrace(areas = Array.empty)
             .UseElmishBindings()
 

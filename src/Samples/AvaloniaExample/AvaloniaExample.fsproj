@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>        
+        <Compile Include="CounterComponent.fs" />        
         <Compile Include="ViewModels\Messaging.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
@@ -34,6 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia.FuncUI" Version="1.1.0" />
         <PackageReference Include="Elmish" Version="4.1.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.5.23280.8" />
         <PackageReference Include="System.Reactive.Core" Version="6.0.0" />
