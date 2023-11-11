@@ -66,12 +66,12 @@ module ElmishViewModel =
                 program 
                 |> AvaloniaProgram.mapSubscription (fun oldSubs -> 
                     fun model -> 
-                        let subsciption (dispatch: 'msg -> unit) = 
+                        let subscription (dispatch: 'msg -> unit) = 
                             subscribeToEvent view model dispatch
 
                         oldSubs model @
                             [
-                                [ $"subscription_{Guid.NewGuid()}" ], subsciption
+                                [ $"subscription_{Guid.NewGuid()}" ], subscription
                             ]
                 )
             )
