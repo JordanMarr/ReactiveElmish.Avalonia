@@ -6,7 +6,9 @@ open Avalonia.FuncUI.DSL
 open Avalonia.Layout
 open Avalonia.Markup.Xaml
 
-module CounterComponent =
+
+type CounterComponentUC() as this =
+    inherit UserControl()
 
     let view =
         Component (fun ctx ->
@@ -14,6 +16,13 @@ module CounterComponent =
 
             DockPanel.create [
                 DockPanel.children [
+                    TextBlock.create [
+                        TextBlock.dock Dock.Top
+                        TextBlock.fontSize 24
+                        TextBlock.verticalAlignment VerticalAlignment.Center
+                        TextBlock.horizontalAlignment HorizontalAlignment.Center
+                        TextBlock.text "Powered by Avalonia.FuncUI"
+                    ]
                     Button.create [
                         Button.dock Dock.Bottom
                         Button.onClick (fun _ -> state.Current - 1 |> state.Set)
@@ -28,7 +37,7 @@ module CounterComponent =
                     ]
                     TextBlock.create [
                         TextBlock.dock Dock.Top
-                        TextBlock.fontSize 48.0
+                        TextBlock.fontSize 20.0
                         TextBlock.verticalAlignment VerticalAlignment.Center
                         TextBlock.horizontalAlignment HorizontalAlignment.Center
                         TextBlock.text (string state.Current)
@@ -37,14 +46,12 @@ module CounterComponent =
             ]
         )
 
-type CounterComponentUC() as this =
-    inherit UserControl()
-
     do 
         this.InitializeComponent()
-        base.Height <- 400.0
-        base.Width <- 400.0
-        base.Content <- CounterComponent.view
+        base.Height <- 300.0
+        base.Width <- 300.0
+        base.VerticalAlignment <- VerticalAlignment.Top
+        base.Content <- view
 
     member private this.InitializeComponent() =
         AvaloniaXamlLoader.Load(this)

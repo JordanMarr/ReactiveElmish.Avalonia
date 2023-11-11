@@ -4,5 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
              x:Class="AvaloniaExample.CounterComponentUC">
-  Welcome to Avalonia!
+    This axaml file is a stub. 
+    The Content property is set to FuncUI view.
 </UserControl>

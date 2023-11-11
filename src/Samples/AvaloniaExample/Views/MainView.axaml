@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"        
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
-        Width="700" Height="650"
+        mc:Ignorable="d" d:DesignWidth="00" d:DesignHeight="650"
+        Width="900" Height="650"
         x:Class="AvaloniaExample.Views.MainView"        
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaExample.ViewModels"
@@ -69,10 +69,10 @@
 		    <Button Classes="tab" Content="About" Command="{Binding ShowAbout}" />
 		</StackPanel>
 
-		<StackPanel Orientation="Horizontal">
-			<ContentControl Content="{Binding ContentVM}" />
-			<local:CounterComponentUC />
-		</StackPanel>
+		<DockPanel>
+			<ContentControl DockPanel.Dock="Left" Content="{Binding ContentVM}" />
+			<local:CounterComponentUC DockPanel.Dock="Right"  />
+		</DockPanel>
 		
 	</DockPanel>
 	

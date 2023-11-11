@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>        
-        <Compile Include="CounterComponent.fs" />        
+        <Compile Include="FuncUI\CounterComponentUC.fs" />        
         <Compile Include="ViewModels\Messaging.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
