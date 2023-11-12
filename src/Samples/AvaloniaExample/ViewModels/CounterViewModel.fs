@@ -2,6 +2,7 @@
 
 open System
 open Elmish.Avalonia
+open Elmish
 
 type Model =  { Count: int; Actions: Action list }
 and Action = { Description: string; Timestamp: DateTime }
@@ -10,7 +11,6 @@ type Msg =
     | Increment
     | Decrement
     | Reset
-    | Terminate
 
 let init() = 
     { 
@@ -32,20 +32,20 @@ let update (msg: Msg) (model: Model) =
         }
     | Reset ->
         init()
-    | Terminate -> 
-        model
 
-let bindings ()  : Binding<Model, Msg> list = [
-    "Count" |> Binding.oneWay (fun m -> m.Count)
-    "Actions" |> Binding.oneWay (fun m -> List.rev m.Actions)
-    "Increment" |> Binding.cmd Increment
-    "Decrement" |> Binding.cmd Decrement
-    "Reset" |> Binding.cmd Reset
-]
+type CounterViewModel() =
+    inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-let designVM = ViewModel.designInstance (init()) (bindings())
+    member this.Count = this.BindModel(fun m -> m.Count)
+    member this.Actions = this.BindModel(fun m -> m.Actions)
+    member this.Increment() = this.Dispatch Msg.Increment
+    member this.Decrement() = this.Dispatch Msg.Decrement
+    member this.Reset() = this.Dispatch Msg.Reset
 
-let vm = 
-    AvaloniaProgram.mkSimple init update bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
+    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+        Program.mkAvaloniaSimple init update
+        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
+        |> Program.withConsoleTrace
+        |> this.RunProgram view
+
+let designVM = new CounterViewModel()

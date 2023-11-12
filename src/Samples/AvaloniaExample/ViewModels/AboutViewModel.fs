@@ -23,20 +23,16 @@ let update (msg: Msg) (model: Model) =
     | Ok -> model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
     | Terminate -> model, Cmd.none
 
+type AboutViewModel() =
+    inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
 
-let bindings ()  : Binding<Model, Msg> list = [
-    "Version" |> Binding.oneWay (fun m -> m.Version)
-    "Ok" |> Binding.cmd Ok
-]
+    member this.Version = this.BindModel(fun m -> m.Version)
+    member this.Ok() = this.Dispatch Msg.Ok
 
-let designVM = ViewModel.designInstance (fst (init())) (bindings())
+    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+        Program.mkAvaloniaProgram init update
+        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
+        |> Program.withConsoleTrace
+        |> this.RunProgram view
 
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
-    |> ElmishViewModel.subscribe (fun view model dispatch -> 
-        view.Loaded |> Observable.subscribe (fun _ -> 
-            printfn "View Loaded!"
-        )
-    )
+let designVM = new AboutViewModel()

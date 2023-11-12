@@ -11,6 +11,7 @@ open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
 open Messaging
+open System.Timers
 
 let rnd = Random()
 
@@ -130,22 +131,8 @@ let update (msg: Msg) (model: Model) =
     | Terminate ->
         model
 
-let bindings ()  : Binding<Model, Msg> list = [
-    "Actions" |> Binding.oneWay (fun m -> List.rev m.Actions)
-    "AddItem" |> Binding.cmd AddItem
-    "RemoveItem" |> Binding.cmd RemoveItem
-    "UpdateItem" |> Binding.cmd UpdateItem
-    "ReplaceItem" |> Binding.cmd ReplaceItem
-    "Reset" |> Binding.cmd Reset
-    "IsAutoUpdateChecked" |> Binding.twoWay ((fun m -> m.IsAutoUpdateChecked), SetIsAutoUpdateChecked)
-    "Series" |> Binding.oneWayLazy ((fun m -> m.Series), (fun _ _ -> true), id)
-    "XAxes" |> Binding.oneWayLazy ((fun _ -> XAxes), (fun _ _ -> true), id)
-    "Ok" |> Binding.cmd Ok
-]
 
-let designVM = ViewModel.designInstance (init()) (bindings())
-
-let subscriptions (model: Model) : Sub<Msg> =
+let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
     let autoUpdateSub (dispatch: Msg -> unit) = 
         Observable
             .Interval(TimeSpan.FromSeconds(1))
@@ -160,14 +147,38 @@ let subscriptions (model: Model) : Sub<Msg> =
                 dispatch RemoveItem
             )
 
+    let viewUnloadedSub (dispatch: Msg -> unit) = 
+        view.Unloaded |> Observable.subscribe(fun _ -> dispatch Terminate)
+
     [
         if model.IsAutoUpdateChecked then
             [ nameof autoUpdateSub ], autoUpdateSub
+
+        [ nameof viewUnloadedSub ], viewUnloadedSub
     ]
 
+type ChartViewModel() =
+    inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-let vm = 
-    AvaloniaProgram.mkSimple init update bindings
-    |> AvaloniaProgram.withSubscription subscriptions
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
+    member this.Actions = this.BindModel(fun m -> m.Actions)
+    member this.AddItem() = this.Dispatch Msg.AddItem
+    member this.RemoveItem() = this.Dispatch Msg.RemoveItem
+    member this.UpdateItem() = this.Dispatch Msg.UpdateItem
+    member this.ReplaceItem() = this.Dispatch Msg.ReplaceItem
+    member this.Reset() = this.Dispatch Msg.Reset
+    member this.IsAutoUpdateChecked 
+        with get () = this.BindModel(fun m -> m.IsAutoUpdateChecked)
+        and set value = this.Dispatch(Msg.SetIsAutoUpdateChecked value)
+    member this.Series = this.BindModel(fun m -> m.Series)
+    member this.XAxes = this.BindModel(fun _ -> XAxes)
+    member this.Ok() = this.Dispatch Msg.Ok
+
+    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+        Program.mkAvaloniaSimple init update
+        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
+        |> Program.withConsoleTrace
+        |> Program.withSubscription (subscriptions view)
+        |> Program.withTermination (fun msg -> msg = Terminate) (fun model -> printfn "View unloaded; terminating loop.")
+        |> this.RunProgram view
+
+let designVM = new ChartViewModel()

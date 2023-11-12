@@ -32,20 +32,21 @@ let update tryPickFile (msg: Msg) (model: Model) =
     | Terminate ->
         model, Cmd.none
 
-let bindings ()  : Binding<Model, Msg> list = [
-    "Ok" |> Binding.cmd Ok
-    "FilePath" |> Binding.oneWay (fun m -> m.FilePath |> Option.defaultValue "Not Set")
-    "PickFile" |> Binding.cmd PickFile
-]
+let tryPickFile () = 
+    let fileProvider = Services.Get<FileService>()
+    fileProvider.TryPickFile()
 
-let designVM = 
-    ViewModel.designInstance (fst (init ())) (bindings())
+type FilePickerViewModel() =
+    inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
 
-let vm () = 
-    let tryPickFile () = 
-        let fileProvider = Services.Get<FileService>()
-        fileProvider.TryPickFile()
+    member this.FilePath = this.BindModel(nameof this.FilePath, fun m -> m.FilePath |> Option.defaultValue "Not Set")
+    member this.Ok() = this.Dispatch Msg.Ok
+    member this.PickFile() = this.Dispatch Msg.PickFile
 
-    AvaloniaProgram.mkProgram init (update tryPickFile) bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
+    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+        Program.mkAvaloniaProgram init (update tryPickFile)
+        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
+        |> Program.withConsoleTrace
+        |> this.RunProgram view
+
+let designVM = new FilePickerViewModel()

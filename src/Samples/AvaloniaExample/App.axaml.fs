@@ -20,7 +20,8 @@ type App() =
             let view = MainView()
             desktop.MainWindow <- view
             Services.Init view           
-            ViewModels.MainViewModel.vm.StartElmishLoop(view)
+            let vm = new ViewModels.MainViewModel.MainViewModel()
+            vm.StartElmishLoop(view)
         | _ -> 
             // leave this here for design view re-renders
             ()

@@ -17,48 +17,48 @@ type Msg =
 
 let init() = 
     { 
-        ContentVM = CounterViewModel.vm
+        ContentVM = new CounterViewModel.CounterViewModel()
     }
 
 let update (msg: Msg) (model: Model) = 
     match msg with
     | ShowCounter -> 
-        { model with ContentVM = CounterViewModel.vm }
+        { model with ContentVM = new CounterViewModel.CounterViewModel() }
     | ShowChart -> 
-        { model with ContentVM = ChartViewModel.vm }  
+        { model with ContentVM = new ChartViewModel.ChartViewModel() }  
     | ShowAbout ->
-        { model with ContentVM = AboutViewModel.vm }
+        { model with ContentVM = new AboutViewModel.AboutViewModel() }
     | ShowFilePicker ->
-        { model with ContentVM = FilePickerViewModel.vm () }
+        { model with ContentVM = new FilePickerViewModel.FilePickerViewModel() }
     | Terminate ->
         model
 
-let bindings() : Binding<Model, Msg> list = [   
-    // Properties
-    "ContentVM" |> Binding.oneWay (fun m -> m.ContentVM)
-    "ShowCounter" |> Binding.cmd ShowCounter
-    "ShowChart" |> Binding.cmd ShowChart
-    "ShowAbout" |> Binding.cmd ShowAbout
-    "ShowFilePicker" |> Binding.cmd ShowFilePicker
-]
+let subscriptions (model: Model) : Sub<Msg> =
+    let messageBusSub (dispatch: Msg -> unit) = 
+        Messaging.bus.Subscribe(fun msg -> 
+            match msg with
+            | Messaging.GlobalMsg.GoHome -> 
+                dispatch ShowCounter
+        )
 
-let designVM = ViewModel.designInstance (init()) (bindings())
+    [ 
+        [ nameof messageBusSub ], messageBusSub
+    ]
 
-let vm : IElmishViewModel = 
-    let subscriptions (model: Model) : Sub<Msg> =
-        let messageBusSub (dispatch: Msg -> unit) = 
-            Messaging.bus.Subscribe(fun msg -> 
-                match msg with
-                | Messaging.GlobalMsg.GoHome -> 
-                    dispatch ShowCounter
-            )
+type MainViewModel() =
+    inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-        [ 
-            [ nameof messageBusSub ], messageBusSub
-        ]
+    member this.ContentVM = this.BindModel(fun m -> m.ContentVM)
+    member this.ShowChart() = this.Dispatch Msg.ShowChart
+    member this.ShowCounter() = this.Dispatch Msg.ShowCounter
+    member this.ShowAbout() = this.Dispatch Msg.ShowAbout
+    member this.ShowFilePicker() = this.Dispatch Msg.ShowFilePicker
 
-    AvaloniaProgram.mkSimple init update bindings
-    |> AvaloniaProgram.withSubscription subscriptions
-    |> ElmishViewModel.create
-    //|> ElmishViewModel.terminateOnUnloaded Terminate
-    :> IElmishViewModel
+    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+        Program.mkAvaloniaSimple init update
+        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
+        |> Program.withConsoleTrace
+        |> Program.withSubscription subscriptions
+        |> this.RunProgram view
+
+let designVM = new MainViewModel()

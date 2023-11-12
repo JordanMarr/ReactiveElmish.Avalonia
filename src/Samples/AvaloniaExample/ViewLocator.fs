@@ -12,7 +12,10 @@ type ViewLocator() =
             let t = data.GetType()
             let viewName = t.FullName.Replace("ViewModels", "Views").Replace("ViewModel", "View")
             let parts = viewName.Split([|'['; '+'|], StringSplitOptions.RemoveEmptyEntries)
-            let name = parts[1]
+            let name = 
+                if parts.Length > 2 
+                then parts[1]
+                else parts[0]
             let viewType = Type.GetType(name)
             if isNull viewType then
                 upcast TextBlock(Text = sprintf "Not Found: %s" name)
