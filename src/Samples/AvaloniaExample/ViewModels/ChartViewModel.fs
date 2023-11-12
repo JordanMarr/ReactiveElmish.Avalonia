@@ -11,7 +11,6 @@ open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
 open Messaging
-open System.Timers
 
 let rnd = Random()
 

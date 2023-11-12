@@ -14,7 +14,6 @@ module Program =
             .Configure<App>()
             .UsePlatformDetect()
             .LogToTrace(areas = Array.empty)
-            .UseElmishBindings()
             .UseReactiveUI()
 
     [<EntryPoint; STAThread>]
