@@ -59,6 +59,6 @@ type MainViewModel() =
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         |> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
-        |> this.RunProgram view
+        |> Program.runAvaloniaProgram this view
 
 let designVM = new MainViewModel()

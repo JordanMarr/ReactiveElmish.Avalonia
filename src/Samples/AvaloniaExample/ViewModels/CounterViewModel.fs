@@ -46,6 +46,6 @@ type CounterViewModel() =
         Program.mkAvaloniaSimple init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         |> Program.withConsoleTrace
-        |> this.RunProgram view
+        |> Program.runAvaloniaProgram this view
 
 let designVM = new CounterViewModel()

@@ -136,6 +136,7 @@ let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
         Observable
             .Interval(TimeSpan.FromSeconds(1))
             .Subscribe(fun _ -> 
+                printfn "AutoUpdate"
                 // similar to newSeries create null entry in 1% of cases
                 let randomNull = rnd.Next(0, 99)
                 match randomNull with
@@ -175,9 +176,9 @@ type ChartViewModel() =
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
         Program.mkAvaloniaSimple init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
-        |> Program.withConsoleTrace
+        //|> Program.withConsoleTrace // too much data
         |> Program.withSubscription (subscriptions view)
         |> Program.withTermination (fun msg -> msg = Terminate) (fun model -> printfn "View unloaded; terminating loop.")
-        |> this.RunProgram view
+        |> Program.runAvaloniaProgram this view
 
 let designVM = new ChartViewModel()

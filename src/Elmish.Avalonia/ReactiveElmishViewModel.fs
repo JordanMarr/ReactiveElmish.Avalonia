@@ -3,19 +3,13 @@
 open Elmish
 open System.Windows.Input
 open Avalonia.Threading
+open Avalonia.Controls
 open System.ComponentModel
 open System.Reactive.Subjects
 open System.Reactive.Linq
 open System.Linq.Expressions
 open System
 open System.Collections.Generic
-
-module Program =
-    let mkAvaloniaProgram (init: unit -> 'Model * Cmd<'Msg>) update = 
-        Program.mkProgram init update (fun _ _ -> ())
-
-    let mkAvaloniaSimple (init: unit -> 'Model) update =
-        Program.mkSimple init update (fun _ _ -> ())
 
 [<AbstractClass>]
 type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) = 
@@ -36,9 +30,9 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
     member val Dispatch : 'Msg -> unit = (fun _ -> failwith "`Dispatch` failed because the Elmish loop has not been started.") with get, set
     
     /// Starts the Elmish loop for this view model.
-    abstract member StartElmishLoop : Avalonia.Controls.Control -> unit
+    abstract member StartElmishLoop : Control -> unit
     interface IElmishViewModel with
-        member this.StartElmishLoop(view: Avalonia.Controls.Control) = this.StartElmishLoop(view)
+        member this.StartElmishLoop(view: Control) = this.StartElmishLoop(view)
 
     interface INotifyPropertyChanged with
         [<CLIEvent>]
@@ -77,8 +71,8 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             // Returns the latest value from the model projection.
             _model |> boxedModelProjection :?> 'PropertyValue
 
-    /// Attaches this VM to the view and starts the Elmish loop.
-    member this.RunProgram(view: Avalonia.Controls.Control) (program: Elmish.Program<unit, 'Model, 'Msg, unit>) =
+    /// Binds this VM to the view `DataContext` and runs the Elmish loop.
+    member internal this.RunProgram (view: Control) (program: Elmish.Program<unit, 'Model, 'Msg, unit>) =
         let setState model (_: Dispatch<'Msg>) =
             _model <- model
             _modelSubject.OnNext(model)
@@ -107,3 +101,18 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             |> Seq.iter (fun (disposable, _) -> disposable.Dispose())
             propertySubscriptions.Clear()
             _modelSubject.Dispose()
+
+
+
+module Program =
+    /// Creates an Avalonia program via Program.mkProgram.
+    let mkAvaloniaProgram (init: unit -> 'Model * Cmd<'Msg>) update = 
+        Program.mkProgram init update (fun _ _ -> ())
+
+    /// Creates an Avalonia program via Program.mkSimple.
+    let mkAvaloniaSimple (init: unit -> 'Model) update =
+        Program.mkSimple init update (fun _ _ -> ())
+
+    /// Binds a VM to the view `DataContext` and runs the Elmish loop.
+    let runAvaloniaProgram (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) = 
+        vm.RunProgram view
