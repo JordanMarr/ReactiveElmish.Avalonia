@@ -113,6 +113,6 @@ module Program =
     let mkAvaloniaSimple (init: unit -> 'Model) update =
         Program.mkSimple init update (fun _ _ -> ())
 
-    /// Binds a VM to the view `DataContext` and runs the Elmish loop.
-    let runAvaloniaProgram (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) = 
+    /// Binds the vm to the view and then runs the Elmish program.
+    let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) = 
         vm.RunProgram view

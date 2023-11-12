@@ -47,6 +47,6 @@ type FilePickerViewModel() =
         Program.mkAvaloniaProgram init (update tryPickFile)
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         |> Program.withConsoleTrace
-        |> Program.runAvaloniaProgram this view
+        |> Program.runView this view
 
 let designVM = new FilePickerViewModel()

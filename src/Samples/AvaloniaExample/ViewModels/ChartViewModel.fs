@@ -179,6 +179,6 @@ type ChartViewModel() =
         //|> Program.withConsoleTrace // too much data
         |> Program.withSubscription (subscriptions view)
         |> Program.withTermination (fun msg -> msg = Terminate) (fun model -> printfn "View unloaded; terminating loop.")
-        |> Program.runAvaloniaProgram this view
+        |> Program.runView this view
 
 let designVM = new ChartViewModel()

@@ -33,6 +33,6 @@ type AboutViewModel() =
         Program.mkAvaloniaProgram init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         |> Program.withConsoleTrace
-        |> Program.runAvaloniaProgram this view
+        |> Program.runView this view
 
 let designVM = new AboutViewModel()
