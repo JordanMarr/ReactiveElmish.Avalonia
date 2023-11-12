@@ -72,7 +72,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             _model |> boxedModelProjection :?> 'PropertyValue
 
     /// Binds this VM to the view `DataContext` and runs the Elmish loop.
-    member internal this.RunProgram (view: Control) (program: Elmish.Program<unit, 'Model, 'Msg, unit>) =
+    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
         let setState model (_: Dispatch<'Msg>) =
             _model <- model
             _modelSubject.OnNext(model)
@@ -114,5 +114,5 @@ module Program =
         Program.mkSimple init update (fun _ _ -> ())
 
     /// Binds the vm to the view and then runs the Elmish program.
-    let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) = 
-        vm.RunProgram view
+    let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
+        vm.RunProgram(program, view)
