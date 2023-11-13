@@ -30,7 +30,7 @@ This is because my vision for this library departs from the typical "monolithic"
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
 While Elmish.WPF created "bindings" to translate the Elmish `Model` to an internal `DictionaryViewModel` behind the scenes, Elmish.Avalonia instead creates a more typical `ReactiveElmishViewModel` and uses a special `BindModel` method to keep the VM properties in sync with the Elmish `Model` properties. 
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/8665e682-7bbb-484b-a50c-308b028f747b)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/66b76ea0-b008-42b5-8c82-b8d56530879a)
 
 
 # Sample App
