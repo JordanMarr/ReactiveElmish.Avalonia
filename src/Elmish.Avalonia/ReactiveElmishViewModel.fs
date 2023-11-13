@@ -68,7 +68,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
 
         | true, (_, boxedModelProjection) -> 
             // Returns the latest value from the model projection.
-            _model |> boxedModelProjection :?> 'PropertyValue
+            _model |> boxedModelProjection :?> 'ModelProjection
 
     /// Binds this VM to the view `DataContext` and runs the Elmish loop.
     member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
