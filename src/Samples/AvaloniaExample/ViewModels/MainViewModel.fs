@@ -59,6 +59,7 @@ type MainViewModel() =
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         |> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
+        |> Program.terminateOnViewUnloaded this Terminate
         |> Program.runView this view
 
 let designVM = new MainViewModel()

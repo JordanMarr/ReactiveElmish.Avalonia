@@ -131,7 +131,7 @@ let update (msg: Msg) (model: Model) =
         model
 
 
-let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
+let subscriptions (model: Model) : Sub<Msg> =
     let autoUpdateSub (dispatch: Msg -> unit) = 
         Observable
             .Interval(TimeSpan.FromSeconds(1))
@@ -147,14 +147,9 @@ let subscriptions (view: Avalonia.Controls.Control) (model: Model) : Sub<Msg> =
                 dispatch RemoveItem
             )
 
-    let viewUnloadedSub (dispatch: Msg -> unit) = 
-        view.Unloaded |> Observable.subscribe(fun _ -> dispatch Terminate)
-
     [
         if model.IsAutoUpdateChecked then
             [ nameof autoUpdateSub ], autoUpdateSub
-
-        [ nameof viewUnloadedSub ], viewUnloadedSub
     ]
 
 type ChartViewModel() =
@@ -177,8 +172,8 @@ type ChartViewModel() =
         Program.mkAvaloniaSimple init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         //|> Program.withConsoleTrace // too much data
-        |> Program.withSubscription (subscriptions view)
-        |> Program.withTermination (fun msg -> msg = Terminate) (fun model -> printfn "View unloaded; terminating loop.")
+        |> Program.withSubscription subscriptions
+        |> Program.terminateOnViewUnloaded this Terminate
         |> Program.runView this view
 
 let designVM = new ChartViewModel()

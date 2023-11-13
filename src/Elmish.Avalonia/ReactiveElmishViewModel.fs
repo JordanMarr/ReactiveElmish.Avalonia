@@ -73,32 +73,39 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
 
     /// Binds this VM to the view `DataContext` and runs the Elmish loop.
     member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
+        
+        // Updates when the Elmish model changes and sends out an Rx stream.
         let setState model (_: Dispatch<'Msg>) =
             _model <- model
             _modelSubject.OnNext(model)
 
+        // A fn that dispatches messages to the Elmish loop.
         let cmdDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
             let dispatch msg = Dispatcher.UIThread.Post(fun () -> innerDispatch msg) |> ignore
             this.Dispatch <- dispatch
             dispatch
 
+        // Wires up the view and the VM.
         view.DataContext <- this
 
         if this.DisposeOnUnload then
+            // Disposes the VM when the view is unloaded, and optionally dispatches a termination message.
             view.Unloaded.AddHandler(fun _ _ -> 
+                this.TerminateMsg |> Option.iter this.Dispatch
                 (this :> IDisposable).Dispose())
         
         program
         |> Program.withSetState setState
         |> Program.runWithDispatch cmdDispatch ()
 
-    /// Determines whether this VM should be disposed when the view is unloaded.
+    /// Determines whether this VM should be disposed when the view is unloaded. Default is true.
     member val DisposeOnUnload = true with get, set
+
+    member val internal TerminateMsg: 'Msg option = None with get, set
 
     interface IDisposable with
         member this.Dispose() =
-            propertySubscriptions.Values
-            |> Seq.iter (fun (disposable, _) -> disposable.Dispose())
+            propertySubscriptions.Values |> Seq.iter (fun (disposable, _) -> disposable.Dispose())
             propertySubscriptions.Clear()
             _modelSubject.Dispose()
 
@@ -116,3 +123,10 @@ module Program =
     /// Binds the vm to the view and then runs the Elmish program.
     let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
         vm.RunProgram(program, view)
+
+    /// Configures `Program.withTermination` using the given 'Msg, and fires the 'Msg when the vm is disposed.
+    let terminateOnViewUnloaded (vm: ReactiveElmishViewModel<'Model, 'Msg>) (terminateMsg: 'Msg) program = 
+        vm.TerminateMsg <- Some terminateMsg
+        program 
+        |> Program.withTermination (fun m -> m = terminateMsg) (fun _ -> printfn $"terminateOnViewUnloaded: dispatching {terminateMsg}")
+
