@@ -55,7 +55,6 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             let disposable = 
                 _modelSubject
                     .Select(modelProjectionFn)
-                    .Distinct()
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
                         this.OnPropertyChanged(vmPropertyName))
