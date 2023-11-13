@@ -34,6 +34,11 @@ Instead of using the V1 bindings, you now create a more standard view model that
 
 ![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/66b76ea0-b008-42b5-8c82-b8d56530879a)
 
+### V2 Design Highlights
+* Works with Avalonia [Compiled Bindings](https://docs.avaloniaui.net/docs/next/basics/data/data-binding/compiled-bindings#enable-and-disable-compiled-bindings) for better performance and compile-time type checking in the views! (The previous `DictionaryViewModel` brought over from Elmish.WPF was not able to take advantage of this because it relied on reflection-based bindings.)
+* More standard looking view model pattern while still maintaining the power of Elmish. For example, you can now create an instance of an Elmish view model and actually inspect its properties from the outside -- and even read / write to the properties in OOP fashion. (The fact that a view model is using Elmish internally should not matter because it's an implementation detail.) This is a perfect example of the benefits of OOP + FP side-by-side.
+* The existing Elmish.WPF `DictionaryViewModel` was not able to bind to DataGrid row columns. The workarounds were pretty cumbersome, imo. Having more typical view models resolves this issue.
+* Elmish.Avalonia now takes a dependency on the Avalonia.ReactiveUI library. (The new `ReactiveElmishViewModel` class inherits from `ReactiveObject`.) Since this is the default view model library for Avalonia, this makes it easier to take advantage of existing patterns when needed.
 
 # Sample App
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
