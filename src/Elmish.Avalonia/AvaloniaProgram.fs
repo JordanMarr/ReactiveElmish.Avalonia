@@ -1,5 +1,6 @@
 ﻿namespace Elmish.Avalonia
 
+open System
 open Avalonia
 open Avalonia.Controls
 open Avalonia.Threading
@@ -8,7 +9,7 @@ open Microsoft.Extensions.Logging.Abstractions
 open Elmish
 
 
-
+[<Obsolete("AvaloniaProgram is deprecated and will be removed in v2. Please use ReactiveElmishViewModel.")>]
 type AvaloniaProgram<'model, 'msg> =
     internal
         {
@@ -21,6 +22,7 @@ type AvaloniaProgram<'model, 'msg> =
         }
 
 
+[<Obsolete("AvaloniaProgram is deprecated and will be removed in v2. Please use ReactiveElmishViewModel.")>]
 [<RequireQualifiedAccess>]
 module AvaloniaProgram =
 

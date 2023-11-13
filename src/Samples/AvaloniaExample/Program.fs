@@ -3,7 +3,6 @@
 open System
 open Avalonia
 open AvaloniaExample
-open Elmish.Avalonia.AppBuilder
 open Avalonia.ReactiveUI
 
 module Program =

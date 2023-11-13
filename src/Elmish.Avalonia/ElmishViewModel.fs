@@ -8,6 +8,7 @@ type IElmishViewModel =
     abstract member StartElmishLoop : view: Control -> unit
 
 /// Used to bind a view with a view model and provides a method to start the Elmish loop.
+[<Obsolete("ElmishViewModel is deprecated and will be removed in v2. Please use ReactiveElmishViewModel.")>]
 type ElmishViewModel<'model, 'msg>(program: AvaloniaProgram<'model, 'msg>) =
     
     member val internal ViewProgramAugmentations 
@@ -20,6 +21,7 @@ type ElmishViewModel<'model, 'msg>(program: AvaloniaProgram<'model, 'msg>) =
             |> AvaloniaProgram.startElmishLoop view
 
 /// Helper functions for creating ElmishViewModels.
+[<Obsolete("ElmishViewModel is deprecated and will be removed in v2. Please use ReactiveElmishViewModel.")>]
 module ElmishViewModel = 
     
     /// Initializes an ElmishViewModel with the given program.
