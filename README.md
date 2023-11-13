@@ -120,6 +120,7 @@ override this.StartElmishLoop(view: Avalonia.Controls.Control) =
 
 ### Program.terminateOnViewUnloaded
 Configures `Program.withTermination` using the given `'Msg`, and fires the terminate `'Msg` when the `view` is `Unloaded`.
+This pattern will dispose your subscriptions when the view is `Unloaded`.
 
 NOTE: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
 
