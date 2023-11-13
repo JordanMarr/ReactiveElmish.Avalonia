@@ -39,8 +39,8 @@ open Counter
 type CounterViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-    member this.Count = this.BindModel(fun m -> m.Count)
-    member this.Actions = this.BindModel(fun m -> m.Actions)
+    member this.Count = this.BindModel(nameof this.Count, fun m -> m.Count)
+    member this.Actions = this.BindModel(nameof this.Actions, fun m -> m.Actions)
     member this.Increment() = this.Dispatch Msg.Increment
     member this.Decrement() = this.Dispatch Msg.Decrement
     member this.Reset() = this.Dispatch Msg.Reset

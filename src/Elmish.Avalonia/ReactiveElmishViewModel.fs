@@ -9,6 +9,8 @@ open System.Reactive.Linq
 open System.Linq.Expressions
 open System
 open System.Collections.Generic
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 
 [<AbstractClass>]
 type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) = 
@@ -37,13 +39,9 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
         [<CLIEvent>]
         member x.PropertyChanged = propertyChanged.Publish
 
-    member this.OnPropertyChanged(propertyName: string) =
-        propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName))
-
-    /// Binds a 'Model property value to a VM property *** of the same name *** and refreshes the VM property when the 'Model property changes.
-    member this.BindModel(modelProperty: Expression<Func<'Model, 'PropertyValue>>) = 
-        let properyName = (modelProperty.Body :?> MemberExpression).Member.Name
-        this.BindModel(properyName, modelProperty.Compile().Invoke)
+    /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
+    member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
+        propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
     member this.BindModel(vmPropertyName: string, modelProjection: 'Model -> 'PropertyValue) = 

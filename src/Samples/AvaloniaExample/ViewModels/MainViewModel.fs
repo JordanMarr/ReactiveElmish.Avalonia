@@ -52,7 +52,7 @@ open Main
 type MainViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-    member this.ContentVM = this.BindModel(fun m -> m.ContentVM)
+    member this.ContentVM = this.BindModel(nameof this.ContentVM, fun m -> m.ContentVM)
     member this.ShowChart() = this.Dispatch Msg.ShowChart
     member this.ShowCounter() = this.Dispatch Msg.ShowCounter
     member this.ShowAbout() = this.Dispatch Msg.ShowAbout
