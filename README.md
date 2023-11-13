@@ -2,20 +2,19 @@
 Static Avalonia views for Elmish programs
 
 ## Why?
-Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.Avalonia port?
+Avalonia.FuncUI and Fabulous.Avalonia already exist and they are both fantastic. So then why make an Elmish.Avalonia port?
 
 ### Benefits
-* Some people may prefer using xaml, and it can be an easier sell for some teams due to the immediate availability of all community controls.
+* Some people may prefer using static xaml views, and it can be an easier sell for some teams due to the immediate availability of all community controls.
 * Bindings have to be created for controls in FuncUI. While most of the controls have bindings provided, third party will not have bindings out-of-the-box. Elmish.Avalonia sidesteps this problem by using xaml directly.
-* There is not currently a reliable design preview tool for FuncUI (although there is currently a project, [Avalonia.FuncUI.LiveView](https://github.com/SilkyFowl/Avalonia.FuncUI.LiveView), that is working to solve this problem). For me to do any kind of real project work with Avalonia and F#, a design preview is a necessity, and using xaml allows you to utilize the custom Avalonia design preview extension. After recently trying Elmish.WPF, I fell in love with the `ViewModel.designInstance` preview functionality that lets you preview your `init` values in the design preview panel, and this also works with Elmish.Avalonia!
-* You can use Avalonia.FuncUI and Elmish.Avalonia side-by-side to have the best of both worlds!
+* Ability to use the excellent Avalonia design previewer. For me to do any kind of real project work with Avalonia and F#, a design previewer is a necessity. Also, being able to easily construct `DesignInstance` VM for each view that utilizes the Elmish `init` function. 
+* You can still use Avalonia.FuncUI and Elmish.Avalonia side-by-side to have the best of both worlds approach if you like using the FuncUI DSL!
 
-### Other reasons
+### Additional reasons
 * Avalonia UI is a big deal in the .NET OSS community; it is always nice for F# community to be able to participate in the latest and greatest with as many options as possible.
 * Avalonia already provides first class templates to create an F# project that include creating .axaml views within the same project! (Not possible with WPF!)
 * While the built-in F# templates do allow you to do classic MVVM style, Elmish is more powerful and has become the standard for F# UI projects.
 * The "Avalonia UI for Visual Studio 2022" extension provides a xaml preview pane that works with F#! 😄 (Also not possible with WPF!)
-* The Elmish.WPF `ViewModel.designInstance` concept works with this extension very well. This allows you populate your "Design Preview" window with the defaults from your Elmish `init` function!
 * Keeping with tradition that the F# community will [provide important libraries, developer tools and workload support](https://learn.microsoft.com/en-us/dotnet/fsharp/strategy).
 
 # History
