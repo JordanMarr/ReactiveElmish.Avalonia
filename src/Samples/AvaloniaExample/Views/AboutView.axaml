@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
 			 xmlns:vm="using:AvaloniaExample.ViewModels"
-			 Design.DataContext="{Binding Source={x:Static vm:AboutViewModel.designVM}}"
+			 Design.DataContext="{Binding Source={x:Static vm:AboutViewModel.DesignVM}}"
+			 x:DataType="vm:AboutViewModel"
              x:Class="AvaloniaExample.Views.AboutView">
 	<StackPanel HorizontalAlignment="Center" Margin="10">
 		<StackPanel Orientation="Horizontal" Margin="10">

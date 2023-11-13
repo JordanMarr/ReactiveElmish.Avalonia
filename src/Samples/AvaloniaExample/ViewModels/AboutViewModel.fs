@@ -1,27 +1,31 @@
-﻿module AvaloniaExample.ViewModels.AboutViewModel
+﻿namespace AvaloniaExample.ViewModels
 
 open Elmish.Avalonia
 open Elmish
 open Messaging
 
-type Model = 
-    {
-        Version: string
-    }
+module About =
 
-type Msg = 
-    | Ok
-    | Terminate
+    type Model = 
+        {
+            Version: string
+        }
 
-let init() = 
-    { 
-        Version = "1.1"
-    }, Cmd.none
+    type Msg = 
+        | Ok
+        | Terminate
 
-let update (msg: Msg) (model: Model) = 
-    match msg with
-    | Ok -> model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
-    | Terminate -> model, Cmd.none
+    let init() = 
+        { 
+            Version = "1.1"
+        }, Cmd.none
+
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | Ok -> model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
+        | Terminate -> model, Cmd.none
+
+open About
 
 type AboutViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
@@ -35,4 +39,4 @@ type AboutViewModel() =
         |> Program.withConsoleTrace
         |> Program.runView this view
 
-let designVM = new AboutViewModel()
+    static member DesignVM = new AboutViewModel()

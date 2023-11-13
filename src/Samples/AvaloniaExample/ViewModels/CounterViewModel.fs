@@ -1,37 +1,40 @@
-﻿module AvaloniaExample.ViewModels.CounterViewModel
+﻿namespace AvaloniaExample.ViewModels
 
 open System
 open Elmish.Avalonia
 open Elmish
 
-type Model =  { Count: int; Actions: Action list }
-and Action = { Description: string; Timestamp: DateTime }
+module Counter = 
+    type Model =  { Count: int; Actions: Action list }
+    and Action = { Description: string; Timestamp: DateTime }
 
-type Msg = 
-    | Increment
-    | Decrement
-    | Reset
+    type Msg = 
+        | Increment
+        | Decrement
+        | Reset
 
-let init() = 
-    { 
-        Count = 0
-        Actions = [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
-    }
-
-let update (msg: Msg) (model: Model) = 
-    match msg with
-    | Increment ->
-        { model with 
-            Count = model.Count + 1 
-            Actions = model.Actions @ [ { Description = "Incremented"; Timestamp = DateTime.Now } ]
+    let init() = 
+        { 
+            Count = 0
+            Actions = [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
         }
-    | Decrement ->
-        { model with 
-            Count = model.Count - 1 
-            Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ] 
-        }
-    | Reset ->
-        init()
+
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | Increment ->
+            { model with 
+                Count = model.Count + 1 
+                Actions = model.Actions @ [ { Description = "Incremented"; Timestamp = DateTime.Now } ]
+            }
+        | Decrement ->
+            { model with 
+                Count = model.Count - 1 
+                Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ] 
+            }
+        | Reset ->
+            init()
+
+open Counter
 
 type CounterViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
@@ -48,4 +51,4 @@ type CounterViewModel() =
         |> Program.withConsoleTrace
         |> Program.runView this view
 
-let designVM = new CounterViewModel()
+    static member DesignVM = new CounterViewModel()

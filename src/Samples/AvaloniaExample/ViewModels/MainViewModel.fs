@@ -1,49 +1,53 @@
-﻿module AvaloniaExample.ViewModels.MainViewModel
+﻿namespace AvaloniaExample.ViewModels
 
 open Elmish.Avalonia
 open Elmish
 
-type Model = 
-    {
-        ContentVM: IElmishViewModel
-    }
+module Main = 
 
-type Msg = 
-    | ShowChart
-    | ShowCounter
-    | ShowAbout
-    | ShowFilePicker
-    | Terminate
+    type Model = 
+        {
+            ContentVM: IElmishViewModel
+        }
 
-let init() = 
-    { 
-        ContentVM = new CounterViewModel.CounterViewModel()
-    }
+    type Msg = 
+        | ShowChart
+        | ShowCounter
+        | ShowAbout
+        | ShowFilePicker
+        | Terminate
 
-let update (msg: Msg) (model: Model) = 
-    match msg with
-    | ShowCounter -> 
-        { model with ContentVM = new CounterViewModel.CounterViewModel() }
-    | ShowChart -> 
-        { model with ContentVM = new ChartViewModel.ChartViewModel() }  
-    | ShowAbout ->
-        { model with ContentVM = new AboutViewModel.AboutViewModel() }
-    | ShowFilePicker ->
-        { model with ContentVM = new FilePickerViewModel.FilePickerViewModel() }
-    | Terminate ->
-        model
+    let init() = 
+        { 
+            ContentVM = new CounterViewModel()
+        }
 
-let subscriptions (model: Model) : Sub<Msg> =
-    let messageBusSub (dispatch: Msg -> unit) = 
-        Messaging.bus.Subscribe(fun msg -> 
-            match msg with
-            | Messaging.GlobalMsg.GoHome -> 
-                dispatch ShowCounter
-        )
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | ShowCounter -> 
+            { model with ContentVM = new CounterViewModel() }
+        | ShowChart -> 
+            { model with ContentVM = new ChartViewModel() }  
+        | ShowAbout ->
+            { model with ContentVM = new AboutViewModel() }
+        | ShowFilePicker ->
+            { model with ContentVM = new FilePickerViewModel() }
+        | Terminate ->
+            model
 
-    [ 
-        [ nameof messageBusSub ], messageBusSub
-    ]
+    let subscriptions (model: Model) : Sub<Msg> =
+        let messageBusSub (dispatch: Msg -> unit) = 
+            Messaging.bus.Subscribe(fun msg -> 
+                match msg with
+                | Messaging.GlobalMsg.GoHome -> 
+                    dispatch ShowCounter
+            )
+
+        [ 
+            [ nameof messageBusSub ], messageBusSub
+        ]
+
+open Main
 
 type MainViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
@@ -62,4 +66,4 @@ type MainViewModel() =
         |> Program.terminateOnViewUnloaded this Terminate
         |> Program.runView this view
 
-let designVM = new MainViewModel()
+    static member DesignVM = new MainViewModel()

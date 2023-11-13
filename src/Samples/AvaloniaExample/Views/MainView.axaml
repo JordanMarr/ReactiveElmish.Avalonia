@@ -7,7 +7,8 @@
         x:Class="AvaloniaExample.Views.MainView"        
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaExample.ViewModels"
-        Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
+        Design.DataContext="{Binding Source={x:Static vm:MainViewModel.DesignVM}}"
+		x:DataType="vm:MainViewModel"
         Title="AvaloniaExample">
 
 	<Window.Styles>

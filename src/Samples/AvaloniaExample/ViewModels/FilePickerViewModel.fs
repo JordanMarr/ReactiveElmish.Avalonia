@@ -1,40 +1,44 @@
-﻿module AvaloniaExample.ViewModels.FilePickerViewModel
+﻿namespace AvaloniaExample.ViewModels
 
 open Elmish.Avalonia
 open Elmish
 open Messaging
 open AvaloniaExample
 
-type Model = 
-    {
-        FilePath: string option
-    }
+module FilePicker = 
 
-type Msg = 
-    | Ok
-    | PickFile
-    | SetFilePath of string option
-    | Terminate
+    type Model = 
+        {
+            FilePath: string option
+        }
 
-let init () = 
-    { 
-        FilePath = None
-    }, Cmd.none
+    type Msg = 
+        | Ok
+        | PickFile
+        | SetFilePath of string option
+        | Terminate
 
-let update tryPickFile (msg: Msg) (model: Model) = 
-    match msg with
-    | Ok -> 
-        model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
-    | PickFile  -> 
-        model, Cmd.OfTask.perform tryPickFile () SetFilePath
-    | SetFilePath path ->
-        { model with FilePath = path }, Cmd.none
-    | Terminate ->
-        model, Cmd.none
+    let init () = 
+        { 
+            FilePath = None
+        }, Cmd.none
 
-let tryPickFile () = 
-    let fileProvider = Services.Get<FileService>()
-    fileProvider.TryPickFile()
+    let update tryPickFile (msg: Msg) (model: Model) = 
+        match msg with
+        | Ok -> 
+            model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
+        | PickFile  -> 
+            model, Cmd.OfTask.perform tryPickFile () SetFilePath
+        | SetFilePath path ->
+            { model with FilePath = path }, Cmd.none
+        | Terminate ->
+            model, Cmd.none
+
+    let tryPickFile () = 
+        let fileProvider = Services.Get<FileService>()
+        fileProvider.TryPickFile()
+
+open FilePicker
 
 type FilePickerViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
@@ -49,4 +53,4 @@ type FilePickerViewModel() =
         |> Program.withConsoleTrace
         |> Program.runView this view
 
-let designVM = new FilePickerViewModel()
+    static member DesignVM = new FilePickerViewModel()
