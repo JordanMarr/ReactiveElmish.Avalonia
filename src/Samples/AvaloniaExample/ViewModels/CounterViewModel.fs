@@ -44,6 +44,7 @@ type CounterViewModel() =
     member this.Increment() = this.Dispatch Msg.Increment
     member this.Decrement() = this.Dispatch Msg.Decrement
     member this.Reset() = this.Dispatch Msg.Reset
+    member this.IsResetEnabled = this.BindModel(nameof this.IsResetEnabled, fun m -> m.Count <> 0)
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
         Program.mkAvaloniaSimple init update
