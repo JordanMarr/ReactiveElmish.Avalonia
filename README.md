@@ -36,14 +36,15 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
 
 ## View Model
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/975bc487-b5ff-4e10-a968-a249cd11488f)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/0ba8f6e1-ce1d-4c94-b8ec-69d10e9016d5)
 
 
 ## Master View
 The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
 Since the design preview is set for both the `MasterView` and the `CounterView`, we are able to see the counter on the `MasterView` design preview!
 
-![image](https://user-images.githubusercontent.com/1030435/219421157-cfa2254c-a1aa-417c-9a8b-69a5bc4ef038.png)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/e47e1662-b484-4524-b007-718f2d38d232)
+
 
 # Project Setup
 
