@@ -21,14 +21,16 @@ Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.A
 # History
 ## V1
 V1 of this project was a port of the awesome [Elmish.WPF](https://github.com/elmish/Elmish.WPF) library.
-Most of the v1 codebase was directly copied, but the WPF bits were replaced with Avalonia bits and adapted where necessary.
-There is a sample project here to get you started, but there is a plethora of [Elmish.WPF examples](https://github.com/elmish/Elmish.WPF/tree/master/src/Samples) that you can also refer to.
+Most of the v1 codebase was directly copied, and the WPF bits were replaced with Avalonia bits and adapted where necessary.
+The V1 bindings (see below) were translated into an internal `DictionaryViewModel` behind the scenes that was bound to the view's `DataContext`. 
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/00988e96-6905-46fa-9d89-25f7bab6881f)
 
 ## V2 (beta)
-The V2 beta is evolving into a complete rewrite, and all the code that was copied from Elmish.WPF is going to be removed.
-This is because my vision for this library departs from the typical "monolithic" Elmish app as I prefer the ability to define separate Elmish loops for each view -- think of them as "Elmish View Models".
+The V2 beta is evolving into a complete rewrite, and all the code that was copied from Elmish.WPF is planned to be removed.
+My vision for this library departs from the typical "monolithic" Elmish app. Instead, it uses more of a modular Elmish approach where each view model can run its own Elmish loop.
+
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
-While Elmish.WPF created "bindings" to translate the Elmish `Model` to an internal `DictionaryViewModel` behind the scenes, Elmish.Avalonia instead creates a more typical `ReactiveElmishViewModel` and uses a special `BindModel` method to keep the VM properties in sync with the Elmish `Model` properties. 
+Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `BindModel` method will take care of binding your view model properties to Elmish model projections. 
 
 ![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/66b76ea0-b008-42b5-8c82-b8d56530879a)
 
