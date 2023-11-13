@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	<NoWarn>FS0044</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>	  
   </PropertyGroup>
 
   <PropertyGroup>
