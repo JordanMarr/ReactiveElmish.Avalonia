@@ -30,6 +30,9 @@ This is because my vision for this library departs from the typical "monolithic"
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
 While Elmish.WPF created "bindings" to translate the Elmish `Model` to an internal `DictionaryViewModel` behind the scenes, Elmish.Avalonia instead creates a more typical `ReactiveElmishViewModel` and uses a special `BindModel` method to keep the VM properties in sync with the Elmish `Model` properties. 
 
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/8665e682-7bbb-484b-a50c-308b028f747b)
+
+
 # Sample App
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
 
@@ -42,10 +45,6 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
-
-## View Model
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/0ba8f6e1-ce1d-4c94-b8ec-69d10e9016d5)
-
 
 ## Master View
 The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
