@@ -1,7 +1,6 @@
 ﻿namespace Elmish.Avalonia
 
 open Elmish
-open System.Windows.Input
 open Avalonia.Threading
 open Avalonia.Controls
 open System.ComponentModel
@@ -53,10 +52,14 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
             let disposable = 
                 _modelSubject
-                    .Select(modelProjection)
+                    .DistinctUntilChanged(modelProjection)
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
-                        this.OnPropertyChanged(vmPropertyName))
+                        this.OnPropertyChanged(vmPropertyName)
+                        #if DEBUG
+                        printfn $"OnPropertyChanged: {vmPropertyName}"
+                        #endif
+                    )
 
             // Stores the subscription and the boxed model projection ('Model -> obj) in a dictionary
             let boxedModelProjection = modelProjection >> unbox<obj>
