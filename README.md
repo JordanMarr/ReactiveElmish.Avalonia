@@ -36,14 +36,15 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
 
 ## View Model
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/975bc487-b5ff-4e10-a968-a249cd11488f)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/0ba8f6e1-ce1d-4c94-b8ec-69d10e9016d5)
 
 
 ## Master View
 The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
 Since the design preview is set for both the `MasterView` and the `CounterView`, we are able to see the counter on the `MasterView` design preview!
 
-![image](https://user-images.githubusercontent.com/1030435/219421157-cfa2254c-a1aa-417c-9a8b-69a5bc4ef038.png)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/e47e1662-b484-4524-b007-718f2d38d232)
+
 
 # Project Setup
 
@@ -51,71 +52,63 @@ Steps to create a new project:
 
 1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
 2) Install the Elmish.Avalonia package from NuGet.
-3) Remove the `Avalonia.ReactiveUI` package.
-4) In `Program.fs`, replace `.UseReactiveUI()` with `.UseElmishBindings()`.
-5) Replace the [`ViewLocator.fs`](https://github.com/JordanMarr/Elmish.Avalonia/blob/main/src/Samples/AvaloniaExample/ViewLocator.fs) with the one from from the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample). This makes it easier to bind the view/viewmodel and start the Elmish loop using convention.
+3) Replace the [`ViewLocator.fs`](https://github.com/JordanMarr/Elmish.Avalonia/blob/main/src/Samples/AvaloniaExample/ViewLocator.fs) with the one from from the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample). This makes it easier to bind the view/viewmodel and start the Elmish loop using convention.
    Looking at the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample), this allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
 
 # Sample Project
-Please view the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample).
+Please view the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/v2-beta/src/Samples/AvaloniaExample).
 
-# AvaloniaProgram
-The `AvaloniaProgram` module contains functions that configure an Elmish program.
 
-### AvaloniaProgram.startElmishLoop
-Starts the Elmish loop and binds the given view to the bindings.
+# Elmish Program Extensions
+Opening the `Elmish.Avalonia` and `Elmish` namespaces adds the following extensions to `Program`:
+
+### Program.mkAvaloniaProgram
+Creates an Avalonia program via Program.mkProgram.
 
 ```F#
-let start view = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> AvaloniaProgram.startElmishLoop view
+Program.mkAvaloniaProgram init update
+|> Program.runView this view
 ```
 
-### AvaloniaProgram.withSubscription
+### Program.mkAvaloniaSimple
+Creates an Avalonia program via Program.mkSimple.
+
+```F#
+override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+   Program.mkAvaloniaSimple init update
+   |> Program.runView this view
+```
+
+### Program.withSubscription
 Creates one or more Elmish subscriptions that can dispatch messages and be enabled/disabled based on the model.
 
 ```F#
 let subscriptions (model: Model) : Sub<Msg> =
-    let autoUpdateSub (dispatch: Msg -> unit) = 
-        let timer = new System.Timers.Timer(1000) 
-        let disposable = 
-            timer.Elapsed.Subscribe(fun _ -> 
-                dispatch AddItem
-            )
-        timer.Start()
-        disposable
+   let autoUpdateSub (dispatch: Msg -> unit) = 
+      Observable
+          .Interval(TimeSpan.FromSeconds(1))
+          .Subscribe(fun _ -> 
+              dispatch AddItem
+          )
 
-    [
-        if model.IsAutoUpdateChecked then
-            [ nameof autoUpdateSub ], autoUpdateSub
-    ]
+   [
+      if model.IsAutoUpdateChecked then
+         [ nameof autoUpdateSub ], autoUpdateSub
+   ]
 
-
-let vm = 
-    AvaloniaProgram.mkSimple init update bindings
-    |> AvaloniaProgram.withSubscription subscriptions
-    |> ElmishViewModel.create
 ```
-
-# ElmishViewModel
-The `ElmishViewModel` module contains functions that configure an `IElmishViewModel`. 
-The `IElmishViewModel` has a single method, `StartElmishLoop`, which takes an Avalonia view, binds it with the bindings and starts the Elmish loop.
-Use of the `ElmishViewModel` is optional and exists primarily to facilitate the `ViewLocator` pattern.
-
-### ElmishViewModel.create
-Creates an `ElmishViewModel<'model, 'msg>`
-
 ```F#
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
+override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+   Program.mkAvaloniaSimple init update
+   |> Program.withSubscription subscriptions
+   |> Program.runView this view
 ```
 
-
-### ElmishViewModel.terminateOnViewUnloaded
-Creates an Elmish subscription when the view `Unloaded` event fires that dispatches the passed-in termination `'msg` to terminate the Elmish loop.
+### Program.terminateOnViewUnloaded
+Configures `Program.withTermination` using the given `'Msg`, and fires the terminate `'Msg` when the `view` is `Unloaded`.
 
 NOTE: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
+
 ```F#
 let update (msg: Msg) (model: Model) =
     // ...
@@ -123,25 +116,10 @@ let update (msg: Msg) (model: Model) =
 ```
 
 ```F#
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
+override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+   Program.mkAvaloniaSimple init update
+   |> Program.withSubscription subscriptions
+   |> Program.terminateOnViewUnloaded this Terminate
+   |> Program.runView this view
 ```
 
-### ElmishViewModel.subscribe
-Adds an Elmish subscription.
-You will be passed the `view`, `model` and `dispatch`.
-NOTE: If you need the ability to toggle a subscription on and off, you will need to use [`AvaloniaProgram.withSubscription`](https://github.com/JordanMarr/Elmish.Avalonia#avaloniaprogramwithsubscription) instead.
-
-```F#
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
-    |> ElmishViewModel.subscribe (fun view model dispatch -> 
-        view.Loaded |> Observable.subscribe (fun _ -> 
-            printfn "View Loaded!"
-        )
-    )
-```
