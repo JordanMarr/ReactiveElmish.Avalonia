@@ -125,7 +125,7 @@ module Program =
     let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
         vm.RunProgram(program, view)
 
-    /// Configures `Program.withTermination` using the given 'Msg, and fires the 'Msg when the vm is disposed.
+    /// Configures `Program.withTermination` using the given terminate 'Msg, and dispatches the 'Msg when the view is `Unloaded`.
     let terminateOnViewUnloaded (vm: ReactiveElmishViewModel<'Model, 'Msg>) (terminateMsg: 'Msg) program = 
         vm.TerminateMsg <- Some terminateMsg
         program 
