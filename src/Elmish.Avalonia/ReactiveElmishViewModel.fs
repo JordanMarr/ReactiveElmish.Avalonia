@@ -44,27 +44,26 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
     /// Binds a 'Model property value to a VM property *** of the same name *** and refreshes the VM property when the 'Model property changes.
     member this.BindModel(modelProperty: Expression<Func<'Model, 'PropertyValue>>) = 
         let properyName = (modelProperty.Body :?> MemberExpression).Member.Name
-        this.BindModel(properyName, modelProperty)
+        this.BindModel(properyName, modelProperty.Compile().Invoke)
 
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
-    member this.BindModel(vmPropertyName: string, modelProjection: Expression<Func<'Model, 'PropertyValue>>) = 
+    member this.BindModel(vmPropertyName: string, modelProjection: 'Model -> 'PropertyValue) = 
         match propertySubscriptions.TryGetValue(vmPropertyName) with
         | false, _ -> 
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
-            let modelProjectionFn = modelProjection.Compile().Invoke
             let disposable = 
                 _modelSubject
-                    .Select(modelProjectionFn)
+                    .Select(modelProjection)
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
                         this.OnPropertyChanged(vmPropertyName))
 
             // Stores the subscription and the boxed model projection ('Model -> obj) in a dictionary
-            let boxedModelProjectionFn = modelProjectionFn >> unbox<obj>
-            propertySubscriptions.Add(vmPropertyName, (disposable, boxedModelProjectionFn))
+            let boxedModelProjection = modelProjection >> unbox<obj>
+            propertySubscriptions.Add(vmPropertyName, (disposable, boxedModelProjection))
 
             // Returns the latest value from the model projection.
-            modelProjectionFn _model
+            _model |> modelProjection 
 
         | true, (_, boxedModelProjection) -> 
             // Returns the latest value from the model projection.
