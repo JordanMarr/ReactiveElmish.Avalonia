@@ -2,36 +2,42 @@
 Static Avalonia views for Elmish programs
 
 ## Why?
-Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.Avalonia port?
+Avalonia.FuncUI and Fabulous.Avalonia already exist and they are both fantastic. So then why make an Elmish.Avalonia port?
 
 ### Benefits
-* Some people may prefer using xaml, and it can be an easier sell for some teams due to the immediate availability of all community controls.
+* Some people may prefer using static xaml views, and it can be an easier sell for some teams due to the immediate availability of all community controls.
 * Bindings have to be created for controls in FuncUI. While most of the controls have bindings provided, third party will not have bindings out-of-the-box. Elmish.Avalonia sidesteps this problem by using xaml directly.
-* There is not currently a reliable design preview tool for FuncUI (although there is currently a project, [Avalonia.FuncUI.LiveView](https://github.com/SilkyFowl/Avalonia.FuncUI.LiveView), that is working to solve this problem). For me to do any kind of real project work with Avalonia and F#, a design preview is a necessity, and using xaml allows you to utilize the custom Avalonia design preview extension. After recently trying Elmish.WPF, I fell in love with the `ViewModel.designInstance` preview functionality that lets you preview your `init` values in the design preview panel, and this also works with Elmish.Avalonia!
-* You can use Avalonia.FuncUI and Elmish.Avalonia side-by-side to have the best of both worlds!
+* Ability to use the excellent Avalonia design previewer. For me to do any kind of real project work with Avalonia and F#, a design previewer is a necessity. Also, being able to easily construct `DesignInstance` VM for each view that utilizes the Elmish `init` function. 
+* You can still use Avalonia.FuncUI and Elmish.Avalonia side-by-side to have the best of both worlds approach if you like using the FuncUI DSL!
 
-### Other reasons
+### Additional reasons
 * Avalonia UI is a big deal in the .NET OSS community; it is always nice for F# community to be able to participate in the latest and greatest with as many options as possible.
 * Avalonia already provides first class templates to create an F# project that include creating .axaml views within the same project! (Not possible with WPF!)
 * While the built-in F# templates do allow you to do classic MVVM style, Elmish is more powerful and has become the standard for F# UI projects.
 * The "Avalonia UI for Visual Studio 2022" extension provides a xaml preview pane that works with F#! 😄 (Also not possible with WPF!)
-* The Elmish.WPF `ViewModel.designInstance` concept works with this extension very well. This allows you populate your "Design Preview" window with the defaults from your Elmish `init` function!
 * Keeping with tradition that the F# community will [provide important libraries, developer tools and workload support](https://learn.microsoft.com/en-us/dotnet/fsharp/strategy).
 
 # History
 ## V1
 V1 of this project was a port of the awesome [Elmish.WPF](https://github.com/elmish/Elmish.WPF) library.
-Most of the v1 codebase was directly copied, but the WPF bits were replaced with Avalonia bits and adapted where necessary.
-There is a sample project here to get you started, but there is a plethora of [Elmish.WPF examples](https://github.com/elmish/Elmish.WPF/tree/master/src/Samples) that you can also refer to.
+Most of the v1 codebase was directly copied, and the WPF bits were replaced with Avalonia bits and adapted where necessary.
+The V1 bindings (see below) were translated into an internal `DictionaryViewModel` behind the scenes that was bound to the view's `DataContext`. 
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/00988e96-6905-46fa-9d89-25f7bab6881f)
 
 ## V2 (beta)
-The V2 beta is evolving into a complete rewrite, and all the code that was copied from Elmish.WPF is going to be removed.
-This is because my vision for this library departs from the typical "monolithic" Elmish app as I prefer the ability to define separate Elmish loops for each view -- think of them as "Elmish View Models".
+The V2 beta is evolving into a complete rewrite, and all the code that was copied from Elmish.WPF is planned to be removed.
+My vision for this library departs from the typical "monolithic" Elmish app. Instead, it uses more of a modular Elmish approach where each view model can run its own Elmish loop.
+
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
-While Elmish.WPF created "bindings" to translate the Elmish `Model` to an internal `DictionaryViewModel` behind the scenes, Elmish.Avalonia instead creates a more typical `ReactiveElmishViewModel` and uses a special `BindModel` method to keep the VM properties in sync with the Elmish `Model` properties. 
+Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `BindModel` method will take care of binding your view model properties to Elmish model projections. 
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/8665e682-7bbb-484b-a50c-308b028f747b)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/66b76ea0-b008-42b5-8c82-b8d56530879a)
 
+### V2 Design Highlights
+* Works with Avalonia [Compiled Bindings](https://docs.avaloniaui.net/docs/next/basics/data/data-binding/compiled-bindings#enable-and-disable-compiled-bindings) for better performance and compile-time type checking in the views. With Compiled Bindings enabled, the build will fail if the view references a binding that doesn't exist in the VM! (The previous `DictionaryViewModel` brought over from Elmish.WPF was not able to take advantage of this because it relied on reflection-based bindings.)
+* More standard looking view model pattern while still maintaining the power of Elmish. For example, you can now create an instance of an Elmish view model and actually inspect its properties from the outside -- and even read / write to the properties in OOP fashion. (The fact that a view model is using Elmish internally should not matter because it's an implementation detail.) This is a perfect example of the benefits of OOP + FP side-by-side.
+* The existing Elmish.WPF `DictionaryViewModel` was not able to bind to DataGrid row columns. The workarounds were pretty cumbersome, imo. Having more typical view models resolves this issue.
+* Elmish.Avalonia now takes a dependency on the Avalonia.ReactiveUI library. (The new `ReactiveElmishViewModel` class inherits from `ReactiveObject`.) Since this is the default view model library for Avalonia, this makes it easier to take advantage of existing patterns when needed.
 
 # Sample App
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
@@ -113,6 +119,7 @@ override this.StartElmishLoop(view: Avalonia.Controls.Control) =
 
 ### Program.terminateOnViewUnloaded
 Configures `Program.withTermination` using the given `'Msg`, and fires the terminate `'Msg` when the `view` is `Unloaded`.
+This pattern will dispose your subscriptions when the view is `Unloaded`.
 
 NOTE: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
 
