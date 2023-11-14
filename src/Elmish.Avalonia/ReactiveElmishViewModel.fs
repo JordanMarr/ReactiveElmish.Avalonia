@@ -6,7 +6,6 @@ open Avalonia.Controls
 open System.ComponentModel
 open System.Reactive.Subjects
 open System.Reactive.Linq
-open System.Linq.Expressions
 open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
@@ -24,11 +23,15 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
     let propertySubscriptions = Dictionary<string, IDisposable * ('Model -> obj)>()
 
     member this.Model = _model
-    
+
     member this.ModelObservable = _modelSubject.AsObservable()
 
     /// Dispatches a message to the Elmish loop. NOTE: will throw an exception if called before the Elmish loop has started.
-    member val Dispatch : 'Msg -> unit = (fun _ -> failwith "`Dispatch` failed because the Elmish loop has not been started.") with get, set
+    member val Dispatch : 'Msg -> unit = 
+        fun _ -> 
+            if not Design.IsDesignMode 
+            then failwith "`Dispatch` failed because the Elmish loop has not been started."
+        with get, set
     
     /// Starts the Elmish loop for this view model.
     abstract member StartElmishLoop : Control -> unit
@@ -55,7 +58,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
                         // Alerts the view that the 'Model projection / VM property has changed.
                         this.OnPropertyChanged(vmPropertyName)
                         #if DEBUG
-                        printfn $"OnPropertyChanged: {vmPropertyName}"
+                        printfn $"PropertyChanged: {vmPropertyName}"
                         #endif
                     )
 
@@ -121,7 +124,8 @@ module Program =
 
     /// Binds the vm to the view and then runs the Elmish program.
     let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
-        vm.RunProgram(program, view)
+        if not Design.IsDesignMode 
+        then vm.RunProgram(program, view)
 
     /// Configures `Program.withTermination` using the given terminate 'Msg, and dispatches the 'Msg when the view is `Unloaded`.
     let terminateOnViewUnloaded (vm: ReactiveElmishViewModel<'Model, 'Msg>) (terminateMsg: 'Msg) program = 
