@@ -74,7 +74,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             _model |> boxedModelProjection :?> 'ModelProjection
 
     /// Binds this VM to the view `DataContext` and runs the Elmish loop.
-    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control, syncDispatch) =
+    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
         
         // Updates when the Elmish model changes and sends out an Rx stream.
         let setState model (_: Dispatch<'Msg>) =
@@ -83,10 +83,11 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
 
         // A fn that dispatches messages to the Elmish loop.
         let withDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
-            let dispatch = 
-                if syncDispatch 
-                then fun msg -> Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
-                else innerDispatch
+            let dispatch msg = 
+                if Dispatcher.UIThread.CheckAccess()
+                then innerDispatch msg |> ignore
+                else Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
+
             this.Dispatch <- dispatch
             dispatch
 
@@ -128,13 +129,7 @@ module Program =
     /// Binds the vm to the view and then runs the Elmish program.    
     let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
         if not Design.IsDesignMode 
-        then vm.RunProgram(program, view, syncDispatch = false)
-
-    /// Binds the vm to the view and then runs the Elmish program.
-    /// Ensures that all changes dispatched from non-UI threads are synchronized via the Avalonia Dispatcher.
-    let runViewWithSyncDispatch (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
-        if not Design.IsDesignMode 
-        then vm.RunProgram(program, view, syncDispatch = true)
+        then vm.RunProgram(program, view)
 
     /// Configures `Program.withTermination` using the given terminate 'Msg, and dispatches the 'Msg when the view is `Unloaded`.
     let terminateOnViewUnloaded (vm: ReactiveElmishViewModel<'Model, 'Msg>) (terminateMsg: 'Msg) program = 
