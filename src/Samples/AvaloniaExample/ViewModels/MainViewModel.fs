@@ -25,13 +25,13 @@ module Main =
     let update (msg: Msg) (model: Model) = 
         match msg with
         | ShowCounter -> 
-            { model with ContentVM = new CounterViewModel() }
+            { ContentVM = new CounterViewModel() }
         | ShowChart -> 
-            { model with ContentVM = new ChartViewModel() }  
+            { ContentVM = new ChartViewModel() }  
         | ShowAbout ->
-            { model with ContentVM = new AboutViewModel() }
+            { ContentVM = new AboutViewModel() }
         | ShowFilePicker ->
-            { model with ContentVM = new FilePickerViewModel() }
+            { ContentVM = new FilePickerViewModel() }
         | Terminate ->
             model
 
@@ -52,11 +52,11 @@ open Main
 type MainViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-    member this.ContentVM = this.BindModel(nameof this.ContentVM, fun m -> m.ContentVM)
-    member this.ShowChart() = this.Dispatch Msg.ShowChart
-    member this.ShowCounter() = this.Dispatch Msg.ShowCounter
-    member this.ShowAbout() = this.Dispatch Msg.ShowAbout
-    member this.ShowFilePicker() = this.Dispatch Msg.ShowFilePicker
+    member this.ContentVM = this.BindModel(nameof this.ContentVM, _.ContentVM)
+    member this.ShowChart() = this.Dispatch ShowChart
+    member this.ShowCounter() = this.Dispatch ShowCounter
+    member this.ShowAbout() = this.Dispatch ShowAbout
+    member this.ShowFilePicker() = this.Dispatch ShowFilePicker
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
         Program.mkAvaloniaSimple init update

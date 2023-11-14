@@ -30,7 +30,7 @@ module FilePicker =
         | PickFile  -> 
             model, Cmd.OfTask.perform tryPickFile () SetFilePath
         | SetFilePath path ->
-            { model with FilePath = path }, Cmd.none
+            { FilePath = path }, Cmd.none
         | Terminate ->
             model, Cmd.none
 
@@ -43,9 +43,9 @@ open FilePicker
 type FilePickerViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
 
-    member this.FilePath = this.BindModel(nameof this.FilePath, fun m -> m.FilePath |> Option.defaultValue "Not Set")
-    member this.Ok() = this.Dispatch Msg.Ok
-    member this.PickFile() = this.Dispatch Msg.PickFile
+    member this.FilePath = this.BindModel(nameof this.FilePath, _.FilePath >> Option.defaultValue "Not Set")
+    member this.Ok() = this.Dispatch Ok
+    member this.PickFile() = this.Dispatch PickFile
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
         Program.mkAvaloniaProgram init (update tryPickFile)

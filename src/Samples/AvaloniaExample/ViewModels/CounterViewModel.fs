@@ -22,12 +22,12 @@ module Counter =
     let update (msg: Msg) (model: Model) = 
         match msg with
         | Increment ->
-            { model with 
+            { 
                 Count = model.Count + 1 
                 Actions = model.Actions @ [ { Description = "Incremented"; Timestamp = DateTime.Now } ]
             }
         | Decrement ->
-            { model with 
+            { 
                 Count = model.Count - 1 
                 Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ] 
             }
@@ -39,11 +39,11 @@ open Counter
 type CounterViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-    member this.Count = this.BindModel(nameof this.Count, fun m -> m.Count)
-    member this.Actions = this.BindModel(nameof this.Actions, fun m -> m.Actions)
-    member this.Increment() = this.Dispatch Msg.Increment
-    member this.Decrement() = this.Dispatch Msg.Decrement
-    member this.Reset() = this.Dispatch Msg.Reset
+    member this.Count = this.BindModel(nameof this.Count, _.Count)
+    member this.Actions = this.BindModel(nameof this.Actions, _.Actions)
+    member this.Increment() = this.Dispatch Increment
+    member this.Decrement() = this.Dispatch Decrement
+    member this.Reset() = this.Dispatch Reset
     member this.IsResetEnabled = this.BindModel(nameof this.IsResetEnabled, fun m -> m.Count <> 0)
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 

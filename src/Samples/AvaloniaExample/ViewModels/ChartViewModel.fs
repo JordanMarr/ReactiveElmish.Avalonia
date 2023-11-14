@@ -159,18 +159,18 @@ open Chart
 type ChartViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-    member this.Actions = this.BindModel(nameof this.Actions, fun m -> m.Actions)
-    member this.AddItem() = this.Dispatch Msg.AddItem
-    member this.RemoveItem() = this.Dispatch Msg.RemoveItem
-    member this.UpdateItem() = this.Dispatch Msg.UpdateItem
-    member this.ReplaceItem() = this.Dispatch Msg.ReplaceItem
-    member this.Reset() = this.Dispatch Msg.Reset
+    member this.Actions = this.BindModel(nameof this.Actions, _.Actions)
+    member this.AddItem() = this.Dispatch AddItem
+    member this.RemoveItem() = this.Dispatch RemoveItem
+    member this.UpdateItem() = this.Dispatch UpdateItem
+    member this.ReplaceItem() = this.Dispatch ReplaceItem
+    member this.Reset() = this.Dispatch Reset
     member this.IsAutoUpdateChecked 
-        with get () = this.BindModel(nameof this.IsAutoUpdateChecked, fun m -> m.IsAutoUpdateChecked)
-        and set value = this.Dispatch(Msg.SetIsAutoUpdateChecked value)
-    member this.Series = this.BindModel(nameof this.Series, fun m -> m.Series)
+        with get () = this.BindModel(nameof this.IsAutoUpdateChecked, _.IsAutoUpdateChecked)
+        and set value = this.Dispatch (SetIsAutoUpdateChecked value)
+    member this.Series = this.BindModel(nameof this.Series, _.Series)
     member this.XAxes = this.BindModel(nameof this.XAxes, fun _ -> XAxes)
-    member this.Ok() = this.Dispatch Msg.Ok
+    member this.Ok() = this.Dispatch Ok
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
         Program.mkAvaloniaSimple init update
