@@ -137,3 +137,5 @@ override this.StartElmishLoop(view: Avalonia.Controls.Control) =
    |> Program.runView this view
 ```
 
+### Program.runView
+Binds the vm to the view and then runs the Elmish program.
