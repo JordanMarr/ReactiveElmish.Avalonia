@@ -74,7 +74,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             _model |> boxedModelProjection :?> 'ModelProjection
 
     /// Binds this VM to the view `DataContext` and runs the Elmish loop.
-    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
+    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control, syncDispatch) =
         
         // Updates when the Elmish model changes and sends out an Rx stream.
         let setState model (_: Dispatch<'Msg>) =
@@ -82,8 +82,11 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             _modelSubject.OnNext(model)
 
         // A fn that dispatches messages to the Elmish loop.
-        let cmdDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
-            let dispatch msg = Dispatcher.UIThread.Post(fun () -> innerDispatch msg) |> ignore
+        let withDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
+            let dispatch = 
+                if syncDispatch 
+                then fun msg -> Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
+                else innerDispatch
             this.Dispatch <- dispatch
             dispatch
 
@@ -98,7 +101,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
         
         program
         |> Program.withSetState setState
-        |> Program.runWithDispatch cmdDispatch ()
+        |> Program.runWithDispatch withDispatch ()
 
     /// Determines whether this VM should be disposed when the view is unloaded. Default is true.
     member val DisposeOnUnload = true with get, set
@@ -122,10 +125,16 @@ module Program =
     let mkAvaloniaSimple (init: unit -> 'Model) update =
         Program.mkSimple init update (fun _ _ -> ())
 
-    /// Binds the vm to the view and then runs the Elmish program.
+    /// Binds the vm to the view and then runs the Elmish program.    
     let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
         if not Design.IsDesignMode 
-        then vm.RunProgram(program, view)
+        then vm.RunProgram(program, view, syncDispatch = false)
+
+    /// Binds the vm to the view and then runs the Elmish program.
+    /// Ensures that all changes dispatched from non-UI threads are synchronized via the Avalonia Dispatcher.
+    let runViewWithSyncDispatch (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
+        if not Design.IsDesignMode 
+        then vm.RunProgram(program, view, syncDispatch = true)
 
     /// Configures `Program.withTermination` using the given terminate 'Msg, and dispatches the 'Msg when the view is `Unloaded`.
     let terminateOnViewUnloaded (vm: ReactiveElmishViewModel<'Model, 'Msg>) (terminateMsg: 'Msg) program = 
