@@ -29,9 +29,10 @@ The V2 beta is evolving into a complete rewrite, and all the code that was copie
 My vision for this library departs from the typical "monolithic" Elmish app. Instead, it uses more of a modular Elmish approach where each view model can run its own Elmish loop.
 
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
-Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `BindModel` method will take care of binding your view model properties to Elmish model projections. 
+Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `Bind` method will take care of binding your view model properties to Elmish model projections. 
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/66b76ea0-b008-42b5-8c82-b8d56530879a)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/8e989018-3b81-443e-b782-d06f52067654)
+
 
 ### V2 Design Highlights
 * Works with Avalonia [Compiled Bindings](https://docs.avaloniaui.net/docs/next/basics/data/data-binding/compiled-bindings#enable-and-disable-compiled-bindings) for better performance and compile-time type checking in the views. With Compiled Bindings enabled, the build will fail if the view references a binding that doesn't exist in the VM! (The previous `DictionaryViewModel` brought over from Elmish.WPF was not able to take advantage of this because it relied on reflection-based bindings.)
