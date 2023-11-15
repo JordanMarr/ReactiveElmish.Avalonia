@@ -10,6 +10,7 @@ open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
+open System.Linq.Expressions
 
 [<AbstractClass>]
 type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) = 
@@ -47,6 +48,11 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
         propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
+    member this.Bind(modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+        this.BindModel(vmPropertyName.Value, modelProjection)
+
+    /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
+    [<Obsolete "ElmishViewModel is deprecated and will be removed in v2. Please use `Bind` instead.">]
     member this.BindModel(vmPropertyName: string, modelProjection: 'Model -> 'ModelProjection) = 
         match propertySubscriptions.TryGetValue(vmPropertyName) with
         | false, _ -> 

@@ -30,7 +30,7 @@ open About
 type AboutViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
 
-    member this.Version = this.BindModel(nameof this.Version, _.Version)
+    member this.Version = this.Bind _.Version
     member this.Ok() = this.Dispatch Ok
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 

@@ -159,17 +159,17 @@ open Chart
 type ChartViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-    member this.Actions = this.BindModel(nameof this.Actions, _.Actions)
+    member this.Actions = this.Bind _.Actions
     member this.AddItem() = this.Dispatch AddItem
     member this.RemoveItem() = this.Dispatch RemoveItem
     member this.UpdateItem() = this.Dispatch UpdateItem
     member this.ReplaceItem() = this.Dispatch ReplaceItem
     member this.Reset() = this.Dispatch Reset
     member this.IsAutoUpdateChecked 
-        with get () = this.BindModel(nameof this.IsAutoUpdateChecked, _.IsAutoUpdateChecked)
+        with get () = this.Bind _.IsAutoUpdateChecked
         and set value = this.Dispatch (SetIsAutoUpdateChecked value)
-    member this.Series = this.BindModel(nameof this.Series, _.Series)
-    member this.XAxes = this.BindModel(nameof this.XAxes, fun _ -> XAxes)
+    member this.Series = this.Bind _.Series
+    member this.XAxes = this.Bind (fun _ -> XAxes)
     member this.Ok() = this.Dispatch Ok
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 

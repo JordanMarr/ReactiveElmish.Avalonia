@@ -43,7 +43,7 @@ open FilePicker
 type FilePickerViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
 
-    member this.FilePath = this.BindModel(nameof this.FilePath, _.FilePath >> Option.defaultValue "Not Set")
+    member this.FilePath = this.Bind (_.FilePath >> Option.defaultValue "Not Set")
     member this.Ok() = this.Dispatch Ok
     member this.PickFile() = this.Dispatch PickFile
 

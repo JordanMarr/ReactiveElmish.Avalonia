@@ -39,12 +39,12 @@ open Counter
 type CounterViewModel() =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
-    member this.Count = this.BindModel(nameof this.Count, _.Count)
-    member this.Actions = this.BindModel(nameof this.Actions, _.Actions)
+    member this.Count = this.Bind _.Count
+    member this.Actions = this.Bind _.Actions
     member this.Increment() = this.Dispatch Increment
     member this.Decrement() = this.Dispatch Decrement
     member this.Reset() = this.Dispatch Reset
-    member this.IsResetEnabled = this.BindModel(nameof this.IsResetEnabled, fun m -> m.Count <> 0)
+    member this.IsResetEnabled = this.Bind(fun m -> m.Count <> 0)
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
         Program.mkAvaloniaSimple init update
