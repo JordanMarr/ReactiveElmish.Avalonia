@@ -124,8 +124,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
         this.BindModel(vmPropertyName.Value, modelProjection)
 
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
-    [<Obsolete "ElmishViewModel is deprecated and will be removed in v2. Please use `Bind` instead.">]
-    member this.BindModel(vmPropertyName: string, modelProjection: 'Model -> 'ModelProjection) = 
+    member private this.BindModel(vmPropertyName: string, modelProjection: 'Model -> 'ModelProjection) = 
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
             let disposable = 
