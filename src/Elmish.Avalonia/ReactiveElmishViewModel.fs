@@ -12,13 +12,21 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Linq.Expressions
 
+type IReactiveElmishViewModel<'Model, 'Msg> =
+    abstract member Dispatch: 'Msg -> unit
+    abstract member Bind: modelProjection: ('Model ->'ModelProjection) * ?vmPropertyName: string -> 'ModelProjection
+
 [<AbstractClass>]
 type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) = 
     inherit ReactiveUI.ReactiveObject()
 
     let propertyChanged = Event<_, _>()
-    let mutable _model: 'Model = initialModel
     let _modelSubject = new Subject<'Model>()
+    let mutable _model: 'Model = initialModel
+    let mutable _dispatch: 'Msg -> unit = 
+        fun _ -> 
+            if not Design.IsDesignMode 
+            then failwith "`Dispatch` failed because the Elmish loop has not been started."
 
     /// Tracks subscriptions of boxed 'Model projections by the VM property name.
     let propertySubscriptions = Dictionary<string, IDisposable * ('Model -> obj)>()
@@ -26,13 +34,6 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
     member this.Model = _model
 
     member this.ModelObservable = _modelSubject.AsObservable()
-
-    /// Dispatches a message to the Elmish loop. NOTE: will throw an exception if called before the Elmish loop has started.
-    member val Dispatch : 'Msg -> unit = 
-        fun _ -> 
-            if not Design.IsDesignMode 
-            then failwith "`Dispatch` failed because the Elmish loop has not been started."
-        with get, set
     
     /// Starts the Elmish loop for this view model.
     abstract member StartElmishLoop : Control -> unit
@@ -41,11 +42,20 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
 
     interface INotifyPropertyChanged with
         [<CLIEvent>]
-        member x.PropertyChanged = propertyChanged.Publish
+        member this.PropertyChanged = propertyChanged.Publish
 
     /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
     member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
         propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
+
+    interface IReactiveElmishViewModel<'Model, 'Msg> with
+        member this.Dispatch msg = _dispatch msg
+        member this.Bind(modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+            this.BindModel(vmPropertyName.Value, modelProjection)
+
+    /// Dispatches a message to the Elmish loop. 
+    /// NOTE: will throw an exception if called before the Elmish loop has started.
+    member this.Dispatch msg = _dispatch msg
 
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
     member this.Bind(modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
@@ -94,7 +104,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
                 then innerDispatch msg |> ignore
                 else Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
 
-            this.Dispatch <- dispatch
+            _dispatch <- dispatch
             dispatch
 
         // Wires up the view and the VM.
@@ -103,7 +113,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
         if this.DisposeOnUnload then
             // Disposes the VM when the view is unloaded, and optionally dispatches a termination message.
             view.Unloaded.AddHandler(fun _ _ -> 
-                this.TerminateMsg |> Option.iter this.Dispatch
+                this.TerminateMsg |> Option.iter _dispatch
                 (this :> IDisposable).Dispose())
         
         program
