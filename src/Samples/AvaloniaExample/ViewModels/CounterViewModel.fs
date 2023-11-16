@@ -5,14 +5,14 @@ open Elmish.Avalonia
 open Elmish
 open App
 
-type CounterViewModel(appVM: IElmishStore<Model, Msg>) =
-    inherit ReactiveUI.ReactiveObject()
+type CounterViewModel(app: IElmishStore<Model, Msg>) =
+    inherit ReactiveViewModel()
 
-    member this.Count = appVM.Bind _.Count
-    member this.Actions = appVM.Bind _.Actions
-    member this.Increment() = appVM.Dispatch Increment
-    member this.Decrement() = appVM.Dispatch Decrement
-    member this.Reset() = appVM.Dispatch ResetCounter
-    member this.IsResetEnabled = appVM.Bind(fun m -> m.Count <> 0)
+    member this.Count = this.Bind(app, _.Count)
+    member this.Actions = this.Bind(app, _.Actions)
+    member this.Increment() = app.Dispatch Increment
+    member this.Decrement() = app.Dispatch Decrement
+    member this.Reset() = app.Dispatch ResetCounter
+    member this.IsResetEnabled = this.Bind(app, fun m -> m.Count <> 0)
 
     //static member DesignVM = new CounterViewModel(App.init())
