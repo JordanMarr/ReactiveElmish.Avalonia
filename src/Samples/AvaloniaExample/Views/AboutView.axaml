@@ -12,6 +12,10 @@
 			<TextBlock Text="Version:" />
 			<TextBlock Text="{Binding Version}" />
 		</StackPanel>
+		<StackPanel Orientation="Horizontal" Margin="10">
+			<TextBlock Text="Counter:" />
+			<TextBlock Text="{Binding Counter}" />
+		</StackPanel>
 		<Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />		
 	</StackPanel>
 </UserControl>

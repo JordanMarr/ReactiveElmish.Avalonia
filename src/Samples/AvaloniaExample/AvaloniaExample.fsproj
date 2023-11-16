@@ -15,6 +15,7 @@
 
     <ItemGroup>        
         <Compile Include="ViewModels\Messaging.fs" />        
+        <Compile Include="ViewModels\App.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
         <Compile Include="ViewModels\ChartViewModel.fs" />        

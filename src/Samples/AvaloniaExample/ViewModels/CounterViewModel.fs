@@ -3,53 +3,18 @@
 open System
 open Elmish.Avalonia
 open Elmish
+open App
 
-module Counter = 
-    type Model =  { Count: int; Actions: Action list }
-    and Action = { Description: string; Timestamp: DateTime }
+type CounterViewModel(appVM: IReactiveElmishViewModel<Model, Msg>) =
+    inherit ReactiveElmishViewModel<Model, Msg>(appVM.Model)
 
-    type Msg = 
-        | Increment
-        | Decrement
-        | Reset
+    member this.Count = appVM.Bind _.Count
+    member this.Actions = appVM.Bind _.Actions
+    member this.Increment() = appVM.Dispatch Increment
+    member this.Decrement() = appVM.Dispatch Decrement
+    member this.Reset() = appVM.Dispatch ResetCounter
+    member this.IsResetEnabled = appVM.Bind(fun m -> m.Count <> 0)
 
-    let init() = 
-        { 
-            Count = 0
-            Actions = [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
-        }
+    override this.StartElmishLoop(view: Avalonia.Controls.Control) = ()
 
-    let update (msg: Msg) (model: Model) = 
-        match msg with
-        | Increment ->
-            { 
-                Count = model.Count + 1 
-                Actions = model.Actions @ [ { Description = "Incremented"; Timestamp = DateTime.Now } ]
-            }
-        | Decrement ->
-            { 
-                Count = model.Count - 1 
-                Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ] 
-            }
-        | Reset ->
-            init()
-
-open Counter
-
-type CounterViewModel() =
-    inherit ReactiveElmishViewModel<Model, Msg>(init())
-
-    member this.Count = this.Bind _.Count
-    member this.Actions = this.Bind _.Actions
-    member this.Increment() = this.Dispatch Increment
-    member this.Decrement() = this.Dispatch Decrement
-    member this.Reset() = this.Dispatch Reset
-    member this.IsResetEnabled = this.Bind(fun m -> m.Count <> 0)
-
-    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
-        Program.mkAvaloniaSimple init update
-        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
-        |> Program.withConsoleTrace
-        |> Program.runView this view
-
-    static member DesignVM = new CounterViewModel()
+    //static member DesignVM = new CounterViewModel(App.init())

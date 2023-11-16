@@ -14,7 +14,8 @@ open System.Linq.Expressions
 
 type IReactiveElmishViewModel<'Model, 'Msg> =
     abstract member Dispatch: 'Msg -> unit
-    abstract member Bind: modelProjection: ('Model ->'ModelProjection) * ?vmPropertyName: string -> 'ModelProjection
+    abstract member Bind: modelProjection: ('Model ->'ModelProjection) * [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string -> 'ModelProjection
+    abstract member Model: 'Model with get
 
 [<AbstractClass>]
 type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) = 
@@ -50,8 +51,11 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
 
     interface IReactiveElmishViewModel<'Model, 'Msg> with
         member this.Dispatch msg = _dispatch msg
+
         member this.Bind(modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
             this.BindModel(vmPropertyName.Value, modelProjection)
+        
+        member this.Model with get () = _model
 
     /// Dispatches a message to the Elmish loop. 
     /// NOTE: will throw an exception if called before the Elmish loop has started.
