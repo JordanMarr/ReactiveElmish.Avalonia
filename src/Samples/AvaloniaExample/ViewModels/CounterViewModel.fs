@@ -15,4 +15,6 @@ type CounterViewModel(app: IElmishStore<Model, Msg>) =
     member this.Reset() = app.Dispatch ResetCounter
     member this.IsResetEnabled = this.Bind(app, fun m -> m.Count <> 0)
 
-    //static member DesignVM = new CounterViewModel(App.init())
+    static member DesignVM = 
+        let store = DesignStore<App.Model, App.Msg>(App.init())
+        new CounterViewModel(store)

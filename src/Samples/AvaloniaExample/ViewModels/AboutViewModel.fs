@@ -12,6 +12,6 @@ type AboutViewModel(app: IElmishStore<Model, Msg>) =
     member this.Counter = this.Bind(app, _.Count)
     member this.Ok() = app.Dispatch (SetView CounterView)
 
-    //override this.StartElmishLoop(view: Avalonia.Controls.Control) = ()
-
-    //static member DesignVM = new AboutViewModel()
+    static member DesignVM = 
+        let store = DesignStore<App.Model, App.Msg>(App.init())
+        new AboutViewModel(store)

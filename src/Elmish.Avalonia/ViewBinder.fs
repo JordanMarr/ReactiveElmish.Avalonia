@@ -25,6 +25,12 @@ type IElmishStore<'Model, 'Msg> =
     abstract member Model: 'Model with get
     abstract member ModelObservable: IObservable<'Model>
 
+type DesignStore<'Model, 'Msg>(designModel) = 
+    interface IElmishStore<'Model, 'Msg> with
+        member this.Dispatch _ = ()
+        member this.Model = designModel
+        member this.ModelObservable = Observable.Never<'Model>()
+
 module ViewBinder = 
 
     let startElmishVM (vm: IStartElmishLoop) (view: Control) = 
