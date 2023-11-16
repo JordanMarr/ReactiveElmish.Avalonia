@@ -11,47 +11,11 @@ open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 
+type IOnPropertyChanged = 
+    abstract member OnPropertyChanged: [<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string -> unit
 
-type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =
-    let _modelSubject = new Subject<'Model>()
-    let mutable _model: 'Model = Unchecked.defaultof<'Model>
-    let mutable _dispatch: 'Msg -> unit = 
-        fun _ -> 
-            if not Design.IsDesignMode 
-            then failwith "`Dispatch` failed because the Elmish loop has not been started."
-
-    do this.RunProgram(program)
-
-    interface IElmishStore<'Model, 'Msg> with
-        member this.Dispatch msg = _dispatch msg
-        member this.Model = _model
-        member this.ModelObservable = _modelSubject.AsObservable()
-    
-        /// Binds this VM to the view `DataContext` and runs the Elmish loop.
-    member private this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>) =
-        
-        // Updates when the Elmish model changes and sends out an Rx stream.
-        let setState model (_: Dispatch<'Msg>) =
-            _model <- model
-            _modelSubject.OnNext(model)
-
-        // A fn that dispatches messages to the Elmish loop.
-        let withDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
-            let dispatch msg = 
-                if Dispatcher.UIThread.CheckAccess()
-                then innerDispatch msg |> ignore
-                else Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
-
-            _dispatch <- dispatch
-            dispatch
-        
-        program
-        |> Program.withSetState setState
-        |> Program.runWithDispatch withDispatch ()
-
-    interface IDisposable with
-        member this.Dispose() =
-            _modelSubject.Dispose()
+type IRunProgram<'Model, 'Msg> = 
+    abstract member RunProgram: Program<unit, 'Model, 'Msg, unit> * Control -> unit
 
 type ReactiveViewModel() = 
     inherit ReactiveUI.ReactiveObject()
@@ -218,26 +182,4 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             propertySubscriptions.Values |> Seq.iter _.Dispose()
             propertySubscriptions.Clear()
             _modelSubject.Dispose()
-
-
-
-module Program =
-    /// Creates an Avalonia program via Program.mkProgram.
-    let mkAvaloniaProgram (init: unit -> 'Model * Cmd<'Msg>) update = 
-        Program.mkProgram init update (fun _ _ -> ())
-
-    /// Creates an Avalonia program via Program.mkSimple.
-    let mkAvaloniaSimple (init: unit -> 'Model) update =
-        Program.mkSimple init update (fun _ _ -> ())
-
-    /// Binds the vm to the view and then runs the Elmish program.    
-    let runView (vm: IRunProgram<'Model, 'Msg>) (view: Control) program = 
-        if not Design.IsDesignMode 
-        then vm.RunProgram(program, view)
-
-    /// Configures `Program.withTermination` using the given terminate 'Msg, and dispatches the 'Msg when the view is `Unloaded`.
-    let terminateOnViewUnloaded (vm: ReactiveElmishViewModel<'Model, 'Msg>) (terminateMsg: 'Msg) program = 
-        vm.TerminateMsg <- Some terminateMsg
-        program 
-        |> Program.withTermination (fun m -> m = terminateMsg) (fun _ -> printfn $"terminateOnViewUnloaded: dispatching {terminateMsg}")
 
