@@ -4,15 +4,20 @@ open Elmish.Avalonia
 open Elmish
 open App
 
-type MainViewModel() =
+type MainViewModel() as this =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
+
+    let counterVM = lazy (new CounterViewModel(this) : ReactiveUI.ReactiveObject)
+    let aboutVM = lazy (new AboutViewModel(this))
+    let chartVM = lazy (new ChartViewModel())
+    let filePickerVM = lazy (new FilePickerViewModel())
 
     member this.ContentVM = this.Bind (fun m -> 
         match m.View with
-        | CounterView -> new CounterViewModel(this) : ReactiveUI.ReactiveObject
-        | AboutView -> new AboutViewModel(this)
-        | ChartView -> new ChartViewModel()
-        | FilePickerView -> new FilePickerViewModel()
+        | CounterView -> counterVM.Value
+        | AboutView -> aboutVM.Value
+        | ChartView -> chartVM.Value
+        | FilePickerView -> filePickerVM.Value
     )
     
     member this.ShowChart() = this.Dispatch (SetView ChartView)
