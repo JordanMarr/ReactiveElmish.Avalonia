@@ -13,5 +13,5 @@ type AboutViewModel(app: IElmishStore<Model, Msg>) =
     member this.Ok() = app.Dispatch (SetView CounterView)
 
     static member DesignVM = 
-        let store = DesignStore<App.Model, App.Msg>(App.init())
+        let store = new DesignStore<App.Model, App.Msg>(App.init())
         new AboutViewModel(store)

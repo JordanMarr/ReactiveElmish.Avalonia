@@ -68,8 +68,7 @@ module Chart =
         | Reset
         | SetIsAutoUpdateChecked of bool
         | Terminate
-        | Ok
-
+    
     let init() =
         {
             Series = 
@@ -126,9 +125,6 @@ module Chart =
                 IsAutoUpdateChecked = isChecked
                 Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
             }
-        | Ok -> 
-            bus.OnNext(GlobalMsg.GoHome)
-            { model with IsAutoUpdateChecked = false }
         | Terminate ->
             model
 
@@ -156,7 +152,7 @@ module Chart =
 
 open Chart
 
-type ChartViewModel() =
+type ChartViewModel(app: IElmishStore<App.Model, App.Msg>) =
     inherit ReactiveElmishViewModel<Model, Msg>(init())
 
     member this.Actions = this.Bind _.Actions
@@ -170,7 +166,7 @@ type ChartViewModel() =
         and set value = this.Dispatch (SetIsAutoUpdateChecked value)
     member this.Series = this.Bind _.Series
     member this.XAxes = this.Bind (fun _ -> XAxes)
-    member this.Ok() = this.Dispatch Ok
+    member this.Ok() = app.Dispatch (App.SetView App.CounterView)
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
         Program.mkAvaloniaSimple init update
@@ -180,4 +176,6 @@ type ChartViewModel() =
         |> Program.terminateOnViewUnloaded this Terminate
         |> Program.runView this view
 
-    static member DesignVM = new ChartViewModel()
+    static member DesignVM = 
+        let store = new DesignStore<App.Model, App.Msg>(App.init())
+        new ChartViewModel(store)

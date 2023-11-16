@@ -16,7 +16,7 @@ type MainViewModel() as this =
 
     let counterVM = lazy (new CounterViewModel(app) : ReactiveUI.ReactiveObject)
     let aboutVM = lazy (new AboutViewModel(app))
-    let chartVM = lazy (new ChartViewModel())
+    let chartVM = lazy (new ChartViewModel(app))
     let filePickerVM = lazy (new FilePickerViewModel())
 
     member this.ContentVM = this.Bind (app, fun m -> 
