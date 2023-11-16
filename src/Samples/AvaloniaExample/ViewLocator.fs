@@ -20,11 +20,17 @@ type ViewLocator() =
             if isNull viewType then
                 upcast TextBlock(Text = sprintf "Not Found: %s" name)
             else
-                let vm = data :?> IElmishViewModel
                 let view = downcast Activator.CreateInstance(viewType)
-                vm.StartElmishLoop(view)
-                view
+                match data with 
+                | :? IElmishViewModel as vm -> 
+                    let vm = data :?> IElmishViewModel
+                    vm.StartElmishLoop(view)
+                    view
+                | :? ReactiveUI.ReactiveObject as vm ->
+                    let vm = data :?> ReactiveUI.ReactiveObject
+                    view.DataContext <- vm
+                    view
                 
         member this.Match(data) = 
             // Only apply this IDataTemplate when data is an IElmishViewModel
-            data :? IElmishViewModel
+            data :? IElmishViewModel || data :? ReactiveUI.ReactiveObject

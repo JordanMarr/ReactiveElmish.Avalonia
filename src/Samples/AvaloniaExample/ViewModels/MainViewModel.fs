@@ -9,7 +9,7 @@ type MainViewModel() =
 
     member this.ContentVM = this.Bind (fun m -> 
         match m.View with
-        | CounterView -> new CounterViewModel(this) : IElmishViewModel
+        | CounterView -> new CounterViewModel(this) : ReactiveUI.ReactiveObject
         | AboutView -> new AboutViewModel(this)
         | ChartView -> new ChartViewModel()
         | FilePickerView -> new FilePickerViewModel()
