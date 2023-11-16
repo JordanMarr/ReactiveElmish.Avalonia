@@ -11,10 +11,10 @@ module Main =
         }
 
     and View = 
-    | CounterView
-    | ChartView
-    | AboutView
-    | FilePickerView
+        | CounterView
+        | ChartView
+        | AboutView
+        | FilePickerView
 
     type Msg = 
         | SetView of View
