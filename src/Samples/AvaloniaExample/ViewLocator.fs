@@ -22,15 +22,15 @@ type ViewLocator() =
             else
                 let view = downcast Activator.CreateInstance(viewType)
                 match data with 
-                | :? IElmishViewModel as vm -> 
-                    let vm = data :?> IElmishViewModel
-                    vm.StartElmishLoop(view)
+                | :? IStartElmishLoop as vm -> 
+                    ViewBinder.startElmishVM vm view
                     view
                 | :? ReactiveUI.ReactiveObject as vm ->
-                    let vm = data :?> ReactiveUI.ReactiveObject
                     view.DataContext <- vm
                     view
+                | _ ->
+                    failwith "Invalid ViewModel type"
                 
         member this.Match(data) = 
             // Only apply this IDataTemplate when data is an IElmishViewModel
-            data :? IElmishViewModel || data :? ReactiveUI.ReactiveObject
+            data :? IStartElmishLoop || data :? ReactiveUI.ReactiveObject

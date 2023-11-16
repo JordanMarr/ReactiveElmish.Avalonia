@@ -4,6 +4,7 @@ open System
 open Elmish
 open Avalonia.Controls
 
+[<Obsolete()>]
 type IElmishViewModel =
     abstract member StartElmishLoop : view: Control -> unit
 

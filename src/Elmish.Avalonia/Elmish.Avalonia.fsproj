@@ -49,6 +49,7 @@
     <Compile Include="AvaloniaPropertyAccessorPlugin.fs" />
     <Compile Include="AvaloniaProgram.fs" />
     <Compile Include="ElmishViewModel.fs" />
+    <Compile Include="ViewBinder.fs" />
     <Compile Include="ReactiveElmishViewModel.fs" />
   </ItemGroup>
 

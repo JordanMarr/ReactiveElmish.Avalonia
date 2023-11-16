@@ -11,14 +11,6 @@ open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 
-type IOnPropertyChanged = 
-    abstract member OnPropertyChanged: [<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string -> unit
-
-type IElmishStore<'Model, 'Msg> =
-    abstract member Dispatch: 'Msg -> unit
-    abstract member Model: 'Model with get
-    abstract member ModelObservable: IObservable<'Model>
-
 
 type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =
     let _modelSubject = new Subject<'Model>()
@@ -36,7 +28,7 @@ type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as t
         member this.ModelObservable = _modelSubject.AsObservable()
     
         /// Binds this VM to the view `DataContext` and runs the Elmish loop.
-    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, ?view: Control) =
+    member private this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>) =
         
         // Updates when the Elmish model changes and sends out an Rx stream.
         let setState model (_: Dispatch<'Msg>) =
@@ -52,18 +44,6 @@ type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as t
 
             _dispatch <- dispatch
             dispatch
-
-        view
-        |> Option.iter (fun view ->
-            // Wires up the view and the VM.
-            view.DataContext <- this
-
-            //if this.DisposeOnUnload then
-            // Disposes the VM when the view is unloaded, and optionally dispatches a termination message.
-            view.Unloaded.AddHandler(fun _ _ -> 
-                //this.TerminateMsg |> Option.iter _dispatch
-                (this :> IDisposable).Dispose())
-        )
         
         program
         |> Program.withSetState setState
@@ -79,10 +59,11 @@ type ReactiveViewModel() =
     let propertyChanged = Event<_, _>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
     
-    ///// Starts the Elmish loop for this view model.
-    //abstract member StartElmishLoop : Control -> unit
-    //interface IElmishViewModel with
-    //    member this.StartElmishLoop(view: Control) = this.StartElmishLoop(view)
+    /// Starts the Elmish loop for this view model.
+    abstract member StartElmishLoop : Control -> unit
+    default this.StartElmishLoop (_: Control) = ()
+    interface IStartElmishLoop with
+        member this.StartElmishLoop(view: Control) = this.StartElmishLoop(view)
 
     interface INotifyPropertyChanged with
         [<CLIEvent>]
@@ -114,37 +95,6 @@ type ReactiveViewModel() =
 
         // Returns the latest value from the model projection.
         store.Model |> modelProjection
-
-    /// Binds this VM to the view `DataContext` and runs the Elmish loop.
-    //member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
-        
-    //    // Updates when the Elmish model changes and sends out an Rx stream.
-    //    let setState model (_: Dispatch<'Msg>) =
-    //        _model <- model
-    //        _modelSubject.OnNext(model)
-
-    //    // A fn that dispatches messages to the Elmish loop.
-    //    let withDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
-    //        let dispatch msg = 
-    //            if Dispatcher.UIThread.CheckAccess()
-    //            then innerDispatch msg |> ignore
-    //            else Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
-
-    //        _dispatch <- dispatch
-    //        dispatch
-
-    //    // Wires up the view and the VM.
-    //    view.DataContext <- this
-
-    //    if this.DisposeOnUnload then
-    //        // Disposes the VM when the view is unloaded, and optionally dispatches a termination message.
-    //        view.Unloaded.AddHandler(fun _ _ -> 
-    //            this.TerminateMsg |> Option.iter _dispatch
-    //            (this :> IDisposable).Dispose())
-        
-    //    program
-    //    |> Program.withSetState setState
-    //    |> Program.runWithDispatch withDispatch ()
 
     /// Determines whether this VM should be disposed when the view is unloaded. Default is true.
     member val DisposeOnUnload = true with get, set
@@ -178,7 +128,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
     
     /// Starts the Elmish loop for this view model.
     abstract member StartElmishLoop : Control -> unit
-    interface IElmishViewModel with
+    interface IStartElmishLoop with
         member this.StartElmishLoop(view: Control) = this.StartElmishLoop(view)
 
     interface INotifyPropertyChanged with
@@ -224,37 +174,39 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
 
         // Returns the latest value from the model projection.
         _model |> modelProjection
-
-    /// Binds this VM to the view `DataContext` and runs the Elmish loop.
-    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
         
-        // Updates when the Elmish model changes and sends out an Rx stream.
-        let setState model (_: Dispatch<'Msg>) =
-            _model <- model
-            _modelSubject.OnNext(model)
+    interface IRunProgram<'Model, 'Msg> with
 
-        // A fn that dispatches messages to the Elmish loop.
-        let withDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
-            let dispatch msg = 
-                if Dispatcher.UIThread.CheckAccess()
-                then innerDispatch msg |> ignore
-                else Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
-
-            _dispatch <- dispatch
-            dispatch
-
-        // Wires up the view and the VM.
-        view.DataContext <- this
-
-        if this.DisposeOnUnload then
-            // Disposes the VM when the view is unloaded, and optionally dispatches a termination message.
-            view.Unloaded.AddHandler(fun _ _ -> 
-                this.TerminateMsg |> Option.iter _dispatch
-                (this :> IDisposable).Dispose())
+        /// Binds this VM to the view `DataContext` and runs the Elmish loop.
+        member this.RunProgram(program: Program<unit, 'Model, 'Msg, unit>, view: Control) =
         
-        program
-        |> Program.withSetState setState
-        |> Program.runWithDispatch withDispatch ()
+            // Updates when the Elmish model changes and sends out an Rx stream.
+            let setState model (_: Dispatch<'Msg>) =
+                _model <- model
+                _modelSubject.OnNext(model)
+
+            // A fn that dispatches messages to the Elmish loop.
+            let withDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
+                let dispatch msg = 
+                    if Dispatcher.UIThread.CheckAccess()
+                    then innerDispatch msg |> ignore
+                    else Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
+
+                _dispatch <- dispatch
+                dispatch
+
+            // Wires up the view and the VM.
+            view.DataContext <- this
+
+            if this.DisposeOnUnload then
+                // Disposes the VM when the view is unloaded, and optionally dispatches a termination message.
+                view.Unloaded.AddHandler(fun _ _ -> 
+                    this.TerminateMsg |> Option.iter _dispatch
+                    (this :> IDisposable).Dispose())
+        
+            program
+            |> Program.withSetState setState
+            |> Program.runWithDispatch withDispatch ()
 
     /// Determines whether this VM should be disposed when the view is unloaded. Default is true.
     member val DisposeOnUnload = true with get, set
@@ -279,7 +231,7 @@ module Program =
         Program.mkSimple init update (fun _ _ -> ())
 
     /// Binds the vm to the view and then runs the Elmish program.    
-    let runView (vm: ReactiveElmishViewModel<'Model, 'Msg>) (view: Control) program = 
+    let runView (vm: IRunProgram<'Model, 'Msg>) (view: Control) program = 
         if not Design.IsDesignMode 
         then vm.RunProgram(program, view)
 
