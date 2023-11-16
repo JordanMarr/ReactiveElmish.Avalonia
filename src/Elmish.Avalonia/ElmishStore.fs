@@ -12,19 +12,22 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 
 type IElmishStore<'Model, 'Msg> =
+    inherit IDisposable       
     abstract member Dispatch: 'Msg -> unit
     abstract member Model: 'Model with get
     abstract member ModelObservable: IObservable<'Model>
-
 
 type DesignStore<'Model, 'Msg>(designModel) = 
     interface IElmishStore<'Model, 'Msg> with
         member this.Dispatch _ = ()
         member this.Model = designModel
         member this.ModelObservable = Observable.Never<'Model>()
+    
+    interface IDisposable with
+        member this.Dispose() = ()
 
 
-type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =
+type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =    
     let _modelSubject = new Subject<'Model>()
     let mutable _model: 'Model = Unchecked.defaultof<'Model>
     let mutable _dispatch: 'Msg -> unit = 

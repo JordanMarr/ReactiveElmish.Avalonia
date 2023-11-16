@@ -20,6 +20,7 @@ type IRunProgram<'Model, 'Msg> =
 type ReactiveViewModel() = 
     inherit ReactiveUI.ReactiveObject()
 
+    let disposables = ResizeArray<IDisposable>()
     let propertyChanged = Event<_, _>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
     
@@ -65,8 +66,13 @@ type ReactiveViewModel() =
 
     member val internal TerminateMsg: 'Msg option = None with get, set
 
+    member this.AddDisposable(disposable: 'T & #IDisposable) =
+        disposables.Add(disposable)
+        disposable : 'T
+
     interface IDisposable with
         member this.Dispose() =
+            disposables |> Seq.iter _.Dispose()
             propertySubscriptions.Values |> Seq.iter _.Dispose()
             propertySubscriptions.Clear()
 

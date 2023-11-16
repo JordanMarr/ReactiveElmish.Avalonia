@@ -20,7 +20,8 @@ module Program =
         then vm.RunProgram(program, view)
 
     let mkStore (program: Program<unit, 'Model, 'Msg, unit>) = 
-        new ElmishStore<'Model, 'Msg>(program)
+        new ElmishStore<'Model, 'Msg>(program) 
+        :> IElmishStore<'Model, 'Msg>
 
     /// Configures `Program.withTermination` using the given terminate 'Msg, and dispatches the 'Msg when the view is `Unloaded`.
     let terminateOnViewUnloaded (vm: ReactiveElmishViewModel<'Model, 'Msg>) (terminateMsg: 'Msg) program = 
