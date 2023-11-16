@@ -7,7 +7,7 @@ open App
 type MainViewModel() as this =
     inherit ReactiveElmishViewModel<Model, Msg>(App.init())
 
-    let counterVM = lazy (new CounterViewModel(this) : ReactiveUI.ReactiveObject)
+    let counterVM = lazy (new CounterViewModel(this))
     let aboutVM = lazy (new AboutViewModel(this))
     let chartVM = lazy (new ChartViewModel(this))
     let filePickerVM = lazy (new FilePickerViewModel())
@@ -18,6 +18,7 @@ type MainViewModel() as this =
         | AboutView -> aboutVM.Value
         | ChartView -> chartVM.Value
         | FilePickerView -> filePickerVM.Value
+        : ReactiveUI.ReactiveObject
     )
     
     member this.ShowChart() = this.Dispatch (SetView ChartView)
