@@ -30,7 +30,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
             then failwith "`Dispatch` failed because the Elmish loop has not been started."
 
     /// Tracks subscriptions of boxed 'Model projections by the VM property name.
-    let propertySubscriptions = Dictionary<string, IDisposable * ('Model -> obj)>()
+    let propertySubscriptions = Dictionary<string, IDisposable>()
 
     member this.Model = _model
 
@@ -68,8 +68,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
     [<Obsolete "ElmishViewModel is deprecated and will be removed in v2. Please use `Bind` instead.">]
     member this.BindModel(vmPropertyName: string, modelProjection: 'Model -> 'ModelProjection) = 
-        match propertySubscriptions.TryGetValue(vmPropertyName) with
-        | false, _ -> 
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
             let disposable = 
                 _modelSubject
@@ -83,15 +82,10 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
                     )
 
             // Stores the subscription and the boxed model projection ('Model -> obj) in a dictionary
-            let boxedModelProjection = modelProjection >> unbox<obj>
-            propertySubscriptions.Add(vmPropertyName, (disposable, boxedModelProjection))
+            propertySubscriptions.Add(vmPropertyName, disposable)
 
-            // Returns the latest value from the model projection.
-            _model |> modelProjection 
-
-        | true, (_, boxedModelProjection) -> 
-            // Returns the latest value from the model projection.
-            _model |> boxedModelProjection :?> 'ModelProjection
+        // Returns the latest value from the model projection.
+        _model |> modelProjection
 
     /// Binds this VM to the view `DataContext` and runs the Elmish loop.
     member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, view: Control) =
@@ -131,7 +125,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
 
     interface IDisposable with
         member this.Dispose() =
-            propertySubscriptions.Values |> Seq.iter (fun (disposable, _) -> disposable.Dispose())
+            propertySubscriptions.Values |> Seq.iter _.Dispose()
             propertySubscriptions.Clear()
             _modelSubject.Dispose()
 
