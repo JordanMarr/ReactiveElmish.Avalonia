@@ -5,7 +5,7 @@ open Elmish.Avalonia
 open Elmish
 open App
 
-type CounterViewModel(appVM: IReactiveElmishViewModel<Model, Msg>) =
+type CounterViewModel(appVM: IElmishStore<Model, Msg>) =
     inherit ReactiveUI.ReactiveObject()
 
     member this.Count = appVM.Bind _.Count

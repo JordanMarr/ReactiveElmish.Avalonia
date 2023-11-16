@@ -10,12 +10,105 @@ open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
-open System.Linq.Expressions
 
-type IReactiveElmishViewModel<'Model, 'Msg> =
+type IOnPropertyChanged = 
+    abstract member OnPropertyChanged: [<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string -> unit
+
+type IElmishStore<'Model, 'Msg> =
     abstract member Dispatch: 'Msg -> unit
     abstract member Bind: modelProjection: ('Model ->'ModelProjection) * [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string -> 'ModelProjection
     abstract member Model: 'Model with get
+
+type ElmishStore<'Model, 'Msg> (vm: IOnPropertyChanged, program: Program<unit, 'Model, 'Msg, unit>) as this =
+    let propertySubscriptions = Dictionary<string, IDisposable>()
+    let _modelSubject = new Subject<'Model>()
+    let mutable _model: 'Model = Unchecked.defaultof<'Model>
+    let mutable _dispatch: 'Msg -> unit = 
+        fun _ -> 
+            if not Design.IsDesignMode 
+            then failwith "`Dispatch` failed because the Elmish loop has not been started."
+
+    do this.RunProgram(program)
+
+    interface IElmishStore<'Model, 'Msg> with
+        member this.Dispatch msg = _dispatch msg
+        member this.Model with get () = _model
+        member this.Bind(modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+            this.BindModel(vmPropertyName.Value, modelProjection)
+
+    member private this.BindModel(vmPropertyName: string, modelProjection: 'Model -> 'ModelProjection) = 
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            // Creates a subscription to the 'Model projection and stores it in a dictionary.
+            let disposable = 
+                _modelSubject
+                    .DistinctUntilChanged(modelProjection)
+                    .Subscribe(fun _ -> 
+                        // Alerts the view that the 'Model projection / VM property has changed.
+                        vm.OnPropertyChanged(vmPropertyName)
+                        #if DEBUG
+                        printfn $"PropertyChanged: {vmPropertyName}"
+                        #endif
+                    )
+
+            // Stores the subscription and the boxed model projection ('Model -> obj) in a dictionary
+            propertySubscriptions.Add(vmPropertyName, disposable)
+
+        // Returns the latest value from the model projection.
+        _model |> modelProjection
+
+        /// Binds this VM to the view `DataContext` and runs the Elmish loop.
+    member internal this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>, ?view: Control) =
+        
+        // Updates when the Elmish model changes and sends out an Rx stream.
+        let setState model (_: Dispatch<'Msg>) =
+            _model <- model
+            _modelSubject.OnNext(model)
+
+        // A fn that dispatches messages to the Elmish loop.
+        let withDispatch (innerDispatch: Dispatch<'Msg>) : Dispatch<'Msg> =
+            let dispatch msg = 
+                if Dispatcher.UIThread.CheckAccess()
+                then innerDispatch msg |> ignore
+                else Dispatcher.UIThread.Post(fun () -> innerDispatch msg)
+
+            _dispatch <- dispatch
+            dispatch
+
+        view
+        |> Option.iter (fun view ->
+            // Wires up the view and the VM.
+            view.DataContext <- this
+
+            //if this.DisposeOnUnload then
+            // Disposes the VM when the view is unloaded, and optionally dispatches a termination message.
+            view.Unloaded.AddHandler(fun _ _ -> 
+                //this.TerminateMsg |> Option.iter _dispatch
+                (this :> IDisposable).Dispose())
+        )
+        
+        program
+        |> Program.withSetState setState
+        |> Program.runWithDispatch withDispatch ()
+
+    interface IDisposable with
+        member this.Dispose() =
+            propertySubscriptions.Values |> Seq.iter _.Dispose()
+            propertySubscriptions.Clear()
+            _modelSubject.Dispose()
+
+type ReactiveViewModel() = 
+    inherit ReactiveUI.ReactiveObject()
+
+    let propertyChanged = Event<_, _>()
+
+    interface INotifyPropertyChanged with
+        [<CLIEvent>]
+        member this.PropertyChanged = propertyChanged.Publish
+
+    interface IOnPropertyChanged with
+        /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
+        member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
+            propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
 [<AbstractClass>]
 type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) = 
@@ -45,11 +138,12 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
         [<CLIEvent>]
         member this.PropertyChanged = propertyChanged.Publish
 
-    /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
-    member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
-        propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
+    interface IOnPropertyChanged with
+        /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
+        member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
+            propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
-    interface IReactiveElmishViewModel<'Model, 'Msg> with
+    interface IElmishStore<'Model, 'Msg> with
         member this.Dispatch msg = _dispatch msg
 
         member this.Bind(modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
@@ -75,7 +169,7 @@ type ReactiveElmishViewModel<'Model, 'Msg>(initialModel: 'Model) =
                     .DistinctUntilChanged(modelProjection)
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
-                        this.OnPropertyChanged(vmPropertyName)
+                        (this :> IOnPropertyChanged).OnPropertyChanged(vmPropertyName)
                         #if DEBUG
                         printfn $"PropertyChanged: {vmPropertyName}"
                         #endif
