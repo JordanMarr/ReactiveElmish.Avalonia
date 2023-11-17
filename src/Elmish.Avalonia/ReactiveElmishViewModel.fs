@@ -40,7 +40,7 @@ type ReactiveViewModel() =
             propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
-    member this.Bind<'Model, 'Msg>(store: IElmishStore<'Model, 'Msg>, modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IElmishStore<'Model, 'Msg>, modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
         let vmPropertyName = vmPropertyName.Value
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
