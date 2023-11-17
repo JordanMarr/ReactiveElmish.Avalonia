@@ -7,17 +7,15 @@ open App
 type MainViewModel() as this =
     inherit ReactiveElmishViewModel<Model, Msg>(App.init())
 
-    let counterVM = lazy (new CounterViewModel(this))
-    let aboutVM = lazy (new AboutViewModel(this))
-    let chartVM = lazy (new ChartViewModel(this))
-    let filePickerVM = lazy (new FilePickerViewModel())
+    let counterVM = new CounterViewModel(this)
+    let aboutVM = new AboutViewModel(this)
 
     member this.ContentVM = this.Bind (fun m -> 
         match m.View with
-        | CounterView -> counterVM.Value
-        | AboutView -> aboutVM.Value
-        | ChartView -> chartVM.Value
-        | FilePickerView -> filePickerVM.Value
+        | CounterView -> counterVM
+        | AboutView -> aboutVM
+        | ChartView -> new ChartViewModel(this)
+        | FilePickerView -> new FilePickerViewModel(this)
         : ReactiveUI.ReactiveObject
     )
     

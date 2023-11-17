@@ -22,7 +22,7 @@ type Msg =
     | SetView of View
     | Increment
     | Decrement
-    | ResetCounter
+    | Reset
 
 let init () = 
     { 
@@ -44,7 +44,11 @@ let update (msg: Msg) (model: Model) =
             Count = model.Count - 1 
             Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ] 
         }
-    | ResetCounter -> init ()
+    | Reset -> 
+        { model with 
+            Count = 0
+            Actions = [ { Description = "Reset"; Timestamp = DateTime.Now } ]
+        }
     | SetView view -> 
         { model with 
             View = view

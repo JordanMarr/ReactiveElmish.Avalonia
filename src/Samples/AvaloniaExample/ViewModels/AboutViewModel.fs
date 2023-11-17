@@ -2,7 +2,6 @@
 
 open Elmish.Avalonia
 open Elmish
-open Messaging
 open App
 
 type AboutViewModel(app: IElmishStore<Model, Msg>) =
@@ -11,6 +10,7 @@ type AboutViewModel(app: IElmishStore<Model, Msg>) =
     member this.Version = this.Bind(app, _.Version)
     member this.Counter = this.Bind(app, _.Count)
     member this.Ok() = app.Dispatch (SetView CounterView)
+    member this.ResetCounter() = app.Dispatch Reset
 
     static member DesignVM = 
         let store = new DesignStore<App.Model, App.Msg>(App.init())

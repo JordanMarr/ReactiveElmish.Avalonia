@@ -10,7 +10,6 @@ open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
-open Messaging
 
 module Chart = 
 

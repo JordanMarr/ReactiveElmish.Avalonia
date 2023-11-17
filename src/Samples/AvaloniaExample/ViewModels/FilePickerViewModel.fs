@@ -2,7 +2,6 @@
 
 open Elmish.Avalonia
 open Elmish
-open Messaging
 open AvaloniaExample
 
 module FilePicker = 
@@ -13,10 +12,8 @@ module FilePicker =
         }
 
     type Msg = 
-        | Ok
         | PickFile
         | SetFilePath of string option
-        | Terminate
 
     let init () = 
         { 
@@ -25,14 +22,10 @@ module FilePicker =
 
     let update tryPickFile (msg: Msg) (model: Model) = 
         match msg with
-        | Ok -> 
-            model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
         | PickFile  -> 
             model, Cmd.OfTask.perform tryPickFile () SetFilePath
         | SetFilePath path ->
             { FilePath = path }, Cmd.none
-        | Terminate ->
-            model, Cmd.none
 
     let tryPickFile () = 
         let fileProvider = Services.Get<FileService>()
@@ -40,11 +33,11 @@ module FilePicker =
 
 open FilePicker
 
-type FilePickerViewModel() =
+type FilePickerViewModel(app: IElmishStore<App.Model, App.Msg>) =
     inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
 
     member this.FilePath = this.Bind (_.FilePath >> Option.defaultValue "Not Set")
-    member this.Ok() = this.Dispatch Ok
+    member this.Ok() = app.Dispatch (App.SetView App.CounterView)
     member this.PickFile() = this.Dispatch PickFile
 
     override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
@@ -53,4 +46,6 @@ type FilePickerViewModel() =
         |> Program.withConsoleTrace
         |> Program.runView this view
 
-    static member DesignVM = new FilePickerViewModel()
+    static member DesignVM = 
+        let store = new DesignStore<App.Model, App.Msg>(App.init())
+        new FilePickerViewModel(store)

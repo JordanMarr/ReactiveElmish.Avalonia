@@ -6,6 +6,7 @@
 			 xmlns:vm="using:AvaloniaExample.ViewModels"
 			 Design.DataContext="{Binding Source={x:Static vm:AboutViewModel.DesignVM}}"
 			 x:DataType="vm:AboutViewModel"
+			 x:CompileBindings="False"
              x:Class="AvaloniaExample.Views.AboutView">
 	<StackPanel HorizontalAlignment="Center" Margin="10">
 		<StackPanel Orientation="Horizontal" Margin="10">
@@ -16,6 +17,7 @@
 			<TextBlock Text="Counter:" />
 			<TextBlock Text="{Binding Counter}" />
 		</StackPanel>
-		<Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />		
+		<Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />
+		<Button Content="Reset" Command="{Binding ResetCounter}" HorizontalAlignment="Center" />
 	</StackPanel>
 </UserControl>
