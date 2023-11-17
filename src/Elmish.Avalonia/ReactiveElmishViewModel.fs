@@ -64,8 +64,6 @@ type ReactiveViewModel() =
     /// Determines whether this VM should be disposed when the view is unloaded. Default is true.
     member val DisposeOnUnload = true with get, set
 
-    member val internal TerminateMsg: 'Msg option = None with get, set
-
     member this.AddDisposable(disposable: 'T & #IDisposable) =
         disposables.Add(disposable)
         disposable : 'T
