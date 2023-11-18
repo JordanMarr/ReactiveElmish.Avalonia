@@ -4,18 +4,13 @@ open Elmish
 open Avalonia.Controls
 open System
 
-type IStartElmishLoop = 
-    abstract member StartElmishLoop : view: Control -> unit
-
 module ViewBinder = 
 
-    let startElmishVM (vm: IStartElmishLoop) (view: Control) = 
+    let bindViewModel (vm: ReactiveUI.IReactiveObject) (view: Control) = 
         view.DataContext <- vm
-        let disposable = vm :?> IDisposable |> Option.ofObj
-        disposable
+        vm :?> IDisposable |> Option.ofObj
         |> Option.iter (fun disposable -> 
             view.Unloaded.Add(fun _ -> 
                 disposable.Dispose()
             )
         )
-        vm.StartElmishLoop(view)

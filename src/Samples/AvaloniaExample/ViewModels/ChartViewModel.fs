@@ -151,29 +151,28 @@ module Chart =
 
 open Chart
 
-type ChartViewModel(app: IElmishStore<App.Model, App.Msg>) =
-    inherit ReactiveElmishViewModel<Model, Msg>(init())
+type ChartViewModel(app: IElmishStore<App.Model, App.Msg>) as this =
+    inherit ReactiveViewModel()
 
-    member this.Actions = this.Bind _.Actions
-    member this.AddItem() = this.Dispatch AddItem
-    member this.RemoveItem() = this.Dispatch RemoveItem
-    member this.UpdateItem() = this.Dispatch UpdateItem
-    member this.ReplaceItem() = this.Dispatch ReplaceItem
-    member this.Reset() = this.Dispatch Reset
-    member this.IsAutoUpdateChecked 
-        with get () = this.Bind _.IsAutoUpdateChecked
-        and set value = this.Dispatch (SetIsAutoUpdateChecked value)
-    member this.Series = this.Bind _.Series
-    member this.XAxes = this.Bind (fun _ -> XAxes)
-    member this.Ok() = app.Dispatch (App.SetView App.CounterView)
-
-    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+    let chart = 
         Program.mkAvaloniaSimple init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
-        //|> Program.withConsoleTrace // too much data
+        //|> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
-        |> Program.terminateOnViewUnloaded this Terminate
-        |> Program.runView this view
+        |> Program.mkStoreWithTerminate this Terminate
+
+    member this.Actions = this.Bind (chart, _.Actions)
+    member this.AddItem() = chart.Dispatch AddItem
+    member this.RemoveItem() = chart.Dispatch RemoveItem
+    member this.UpdateItem() = chart.Dispatch UpdateItem
+    member this.ReplaceItem() = chart.Dispatch ReplaceItem
+    member this.Reset() = chart.Dispatch Reset
+    member this.IsAutoUpdateChecked 
+        with get () = this.Bind (chart, _.IsAutoUpdateChecked)
+        and set value = chart.Dispatch (SetIsAutoUpdateChecked value)
+    member this.Series = this.Bind (chart, _.Series)
+    member this.XAxes = this.Bind (chart, fun _ -> XAxes)
+    member this.Ok() = app.Dispatch (App.SetView App.CounterView)
 
     static member DesignVM = 
         let store = Store.design(App.init())
