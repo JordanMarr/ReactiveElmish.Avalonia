@@ -6,27 +6,21 @@ open System
 open Microsoft.Extensions.DependencyInjection
 open ReactiveUI
 
-type VMKey = 
+type VM = 
     private VMKey of string
-    with 
-        static member Create(vmType: Type) = 
-            VMKey vmType.FullName
-        static member Create<'ViewModel & #IReactiveObject>() = 
-            let vmType = typeof<'ViewModel>
-            VMKey vmType.FullName
+        static member Create(vmType: Type) = VMKey vmType.FullName
+        static member Create<'ViewModel & #IReactiveObject>() = VMKey typeof<'ViewModel>.FullName
 
-
-type ViewRegistration = 
-    | Singleton of view: Control
-    | Transient of viewType: Type
-    with 
-        static member TransientView<'View & #Control>() = Transient typeof<'View>
-        static member SingletonView<'View & #Control>(view: 'View) = Singleton view
-        static member SingletonView<'View & #Control>() = Activator.CreateInstance(typeof<'View>) :?> Control |> Singleton
+type View = 
+    | SingletonView of view: Control
+    | TransientView of viewType: Type
+        static member Transient<'View & #Control>() = TransientView typeof<'View>
+        static member Singleton<'View & #Control>(view: 'View) = SingletonView view
+        static member Singleton<'View & #Control>() = Activator.CreateInstance(typeof<'View>) :?> Control |> SingletonView
 
 type CompositionRoot() as this = 
     let serviceCollection: Lazy<IServiceCollection> = lazy this.InitServices()
-    let mutable viewRegistry: Map<VMKey, ViewRegistration> = Map.empty
+    let mutable viewRegistry: Map<VM, View> = Map.empty
 
     interface ICompositionRoot with
         member this.ServiceProvider = this.ServiceProvider
@@ -49,7 +43,7 @@ type CompositionRoot() as this =
         this.RegisterServices(services)
 
     /// Allows you to register views by VM type name.
-    abstract member RegisterViews : unit -> Map<VMKey, ViewRegistration>
+    abstract member RegisterViews : unit -> Map<VM, View>
     default this.RegisterViews() = 
         // TODO: Default should scan the assembly for all VMs and views
         Map.empty
@@ -64,20 +58,20 @@ type CompositionRoot() as this =
 
     /// Gets or creates a view from the view registry by its VM type.
     member this.GetView(vmType: Type) = 
-        let vmKey = VMKey.Create vmType
+        let vmKey = VM.Create vmType
 
         // Returns a view/VM instance from the registry or creates a new one.
         match viewRegistry |> Map.tryFind vmKey with
         | Some registration -> 
             match registration with
-            | Singleton view -> 
+            | SingletonView view -> 
                 if view.DataContext = null then 
                     let vm = this.ServiceProvider.GetRequiredService(vmType) :?> IReactiveObject
                     ReactiveElmishViewModel.trySetRoot this vm
                     ViewBinder.bindSingleton (vm, view) |> snd
                 else
                     view
-            | Transient viewType -> 
+            | TransientView viewType -> 
                 let vm = this.ServiceProvider.GetRequiredService(vmType) :?> IReactiveObject
                 ReactiveElmishViewModel.trySetRoot this vm
                 let view = Activator.CreateInstance(viewType) :?> Control

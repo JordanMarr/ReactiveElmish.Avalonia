@@ -16,10 +16,10 @@ type AppCompositionRoot() =
 
     override this.RegisterViews() = 
         Map [
-            VMKey.Create<ViewModels.MainViewModel>(), ViewRegistration.SingletonView(mainView)
-            VMKey.Create<ViewModels.CounterViewModel>(), ViewRegistration.SingletonView<Views.CounterView>()
-            VMKey.Create<ViewModels.AboutViewModel>(), ViewRegistration.SingletonView<Views.AboutView>()
-            VMKey.Create<ViewModels.ChartViewModel>(), ViewRegistration.SingletonView<Views.ChartView>()
-            VMKey.Create<ViewModels.FilePickerViewModel>(), ViewRegistration.SingletonView<Views.FilePickerView>()
+            VM.Create<ViewModels.MainViewModel>(), View.Singleton(mainView)
+            VM.Create<ViewModels.CounterViewModel>(), View.Singleton<Views.CounterView>()
+            VM.Create<ViewModels.AboutViewModel>(), View.Singleton<Views.AboutView>()
+            VM.Create<ViewModels.ChartViewModel>(), View.Singleton<Views.ChartView>()
+            VM.Create<ViewModels.FilePickerViewModel>(), View.Singleton<Views.FilePickerView>()
         ]
         
