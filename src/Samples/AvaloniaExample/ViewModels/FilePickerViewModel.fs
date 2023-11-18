@@ -46,6 +46,4 @@ type FilePickerViewModel(fileSvc: FileService) =
             local.Dispatch (SetFilePath path)
         }
 
-    static member DesignVM = 
-        let svc = Unchecked.defaultof<FileService>
-        new FilePickerViewModel(svc)
+    static member DesignVM = new FilePickerViewModel(Design.stub)

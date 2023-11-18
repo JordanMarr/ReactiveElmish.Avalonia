@@ -17,18 +17,9 @@ type IElmishStore<'Model, 'Msg> =
     abstract member Model: 'Model with get
     abstract member ModelObservable: IObservable<'Model>
 
-type DesignStore<'Model, 'Msg>(designModel) = 
-    interface IElmishStore<'Model, 'Msg> with
-        member this.Dispatch _ = ()
-        member this.Model = designModel
-        member this.ModelObservable = Observable.Never<'Model>()
-    
-    interface IDisposable with
-        member this.Dispose() = ()
-
-module Store = 
-    let design (model: 'Model) = new DesignStore<'Model, 'Msg>(model)
-
+module Design = 
+    /// Stubs constructor injected dependencies in design mode.
+    let stub<'T> = Unchecked.defaultof<'T>
 
 type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =    
     let _modelSubject = new Subject<'Model>()
