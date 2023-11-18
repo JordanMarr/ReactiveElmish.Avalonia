@@ -23,7 +23,7 @@ type ViewLocator() =
                 let view = downcast Activator.CreateInstance(viewType)
                 match data with 
                 | :? ReactiveUI.ReactiveObject as vm ->
-                    ViewBinder.bindViewModel vm view
+                    ViewBinder.bindWithDispose vm view
                     view
                 | _ ->
                     TextBlock(Text = sprintf $"Not found: %s{name}")

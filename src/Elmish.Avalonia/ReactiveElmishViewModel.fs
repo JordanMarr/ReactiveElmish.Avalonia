@@ -38,7 +38,7 @@ type ReactiveElmishViewModel() =
                         // Alerts the view that the 'Model projection / VM property has changed.
                         this.OnPropertyChanged(vmPropertyName)
                         #if DEBUG
-                        printfn $"PropertyChanged: {vmPropertyName}"
+                        printfn $"PropertyChanged: {vmPropertyName} by {this}"
                         #endif
                     )
 
@@ -47,9 +47,6 @@ type ReactiveElmishViewModel() =
 
         // Returns the latest value from the model projection.
         store.Model |> modelProjection
-
-    /// Determines whether this VM should be disposed when the view is unloaded. Default is true.
-    member val DisposeOnUnload = true with get, set
 
     member this.AddDisposable(disposable: 'Disposable & #IDisposable) =
         disposables.Add(disposable)
