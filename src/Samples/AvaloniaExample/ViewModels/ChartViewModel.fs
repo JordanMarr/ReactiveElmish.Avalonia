@@ -185,7 +185,7 @@ type ChartViewModel() as this =
         and set value = local.Dispatch (SetIsAutoUpdateChecked value)
     member this.Series = this.Bind (local, _.Series)
     member this.XAxes = this.Bind (local, fun _ -> XAxes)
-    member this.Ok() = app.Dispatch (App.SetView App.CounterView)
+    member this.Ok() = app.Dispatch App.GoHome
 
     static member DesignVM = 
         new ChartViewModel()

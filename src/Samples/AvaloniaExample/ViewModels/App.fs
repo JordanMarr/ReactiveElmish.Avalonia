@@ -17,6 +17,7 @@ and View =
 
 type Msg = 
     | SetView of View
+    | GoHome
 
 let init () = 
     { 
@@ -26,6 +27,7 @@ let init () =
 let update (msg: Msg) (model: Model) = 
     match msg with
     | SetView view -> { View = view }   
+    | GoHome -> { View = CounterView }
 
 
 let app = 

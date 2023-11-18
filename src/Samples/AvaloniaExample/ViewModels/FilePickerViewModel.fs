@@ -39,7 +39,7 @@ type FilePickerViewModel(fileSvc: FileService) =
         |> Program.mkStore
 
     member this.FilePath = this.Bind (local, _.FilePath >> Option.defaultValue "Not Set")
-    member this.Ok() = app.Dispatch (App.SetView App.CounterView)
+    member this.Ok() = app.Dispatch App.GoHome
     member this.PickFile() = 
         task {
             let! path = fileSvc.TryPickFile()
