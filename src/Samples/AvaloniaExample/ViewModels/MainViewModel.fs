@@ -16,7 +16,6 @@ type MainViewModel() =
             | AboutView -> this.GetView<AboutViewModel>()
             | ChartView -> this.GetView<ChartViewModel>()
             | FilePickerView -> this.GetView<FilePickerViewModel>()
-            : Control
         )
     
     member this.ShowChart() = app.Dispatch (SetView ChartView)
