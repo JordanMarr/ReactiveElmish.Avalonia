@@ -20,7 +20,7 @@ module Program =
         :> IElmishStore<'Model, 'Msg>
 
     /// Makes a reactive Elmish store from a program that terminates on the given "Terminate" 'Msg.
-    let mkStoreWithTerminate (vm: ReactiveViewModel) (terminateMsg: 'Msg) (program: Program<unit, 'Model, 'Msg, unit>) = 
+    let mkStoreWithTerminate (vm: ReactiveElmishViewModel) (terminateMsg: 'Msg) (program: Program<unit, 'Model, 'Msg, unit>) = 
         let prog = program |> Program.withTermination (fun m -> m = terminateMsg) (fun _ -> printfn $"Terminating store: dispatching {terminateMsg}")
         let store = new ElmishStore<'Model, 'Msg>(prog) :> IElmishStore<'Model, 'Msg>
         let disposable = 

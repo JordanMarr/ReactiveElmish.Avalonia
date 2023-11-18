@@ -11,10 +11,7 @@ open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 
-type IOnPropertyChanged = 
-    abstract member OnPropertyChanged: [<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string -> unit
-
-type ReactiveViewModel() = 
+type ReactiveElmishViewModel() = 
     inherit ReactiveUI.ReactiveObject()
 
     let disposables = ResizeArray<IDisposable>()
@@ -31,10 +28,9 @@ type ReactiveViewModel() =
         [<CLIEvent>]
         member this.PropertyChanged = propertyChanged.Publish
 
-    interface IOnPropertyChanged with
-        /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
-        member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
-            propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
+    /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
+    member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
+        propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
     /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
     member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IElmishStore<'Model, 'Msg>, modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
@@ -46,7 +42,7 @@ type ReactiveViewModel() =
                     .DistinctUntilChanged(modelProjection)
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
-                        (this :> IOnPropertyChanged).OnPropertyChanged(vmPropertyName)
+                        this.OnPropertyChanged(vmPropertyName)
                         #if DEBUG
                         printfn $"PropertyChanged: {vmPropertyName}"
                         #endif

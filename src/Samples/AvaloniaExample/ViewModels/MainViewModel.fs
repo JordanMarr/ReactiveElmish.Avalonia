@@ -5,7 +5,7 @@ open Elmish
 open App
 
 type MainViewModel() =
-    inherit ReactiveViewModel()
+    inherit ReactiveElmishViewModel()
 
     let app = 
         Program.mkAvaloniaSimple App.init App.update
@@ -13,7 +13,7 @@ type MainViewModel() =
         |> Program.withConsoleTrace
         |> Program.mkStore
 
-    let counterVM = new CounterViewModel(app)
+    let counterVM = new CounterViewModel()
     let aboutVM = new AboutViewModel(app)
 
     member this.ContentVM = 
