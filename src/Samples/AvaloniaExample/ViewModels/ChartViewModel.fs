@@ -159,7 +159,18 @@ type ChartViewModel(app: IElmishStore<App.Model, App.Msg>) as this =
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         //|> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
-        |> Program.mkStoreWithTerminate this Terminate
+        |> Program.mkStore
+        // We can Terminate the store when the VM is disposed, but are using singlteton VMs in this example.
+        //|> Program.mkStoreWithTerminate this Terminate 
+
+    do
+        app.ModelObservable
+        |> Observable.subscribe (fun m -> 
+            if m.View <> App.ChartView && this.IsAutoUpdateChecked then
+                printfn "Disabling Chart AutoUpdate"
+                chart.Dispatch (SetIsAutoUpdateChecked false)
+        )
+        |> ignore
 
     member this.Actions = this.Bind (chart, _.Actions)
     member this.AddItem() = chart.Dispatch AddItem

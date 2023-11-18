@@ -7,7 +7,7 @@ open System
 module ViewBinder = 
 
     /// Binds a vm to a view and disposes the vm when the view is unloaded.
-    let bindWithDispose (vm: ReactiveUI.IReactiveObject) (view: Control) = 
+    let bindWithDispose (vm: ReactiveUI.IReactiveObject, view: Control) = 
         view.DataContext <- vm
         vm :?> IDisposable |> Option.ofObj
         |> Option.iter (fun disposable -> 
@@ -15,8 +15,10 @@ module ViewBinder =
                 disposable.Dispose()
             )
         )
+        vm, view
 
     /// Binds a vm to a view and does not dispose the vm when the view is unloaded.
-    let bindSingleton (vm: ReactiveUI.IReactiveObject) (view: Control) = 
+    let bindSingleton (vm: ReactiveUI.IReactiveObject, view: Control) = 
         view.DataContext <- vm
+        vm, view
         

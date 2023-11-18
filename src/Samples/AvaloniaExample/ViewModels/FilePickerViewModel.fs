@@ -39,7 +39,7 @@ type FilePickerViewModel(app: IElmishStore<App.Model, App.Msg>) =
     let filePicker = 
         Program.mkAvaloniaProgram init (update tryPickFile)
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
-        |> Program.withConsoleTrace
+        //|> Program.withConsoleTrace
         |> Program.mkStore
 
     member this.FilePath = this.Bind (filePicker, _.FilePath >> Option.defaultValue "Not Set")

@@ -22,7 +22,7 @@ type App() =
             desktop.MainWindow <- view
             Services.Init view
             let vm = new ViewModels.MainViewModel()
-            ViewBinder.bindWithDispose vm view
+            ViewBinder.bindWithDispose (vm, view) |> ignore
         | _ -> 
             // leave this here for design view re-renders
             ()
