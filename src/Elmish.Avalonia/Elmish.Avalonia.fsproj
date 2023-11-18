@@ -35,20 +35,6 @@
       <_Parameter1>Elmish.Avalonia.Benchmarks</_Parameter1>
     </AssemblyAttribute>-->
     <None Include="elmish-avalonia-logo-128x128.png" />
-    <Compile Include="InternalUtils.fs" />
-    <Compile Include="Merge.fs" />
-    <Compile Include="Command.fs" />
-    <Compile Include="Utils.fs" />
-    <Compile Include="WindowState.fs" />
-    <Compile Include="ViewModelArgs.fs" />
-    <Compile Include="BindingData.fs" />
-    <Compile Include="BindingVmHelpers.fs" />
-    <Compile Include="DictionaryViewModel.fs" />
-    <Compile Include="Binding.fs" />
-    <Compile Include="ViewModelModule.fs" />
-    <Compile Include="AvaloniaPropertyAccessorPlugin.fs" />
-    <Compile Include="AvaloniaProgram.fs" />
-    <Compile Include="ElmishViewModel.fs" />
     <Compile Include="ElmishStore.fs" />
     <Compile Include="ViewBinder.fs" />
     <Compile Include="ReactiveElmishViewModel.fs" />
