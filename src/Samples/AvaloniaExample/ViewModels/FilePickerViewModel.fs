@@ -27,19 +27,16 @@ module FilePicker =
         | SetFilePath path ->
             { FilePath = path }, Cmd.none
 
-    let tryPickFile () = 
-        let fileProvider = Services.Get<FileService>()
-        fileProvider.TryPickFile()
 
 open FilePicker
 
-type FilePickerViewModel() =
+type FilePickerViewModel(fileSvc: FileService) =
     inherit ReactiveElmishViewModel()
 
     let app = App.app
 
     let filePicker = 
-        Program.mkAvaloniaProgram init (update tryPickFile)
+        Program.mkAvaloniaProgram init (update fileSvc.TryPickFile)
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         //|> Program.withConsoleTrace
         |> Program.mkStore
@@ -49,4 +46,5 @@ type FilePickerViewModel() =
     member this.PickFile() = filePicker.Dispatch PickFile
 
     static member DesignVM = 
-        new FilePickerViewModel()
+        let svc = Unchecked.defaultof<FileService>
+        new FilePickerViewModel(svc)

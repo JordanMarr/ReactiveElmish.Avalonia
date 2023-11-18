@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
-        <Compile Include="Services\Services.fs" />
+        <Compile Include="Services\FileService.fs" />
         <AvaloniaXaml Remove="Models\**" />
         <EmbeddedResource Remove="Models\**" />
         <None Remove=".gitignore" />
