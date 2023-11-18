@@ -31,7 +31,6 @@ type CompositionRoot() as this =
     interface ICompositionRoot with
         member this.ServiceProvider = this.ServiceProvider
         member this.GetView(vmType: Type) = this.GetView(vmType)
-        member this.GetView(vm: IReactiveObject) = this.GetView(vm)
         
     /// Gets the composition root service provider.
     member this.ServiceProvider = 
@@ -54,25 +53,6 @@ type CompositionRoot() as this =
         let window = Activator.CreateInstance(typeof<'MainView>) :?> Window
         ViewBinder.bindSingleton (vm, window) |> ignore
         window
-    
-    /// Gets or creates a view from the view registry by its VM type.
-    member this.GetView<'ViewModel & #IReactiveObject>(?vm: 'ViewModel) = 
-        let vmType = typeof<'ViewModel>
-        let vmKey = VMKey.Create vmType
-
-        let vm = defaultArg vm (this.ServiceProvider.GetRequiredService<'ViewModel>()) 
-
-        // Returns a view/VM instance from the registry or creates a new one.
-        match viewRegistry |> Map.tryFind vmKey with
-        | Some registration -> 
-            match registration with
-            | Singleton view -> 
-                ViewBinder.bindSingleton (vm, view) |> snd
-            | Transient viewType -> 
-                let view = Activator.CreateInstance(viewType) :?> Control
-                ViewBinder.bindWithDispose (vm, view) |> snd
-        | None ->
-            failwithf $"No view registered for VM type {vmType.FullName}"
 
     /// Gets or creates a view from the view registry by its VM type.
     member this.GetView(vmType: Type) = 

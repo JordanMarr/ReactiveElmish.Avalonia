@@ -9,5 +9,4 @@ open ReactiveUI
 type ICompositionRoot = 
     abstract ServiceProvider: IServiceProvider with get
     abstract GetView: Type -> Control
-    abstract GetView: IReactiveObject -> Control
 
