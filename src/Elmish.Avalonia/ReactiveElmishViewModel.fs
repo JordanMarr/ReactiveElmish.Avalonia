@@ -65,7 +65,7 @@ type ReactiveElmishViewModel() =
 
 
 
-module ReactiveElmishViewModel = 
+module internal ReactiveElmishViewModel = 
     let trySetRoot (root: ICompositionRoot) (vm: ReactiveUI.IReactiveObject) =
         if vm :? ReactiveElmishViewModel then
             (vm :?> ReactiveElmishViewModel).Root <- root
