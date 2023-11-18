@@ -36,7 +36,9 @@
     </AssemblyAttribute>-->
     <Compile Include="ElmishStore.fs" />
     <Compile Include="ViewBinder.fs" />
+    <Compile Include="ICompositionRoot.fs" />
     <Compile Include="ReactiveElmishViewModel.fs" />
+    <Compile Include="CompositionRoot.fs" />
     <Compile Include="ProgramExtensions.fs" />
   </ItemGroup>
 
@@ -44,6 +46,7 @@
     <PackageReference Include="Avalonia" Version="11.0.5" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
     <PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[6.0.1, 99]" />
   </ItemGroup>
 

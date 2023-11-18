@@ -10,6 +10,7 @@ open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
+open Microsoft.Extensions.DependencyInjection
 
 type ReactiveElmishViewModel() = 
     inherit ReactiveUI.ReactiveObject()
@@ -17,6 +18,8 @@ type ReactiveElmishViewModel() =
     let disposables = ResizeArray<IDisposable>()
     let propertyChanged = Event<_, _>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
+
+    member val Root: ICompositionRoot = Unchecked.defaultof<_> with get, set
     
     interface INotifyPropertyChanged with
         [<CLIEvent>]

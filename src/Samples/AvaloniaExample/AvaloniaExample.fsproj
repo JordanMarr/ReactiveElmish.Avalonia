@@ -25,6 +25,7 @@
         <Compile Include="ViewModels\ChartViewModel.fs" />        
         <Compile Include="ViewModels\FilePickerViewModel.fs" />        
         <Compile Include="ViewModels\MainViewModel.fs" />        
+        <Compile Include="AppCompositionRoot.fs" />        
         <Compile Include="ViewLocator.fs" />
         <Compile Include="App.axaml.fs" />
         <Compile Include="Program.fs" />
@@ -37,7 +38,6 @@
     <ItemGroup>
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
         <PackageReference Include="Elmish" Version="4.1.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.5.23280.8" />
         <PackageReference Include="System.Reactive.Core" Version="6.0.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.5" />

@@ -15,6 +15,11 @@ type MainViewModel() =
         //|> Program.withConsoleTrace
         |> Program.mkStore
 
+    //let counterView () = this.ServiceProvider.GetRequiredService<CounterViewModel>()
+    //let aboutView () = this.ServiceProvider.GetRequiredService<AboutViewModel>()
+    //let chartView () = this.ServiceProvider.GetRequiredService<ChartViewModel>()
+    //let filePickerView () = this.ServiceProvider.GetRequiredService<FilePickerViewModel>()
+
     let counterView = lazy (ViewBinder.bindSingleton (new CounterViewModel(app), Views.CounterView()) |> snd)
     let aboutView = lazy (ViewBinder.bindSingleton (new AboutViewModel(app), Views.AboutView()) |> snd)
     let chartView = lazy (ViewBinder.bindSingleton (new ChartViewModel(app), Views.ChartView()) |> snd)
