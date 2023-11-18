@@ -18,12 +18,6 @@ type ReactiveElmishViewModel() =
     let propertyChanged = Event<_, _>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
     
-    ///// Starts the Elmish loop for this view model.
-    //abstract member StartElmishLoop : Control -> unit
-    //default this.StartElmishLoop (_: Control) = ()
-    //interface IStartElmishLoop with
-    //    member this.StartElmishLoop(view: Control) = this.StartElmishLoop(view)
-
     interface INotifyPropertyChanged with
         [<CLIEvent>]
         member this.PropertyChanged = propertyChanged.Publish
