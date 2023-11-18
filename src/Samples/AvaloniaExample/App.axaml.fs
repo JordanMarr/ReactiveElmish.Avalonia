@@ -18,11 +18,6 @@ type App() =
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
-            //let view = MainView()
-            //desktop.MainWindow <- view
-            //Services.Init view
-            //let vm = new ViewModels.MainViewModel()
-            //ViewBinder.bindWithDispose (vm, view) |> ignore
             let appRoot = AppCompositionRoot()
             desktop.MainWindow <- appRoot.GetMainWindow<ViewModels.MainViewModel>()
         | _ -> 
