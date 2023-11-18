@@ -14,11 +14,13 @@ type AppCompositionRoot() =
     override this.RegisterServices() = 
         ServiceCollection()
             .AddSingleton<FileService>(FileService(mainView))
-            .AddSingleton<ViewModels.MainViewModel>()
-            .AddSingleton<ViewModels.CounterViewModel>()
-            .AddSingleton<ViewModels.AboutViewModel>()
-            .AddSingleton<ViewModels.ChartViewModel>()
-            .AddSingleton<ViewModels.FilePickerViewModel>()
+            // TODO: Auto-register by default in CompositionRoot
+            // Transient VMs (singleton lifetime will be handled via RegisterViews)
+            .AddTransient<ViewModels.MainViewModel>()
+            .AddTransient<ViewModels.CounterViewModel>()
+            .AddTransient<ViewModels.AboutViewModel>()
+            .AddTransient<ViewModels.ChartViewModel>()
+            .AddTransient<ViewModels.FilePickerViewModel>()
 
 
     override this.RegisterViews() = 

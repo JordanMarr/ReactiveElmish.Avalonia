@@ -37,7 +37,7 @@ module Counter =
 
 open Counter
 
-type CounterViewModel(app: IElmishStore<App.Model, App.Msg>) =
+type CounterViewModel() =
     inherit ReactiveElmishViewModel()
 
     let counter = 
@@ -53,5 +53,4 @@ type CounterViewModel(app: IElmishStore<App.Model, App.Msg>) =
     member this.IsResetEnabled = this.Bind(counter, fun m -> m.Count <> 0)
 
     static member DesignVM = 
-        let store = Store.design(App.init())
-        new CounterViewModel(store)
+        new CounterViewModel()

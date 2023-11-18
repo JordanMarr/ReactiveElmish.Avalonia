@@ -10,7 +10,6 @@ open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
-open Microsoft.Extensions.DependencyInjection
 
 type ReactiveElmishViewModel() = 
     inherit ReactiveUI.ReactiveObject()
@@ -20,6 +19,10 @@ type ReactiveElmishViewModel() =
     let propertySubscriptions = Dictionary<string, IDisposable>()
 
     member val Root: ICompositionRoot = Unchecked.defaultof<_> with get, set
+
+    member this.GetView<'ViewModel & #ReactiveUI.IReactiveObject>() = 
+        let vmType = typeof<'ViewModel>
+        this.Root.GetView(vmType)
     
     interface INotifyPropertyChanged with
         [<CLIEvent>]
@@ -61,3 +64,8 @@ type ReactiveElmishViewModel() =
             propertySubscriptions.Clear()
 
 
+
+module ReactiveElmishViewModel = 
+    let trySetRoot (root: ICompositionRoot) (vm: ReactiveUI.IReactiveObject) =
+        if vm :? ReactiveElmishViewModel then
+            (vm :?> ReactiveElmishViewModel).Root <- root

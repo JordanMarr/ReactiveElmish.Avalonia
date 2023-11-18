@@ -2,13 +2,13 @@
 
 open Elmish.Avalonia
 open Elmish
+open App
 
-type AboutViewModel(app: IElmishStore<App.Model, App.Msg>) =
+type AboutViewModel() =
     inherit ReactiveElmishViewModel()
 
     member this.Version = "v1.0"
-    member this.Ok() = app.Dispatch (App.SetView App.CounterView)
+    member this.Ok() = app.Dispatch (SetView CounterView)
 
     static member DesignVM = 
-        let store = Store.design(App.init())
-        new AboutViewModel(store)
+        new AboutViewModel()

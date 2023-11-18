@@ -27,3 +27,9 @@ let update (msg: Msg) (model: Model) =
     match msg with
     | SetView view -> { View = view }   
 
+
+let app = 
+    Program.mkAvaloniaSimple init update
+    |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
+    //|> Program.withConsoleTrace
+    |> Program.mkStore

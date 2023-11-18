@@ -19,7 +19,7 @@ type App() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
             let appRoot = AppCompositionRoot()
-            desktop.MainWindow <- appRoot.GetMainWindow<ViewModels.MainViewModel>()
+            desktop.MainWindow <- appRoot.GetMainWindow<ViewModels.MainViewModel, Views.MainView>()
         | _ -> 
             // leave this here for design view re-renders
             ()

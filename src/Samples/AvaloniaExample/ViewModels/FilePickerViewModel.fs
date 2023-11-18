@@ -33,8 +33,10 @@ module FilePicker =
 
 open FilePicker
 
-type FilePickerViewModel(app: IElmishStore<App.Model, App.Msg>) =
+type FilePickerViewModel() =
     inherit ReactiveElmishViewModel()
+
+    let app = App.app
 
     let filePicker = 
         Program.mkAvaloniaProgram init (update tryPickFile)
@@ -47,5 +49,4 @@ type FilePickerViewModel(app: IElmishStore<App.Model, App.Msg>) =
     member this.PickFile() = filePicker.Dispatch PickFile
 
     static member DesignVM = 
-        let store = Store.design(App.init())
-        new FilePickerViewModel(store)
+        new FilePickerViewModel()

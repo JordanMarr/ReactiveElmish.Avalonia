@@ -151,8 +151,10 @@ module Chart =
 
 open Chart
 
-type ChartViewModel(app: IElmishStore<App.Model, App.Msg>) as this =
+type ChartViewModel() as this =
     inherit ReactiveElmishViewModel()
+
+    let app = App.app
 
     let chart = 
         Program.mkAvaloniaSimple init update
@@ -186,5 +188,4 @@ type ChartViewModel(app: IElmishStore<App.Model, App.Msg>) as this =
     member this.Ok() = app.Dispatch (App.SetView App.CounterView)
 
     static member DesignVM = 
-        let store = Store.design(App.init())
-        new ChartViewModel(store)
+        new ChartViewModel()

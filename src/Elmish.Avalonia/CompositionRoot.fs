@@ -30,11 +30,9 @@ type CompositionRoot() as this =
 
     interface ICompositionRoot with
         member this.ServiceProvider = this.ServiceProvider
-        //member this.GetView<'ViewModel & #IReactiveObject>(?vm: 'ViewModel) = 
-        //    let vm = defaultArg vm (this.ServiceProvider.GetRequiredService<'ViewModel>()) 
-        //    let r = this.GetView<'ViewModel & #IReactiveObject>(vm)
-        //    r
-
+        member this.GetView(vmType: Type) = this.GetView(vmType)
+        member this.GetView(vm: IReactiveObject) = this.GetView(vm)
+        
     /// Gets the composition root service provider.
     member this.ServiceProvider = 
         serviceCollection.Value.BuildServiceProvider()
@@ -49,11 +47,12 @@ type CompositionRoot() as this =
         // TODO: Default should scan the assembly for all VMs and views
         Map.empty
 
-    member this.GetMainWindow<'MainViewModel & #ReactiveElmishViewModel>() = 
+    member this.GetMainWindow<'MainViewModel & #ReactiveElmishViewModel, 'MainView & #Window>() = 
         viewRegistry <- this.RegisterViews()
-        let window = this.GetView<'MainViewModel>() |> unbox<Window>
-        let vm = window.DataContext :?> ReactiveElmishViewModel // |> unbox<ReactiveElmishViewModel>
+        let vm = this.ServiceProvider.GetRequiredService<'MainViewModel>()
         vm.Root <- this
+        let window = Activator.CreateInstance(typeof<'MainView>) :?> Window
+        ViewBinder.bindSingleton (vm, window) |> ignore
         window
     
     /// Gets or creates a view from the view registry by its VM type.
@@ -70,6 +69,29 @@ type CompositionRoot() as this =
             | Singleton view -> 
                 ViewBinder.bindSingleton (vm, view) |> snd
             | Transient viewType -> 
+                let view = Activator.CreateInstance(viewType) :?> Control
+                ViewBinder.bindWithDispose (vm, view) |> snd
+        | None ->
+            failwithf $"No view registered for VM type {vmType.FullName}"
+
+    /// Gets or creates a view from the view registry by its VM type.
+    member this.GetView(vmType: Type) = 
+        let vmKey = VMKey.Create vmType
+
+        // Returns a view/VM instance from the registry or creates a new one.
+        match viewRegistry |> Map.tryFind vmKey with
+        | Some registration -> 
+            match registration with
+            | Singleton view -> 
+                if view.DataContext = null then 
+                    let vm = this.ServiceProvider.GetRequiredService(vmType) :?> IReactiveObject
+                    ReactiveElmishViewModel.trySetRoot this vm
+                    ViewBinder.bindSingleton (vm, view) |> snd
+                else
+                    view
+            | Transient viewType -> 
+                let vm = this.ServiceProvider.GetRequiredService(vmType) :?> IReactiveObject
+                ReactiveElmishViewModel.trySetRoot this vm
                 let view = Activator.CreateInstance(viewType) :?> Control
                 ViewBinder.bindWithDispose (vm, view) |> snd
         | None ->
