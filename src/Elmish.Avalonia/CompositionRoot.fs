@@ -25,7 +25,7 @@ type ViewRegistration =
         static member SingletonView<'View & #Control>() = Activator.CreateInstance(typeof<'View>) :?> Control |> Singleton
 
 type CompositionRoot() as this = 
-    let serviceCollection = lazy this.RegisterServices()
+    let serviceCollection: Lazy<IServiceCollection> = lazy this.InitServices()
     let mutable viewRegistry: Map<VMKey, ViewRegistration> = Map.empty
 
     interface ICompositionRoot with
@@ -33,19 +33,20 @@ type CompositionRoot() as this =
         member this.GetView(vmType: Type) = this.GetView(vmType)
         
     /// Gets the composition root service provider.
-    member this.ServiceProvider = 
-        serviceCollection.Value.BuildServiceProvider()
+    member this.ServiceProvider = serviceCollection.Value.BuildServiceProvider() : IServiceProvider
 
-    /// Allows you to register services to be consumed by your application and VMs.
-    abstract member RegisterServices : unit -> IServiceCollection
-    default this.RegisterServices() = 
+    /// Registers services to be consumed by the application and VMs.
+    abstract member RegisterServices: IServiceCollection -> IServiceCollection
+    default this.RegisterServices(services: IServiceCollection) = services
+    
+    member private this.InitServices() = 
         let services = ServiceCollection()
         // Find all IReactiveObject types in the assembly and add them as transient services.
         let vmType = typeof<IReactiveObject>
-        System.Reflection.Assembly.GetCallingAssembly().GetTypes()
+        Reflection.Assembly.GetEntryAssembly().GetTypes()
         |> Array.filter (fun t -> t.IsClass && not t.IsAbstract && t.GetInterfaces() |> Array.contains(vmType))
         |> Array.iter (services.AddTransient >> ignore)
-        services
+        this.RegisterServices(services)
 
     /// Allows you to register views by VM type name.
     abstract member RegisterViews : unit -> Map<VMKey, ViewRegistration>
