@@ -32,18 +32,18 @@ type FilePickerViewModel(fileSvc: FileService) =
 
     let app = App.app
 
-    let filePicker = 
+    let local = 
         Program.mkAvaloniaSimple init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         //|> Program.withConsoleTrace
         |> Program.mkStore
 
-    member this.FilePath = this.Bind (filePicker, _.FilePath >> Option.defaultValue "Not Set")
+    member this.FilePath = this.Bind (local, _.FilePath >> Option.defaultValue "Not Set")
     member this.Ok() = app.Dispatch (App.SetView App.CounterView)
     member this.PickFile() = 
         task {
             let! path = fileSvc.TryPickFile()
-            filePicker.Dispatch (SetFilePath path)
+            local.Dispatch (SetFilePath path)
         }
 
     static member DesignVM = 

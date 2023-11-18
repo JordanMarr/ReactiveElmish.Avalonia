@@ -156,7 +156,7 @@ type ChartViewModel() as this =
 
     let app = App.app
 
-    let chart = 
+    let local = 
         Program.mkAvaloniaSimple init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
         //|> Program.withConsoleTrace
@@ -170,21 +170,21 @@ type ChartViewModel() as this =
         |> Observable.subscribe (fun m -> 
             if m.View <> App.ChartView && this.IsAutoUpdateChecked then
                 printfn "Disabling Chart AutoUpdate"
-                chart.Dispatch (SetIsAutoUpdateChecked false)
+                local.Dispatch (SetIsAutoUpdateChecked false)
         )
         |> ignore
 
-    member this.Actions = this.Bind (chart, _.Actions)
-    member this.AddItem() = chart.Dispatch AddItem
-    member this.RemoveItem() = chart.Dispatch RemoveItem
-    member this.UpdateItem() = chart.Dispatch UpdateItem
-    member this.ReplaceItem() = chart.Dispatch ReplaceItem
-    member this.Reset() = chart.Dispatch Reset
+    member this.Actions = this.Bind (local, _.Actions)
+    member this.AddItem() = local.Dispatch AddItem
+    member this.RemoveItem() = local.Dispatch RemoveItem
+    member this.UpdateItem() = local.Dispatch UpdateItem
+    member this.ReplaceItem() = local.Dispatch ReplaceItem
+    member this.Reset() = local.Dispatch Reset
     member this.IsAutoUpdateChecked 
-        with get () = this.Bind (chart, _.IsAutoUpdateChecked)
-        and set value = chart.Dispatch (SetIsAutoUpdateChecked value)
-    member this.Series = this.Bind (chart, _.Series)
-    member this.XAxes = this.Bind (chart, fun _ -> XAxes)
+        with get () = this.Bind (local, _.IsAutoUpdateChecked)
+        and set value = local.Dispatch (SetIsAutoUpdateChecked value)
+    member this.Series = this.Bind (local, _.Series)
+    member this.XAxes = this.Bind (local, fun _ -> XAxes)
     member this.Ok() = app.Dispatch (App.SetView App.CounterView)
 
     static member DesignVM = 

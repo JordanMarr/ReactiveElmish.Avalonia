@@ -40,17 +40,17 @@ open Counter
 type CounterViewModel() =
     inherit ReactiveElmishViewModel()
 
-    let counter = 
+    let local = 
         Program.mkAvaloniaSimple init update
         //|> Program.withConsoleTrace
         |> Program.mkStore
 
-    member this.Count = this.Bind(counter, _.Count)
-    member this.Actions = this.Bind(counter, _.Actions)
-    member this.Increment() = counter.Dispatch Increment
-    member this.Decrement() = counter.Dispatch Decrement
-    member this.Reset() = counter.Dispatch Reset
-    member this.IsResetEnabled = this.Bind(counter, fun m -> m.Count <> 0)
+    member this.Count = this.Bind(local, _.Count)
+    member this.Actions = this.Bind(local, _.Actions)
+    member this.Increment() = local.Dispatch Increment
+    member this.Decrement() = local.Dispatch Decrement
+    member this.Reset() = local.Dispatch Reset
+    member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
 
     static member DesignVM = 
         new CounterViewModel()
