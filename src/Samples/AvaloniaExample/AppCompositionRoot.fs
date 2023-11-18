@@ -12,16 +12,8 @@ type AppCompositionRoot() =
     let mainView = Views.MainView()
 
     override this.RegisterServices() = 
-        ServiceCollection()
-            .AddSingleton<FileService>(FileService(mainView))
-            // TODO: Auto-register by default in CompositionRoot
-            // Transient VMs (singleton lifetime will be handled via RegisterViews)
-            .AddTransient<ViewModels.MainViewModel>()
-            .AddTransient<ViewModels.CounterViewModel>()
-            .AddTransient<ViewModels.AboutViewModel>()
-            .AddTransient<ViewModels.ChartViewModel>()
-            .AddTransient<ViewModels.FilePickerViewModel>()
-
+        let services = base.RegisterServices()
+        services.AddSingleton<FileService>(FileService(mainView))
 
     override this.RegisterViews() = 
         Map [

@@ -38,7 +38,14 @@ type CompositionRoot() as this =
 
     /// Allows you to register services to be consumed by your application and VMs.
     abstract member RegisterServices : unit -> IServiceCollection
-    default this.RegisterServices() = ServiceCollection()
+    default this.RegisterServices() = 
+        let services = ServiceCollection()
+        // Find all IReactiveObject types in the assembly and add them as transient services.
+        let vmType = typeof<IReactiveObject>
+        System.Reflection.Assembly.GetCallingAssembly().GetTypes()
+        |> Array.filter (fun t -> t.IsClass && not t.IsAbstract && t.GetInterfaces() |> Array.contains(vmType))
+        |> Array.iter (services.AddTransient >> ignore)
+        services
 
     /// Allows you to register views by VM type name.
     abstract member RegisterViews : unit -> Map<VMKey, ViewRegistration>
