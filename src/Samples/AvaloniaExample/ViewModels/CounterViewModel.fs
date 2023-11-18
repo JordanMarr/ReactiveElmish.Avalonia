@@ -34,15 +34,23 @@ module Counter =
         | Reset ->
             init()
 
-open Counter
-
-type CounterViewModel() =
-    inherit ReactiveElmishViewModel()
-
+    // Use this for a singleton counter store
     let counter = 
-        Program.mkAvaloniaSimple Counter.init Counter.update
+        Program.mkAvaloniaSimple init update
         |> Program.withConsoleTrace
         |> Program.mkStore
+
+open Counter
+
+
+type CounterViewModel(app: IElmishStore<App.Model, App.Msg>) =
+    inherit ReactiveElmishViewModel()
+
+    // Use this for a transient counter store
+    //let counter = 
+    //    Program.mkAvaloniaSimple init update
+    //    |> Program.withConsoleTrace
+    //    |> Program.mkStore
 
     member this.Count = this.Bind(counter, _.Count)
     member this.Actions = this.Bind(counter, _.Actions)
@@ -52,4 +60,5 @@ type CounterViewModel() =
     member this.IsResetEnabled = this.Bind(counter, fun m -> m.Count <> 0)
 
     static member DesignVM = 
-        new CounterViewModel()
+        let store = Store.design(App.init())
+        new CounterViewModel(store)

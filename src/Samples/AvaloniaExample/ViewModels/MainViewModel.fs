@@ -13,14 +13,11 @@ type MainViewModel() =
         |> Program.withConsoleTrace
         |> Program.mkStore
 
-    let counterVM = new CounterViewModel()
-    let aboutVM = new AboutViewModel(app)
-
     member this.ContentVM = 
         this.Bind (app, fun m -> 
             match m.View with
-            | CounterView -> counterVM
-            | AboutView -> aboutVM
+            | CounterView -> new CounterViewModel(app)
+            | AboutView -> new AboutViewModel(app)
             | ChartView -> new ChartViewModel(app)
             | FilePickerView -> new FilePickerViewModel(app)
             : ReactiveUI.ReactiveObject
@@ -31,4 +28,5 @@ type MainViewModel() =
     member this.ShowAbout() = app.Dispatch (SetView AboutView)
     member this.ShowFilePicker() = app.Dispatch (SetView FilePickerView)
 
-    static member DesignVM = new MainViewModel()
+    static member DesignVM = 
+        new MainViewModel()
