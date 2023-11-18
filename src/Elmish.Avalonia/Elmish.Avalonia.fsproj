@@ -34,7 +34,6 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>Elmish.Avalonia.Benchmarks</_Parameter1>
     </AssemblyAttribute>-->
-    <None Include="elmish-avalonia-logo-128x128.png" />
     <Compile Include="ElmishStore.fs" />
     <Compile Include="ViewBinder.fs" />
     <Compile Include="ReactiveElmishViewModel.fs" />
