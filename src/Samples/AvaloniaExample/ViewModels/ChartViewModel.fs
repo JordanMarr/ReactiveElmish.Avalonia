@@ -176,5 +176,5 @@ type ChartViewModel(app: IElmishStore<App.Model, App.Msg>) =
         |> Program.runView this view
 
     static member DesignVM = 
-        let store = new DesignStore<App.Model, App.Msg>(App.init())
+        let store = Store.design(App.init())
         new ChartViewModel(store)

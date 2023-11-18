@@ -26,6 +26,9 @@ type DesignStore<'Model, 'Msg>(designModel) =
     interface IDisposable with
         member this.Dispose() = ()
 
+module Store = 
+    let design (model: 'Model) = new DesignStore<'Model, 'Msg>(model)
+
 
 type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =    
     let _modelSubject = new Subject<'Model>()

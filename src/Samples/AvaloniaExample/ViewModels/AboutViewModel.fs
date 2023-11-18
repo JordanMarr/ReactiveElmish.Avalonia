@@ -13,5 +13,5 @@ type AboutViewModel(app: IElmishStore<Model, Msg>) =
     member this.ResetCounter() = app.Dispatch Reset
 
     static member DesignVM = 
-        let store = new DesignStore<App.Model, App.Msg>(App.init())
+        let store = Store.design(App.init())
         new AboutViewModel(store)
