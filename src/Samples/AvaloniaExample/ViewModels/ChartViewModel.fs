@@ -162,14 +162,14 @@ type ChartViewModel() as this =
         //|> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
         |> Program.mkStore
-        // Terminate all Elmish subscriptions on dispose (view is registered as Transient).
+        //Terminate all Elmish subscriptions on dispose (view is registered as Transient).
         //|> Program.mkStoreWithTerminate this Terminate 
 
     do  // Manually disable AutoUpdate (when view is registered as Singleton).
         this.Subscribe(app.Observable, fun m -> 
-            if m.View = App.ChartView && not this.IsAutoUpdateChecked then
-                printfn "Enabling Chart AutoUpdate"
-                local.Dispatch (SetIsAutoUpdateChecked true)
+            if m.View <> App.ChartView && this.IsAutoUpdateChecked then
+                printfn "Disabling Chart AutoUpdate"
+                local.Dispatch (SetIsAutoUpdateChecked false)
         )
 
     member this.Actions = this.Bind (local, _.Actions)
