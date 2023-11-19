@@ -48,17 +48,14 @@ type CompositionRoot() as this =
 
     /// Allows you to register views by VM type name.
     abstract member RegisterViews : unit -> Map<VM, View>
-    default this.RegisterViews() = 
-        // TODO: Default should scan the assembly for all VMs and views
-        Map.empty
+    default this.RegisterViews() = Map.empty
 
-    member this.GetMainWindow<'MainViewModel & #ReactiveElmishViewModel, 'MainView & #Window>() = 
+    /// Initializes the view registry and returns the main window..
+    member this.GetMainWindow<'MainViewModel & #ReactiveElmishViewModel>() = 
         viewRegistry <- this.RegisterViews()
-        let vm = this.ServiceProvider.GetRequiredService<'MainViewModel>()
-        vm.Root <- this
-        let window = Activator.CreateInstance(typeof<'MainView>) :?> Window
-        ViewBinder.bindSingleton (vm, window) |> ignore
-        window
+        match this.GetView(typeof<'MainViewModel>) |> box with
+        | :? Window as window -> window
+        | _ -> failwithf $"No main window registered for VM type {typeof<'MainViewModel>.FullName}"
 
     /// Gets or creates a view from the view registry by its VM type.
     member this.GetView(vmType: Type) = 
