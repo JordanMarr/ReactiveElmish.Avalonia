@@ -31,7 +31,8 @@ My vision for this library departs from the typical "monolithic" Elmish app. Ins
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
 Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `Bind` method will take care of binding your view model properties to Elmish model projections. 
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/8e989018-3b81-443e-b782-d06f52067654)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/21d1fed5-5606-4cab-87f7-585d2c59d9ce)
+
 
 
 ### V2 Design Highlights
@@ -53,11 +54,13 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
 
-## Master View
-The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
-Since the design preview is set for both the `MasterView` and the `CounterView`, we are able to see the counter on the `MasterView` design preview!
+## Composition Root
+The composition root is where you register your views/vms as well as any injected services.
+Views can be registered with two lifetimes:
+* `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
+* `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/e47e1662-b484-4524-b007-718f2d38d232)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/212897e3-a73f-4143-849f-71c53434bbbd)
 
 
 # Project Setup
@@ -66,8 +69,7 @@ Steps to create a new project:
 
 1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
 2) Install the Elmish.Avalonia package from NuGet.
-3) Replace the [`ViewLocator.fs`](https://github.com/JordanMarr/Elmish.Avalonia/blob/main/src/Samples/AvaloniaExample/ViewLocator.fs) with the one from from the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample). This makes it easier to bind the view/viewmodel and start the Elmish loop using convention.
-   Looking at the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample), this allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
+3) Use the `AvaloniaExample` project in the `Samples` directory as a reference.
 
 # Sample Project
 Please view the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/v2-beta/src/Samples/AvaloniaExample).
