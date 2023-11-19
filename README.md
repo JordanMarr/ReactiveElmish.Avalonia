@@ -31,7 +31,8 @@ My vision for this library departs from the typical "monolithic" Elmish app. Ins
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
 Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `Bind` method will take care of binding your view model properties to Elmish model projections. 
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/8e989018-3b81-443e-b782-d06f52067654)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/21d1fed5-5606-4cab-87f7-585d2c59d9ce)
+
 
 
 ### V2 Design Highlights
