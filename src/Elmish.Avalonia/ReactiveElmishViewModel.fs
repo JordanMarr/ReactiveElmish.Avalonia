@@ -38,7 +38,7 @@ type ReactiveElmishViewModel() =
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
             let disposable = 
-                store.ModelObservable
+                store.Observable
                     .DistinctUntilChanged(modelProjection)
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
@@ -54,7 +54,13 @@ type ReactiveElmishViewModel() =
         // Returns the latest value from the model projection.
         store.Model |> modelProjection
 
-    member this.AddDisposable(disposable: 'Disposable & #IDisposable) =
+    /// Subscribes to an IObservable<> and adds the subscription to the list of disposables.
+    member this.Subscribe(observable: IObservable<'T>, handler: 'T -> unit) =
+        observable 
+        |> Observable.subscribe handler
+        |> this.AddDisposable
+
+    member this.AddDisposable(disposable: IDisposable) =
         disposables.Add(disposable)
 
     interface IDisposable with

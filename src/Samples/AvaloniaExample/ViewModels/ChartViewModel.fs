@@ -162,17 +162,15 @@ type ChartViewModel() as this =
         //|> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
         |> Program.mkStore
-        // We can Terminate the store when the VM is disposed, but are using singlteton VMs in this example.
+        // Terminate all Elmish subscriptions on dispose (view is registered as Transient).
         //|> Program.mkStoreWithTerminate this Terminate 
 
-    do
-        app.ModelObservable
-        |> Observable.subscribe (fun m -> 
-            if m.View <> App.ChartView && this.IsAutoUpdateChecked then
-                printfn "Disabling Chart AutoUpdate"
-                local.Dispatch (SetIsAutoUpdateChecked false)
+    do  // Manually disable AutoUpdate (when view is registered as Singleton).
+        this.Subscribe(app.Observable, fun m -> 
+            if m.View = App.ChartView && not this.IsAutoUpdateChecked then
+                printfn "Enabling Chart AutoUpdate"
+                local.Dispatch (SetIsAutoUpdateChecked true)
         )
-        |> ignore
 
     member this.Actions = this.Bind (local, _.Actions)
     member this.AddItem() = local.Dispatch AddItem
@@ -187,5 +185,4 @@ type ChartViewModel() as this =
     member this.XAxes = this.Bind (local, fun _ -> XAxes)
     member this.Ok() = app.Dispatch App.GoHome
 
-    static member DesignVM = 
-        new ChartViewModel()
+    static member DesignVM = new ChartViewModel()

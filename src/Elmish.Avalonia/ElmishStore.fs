@@ -15,10 +15,10 @@ type IElmishStore<'Model, 'Msg> =
     inherit IDisposable       
     abstract member Dispatch: 'Msg -> unit
     abstract member Model: 'Model with get
-    abstract member ModelObservable: IObservable<'Model>
+    abstract member Observable: IObservable<'Model>
 
 module Design = 
-    /// Stubs constructor injected dependencies in design mode.
+    /// Stubs a constructor injected dependency in design mode.
     let stub<'T> = Unchecked.defaultof<'T>
 
 type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =    
@@ -34,7 +34,7 @@ type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as t
     interface IElmishStore<'Model, 'Msg> with
         member this.Dispatch msg = _dispatch msg
         member this.Model = _model
-        member this.ModelObservable = _modelSubject.AsObservable()
+        member this.Observable = _modelSubject.AsObservable()
     
         /// Binds this VM to the view `DataContext` and runs the Elmish loop.
     member private this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>) =

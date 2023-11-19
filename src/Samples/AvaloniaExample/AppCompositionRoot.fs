@@ -5,21 +5,23 @@ open Avalonia.Controls
 open Avalonia.Controls.Templates
 open Elmish.Avalonia
 open Microsoft.Extensions.DependencyInjection
+open AvaloniaExample.ViewModels
+open AvaloniaExample.Views
 
 type AppCompositionRoot() =
     inherit CompositionRoot()
 
-    let mainView = Views.MainView()
+    let mainView = MainView()
 
     override this.RegisterServices(services) = 
         services.AddSingleton<FileService>(FileService(mainView))
 
     override this.RegisterViews() = 
         Map [
-            VM.Create<ViewModels.MainViewModel>(), View.Singleton(mainView)
-            VM.Create<ViewModels.CounterViewModel>(), View.Singleton<Views.CounterView>()
-            VM.Create<ViewModels.AboutViewModel>(), View.Singleton<Views.AboutView>()
-            VM.Create<ViewModels.ChartViewModel>(), View.Singleton<Views.ChartView>()
-            VM.Create<ViewModels.FilePickerViewModel>(), View.Singleton<Views.FilePickerView>()
+            VM.Create<MainViewModel>(), View.Singleton(mainView)
+            VM.Create<CounterViewModel>(), View.Singleton<CounterView>()
+            VM.Create<AboutViewModel>(), View.Singleton<AboutView>()
+            VM.Create<ChartViewModel>(), View.Singleton<ChartView>()
+            VM.Create<FilePickerViewModel>(), View.Singleton<FilePickerView>()
         ]
         
