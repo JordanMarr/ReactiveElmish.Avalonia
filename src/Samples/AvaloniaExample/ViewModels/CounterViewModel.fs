@@ -34,22 +34,23 @@ module Counter =
         | Reset ->
             init()
 
+
 open Counter
 
 type CounterViewModel() =
-    inherit ReactiveElmishViewModel<Model, Msg>(init())
+    inherit ReactiveElmishViewModel()
 
-    member this.Count = this.Bind _.Count
-    member this.Actions = this.Bind _.Actions
-    member this.Increment() = this.Dispatch Increment
-    member this.Decrement() = this.Dispatch Decrement
-    member this.Reset() = this.Dispatch Reset
-    member this.IsResetEnabled = this.Bind(fun m -> m.Count <> 0)
-
-    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+    let local = 
         Program.mkAvaloniaSimple init update
-        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
-        |> Program.withConsoleTrace
-        |> Program.runView this view
+        //|> Program.withConsoleTrace
+        |> Program.mkStore
 
-    static member DesignVM = new CounterViewModel()
+    member this.Count = this.Bind(local, _.Count)
+    member this.Actions = this.Bind(local, _.Actions)
+    member this.Increment() = local.Dispatch Increment
+    member this.Decrement() = local.Dispatch Decrement
+    member this.Reset() = local.Dispatch Reset
+    member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
+
+    static member DesignVM = 
+        new CounterViewModel()

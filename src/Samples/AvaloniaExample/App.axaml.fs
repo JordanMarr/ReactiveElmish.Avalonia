@@ -4,6 +4,7 @@ open Avalonia
 open Avalonia.Markup.Xaml
 open AvaloniaExample.Views
 open Avalonia.Controls.ApplicationLifetimes
+open Elmish.Avalonia
 
 type App() =
     inherit Application()
@@ -17,11 +18,8 @@ type App() =
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
-            let view = MainView()
-            desktop.MainWindow <- view
-            Services.Init view           
-            let vm = new ViewModels.MainViewModel()
-            vm.StartElmishLoop(view)
+            let appRoot = AppCompositionRoot()
+            desktop.MainWindow <- appRoot.GetMainWindow<ViewModels.MainViewModel, Views.MainView>()
         | _ -> 
             // leave this here for design view re-renders
             ()

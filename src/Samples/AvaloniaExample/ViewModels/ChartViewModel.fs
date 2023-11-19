@@ -10,7 +10,6 @@ open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
-open Messaging
 
 module Chart = 
 
@@ -68,8 +67,7 @@ module Chart =
         | Reset
         | SetIsAutoUpdateChecked of bool
         | Terminate
-        | Ok
-
+    
     let init() =
         {
             Series = 
@@ -126,9 +124,6 @@ module Chart =
                 IsAutoUpdateChecked = isChecked
                 Actions = model.Actions @ [ { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } ]
             }
-        | Ok -> 
-            bus.OnNext(GlobalMsg.GoHome)
-            { model with IsAutoUpdateChecked = false }
         | Terminate ->
             model
 
@@ -156,28 +151,38 @@ module Chart =
 
 open Chart
 
-type ChartViewModel() =
-    inherit ReactiveElmishViewModel<Model, Msg>(init())
+type ChartViewModel() as this =
+    inherit ReactiveElmishViewModel()
 
-    member this.Actions = this.Bind _.Actions
-    member this.AddItem() = this.Dispatch AddItem
-    member this.RemoveItem() = this.Dispatch RemoveItem
-    member this.UpdateItem() = this.Dispatch UpdateItem
-    member this.ReplaceItem() = this.Dispatch ReplaceItem
-    member this.Reset() = this.Dispatch Reset
-    member this.IsAutoUpdateChecked 
-        with get () = this.Bind _.IsAutoUpdateChecked
-        and set value = this.Dispatch (SetIsAutoUpdateChecked value)
-    member this.Series = this.Bind _.Series
-    member this.XAxes = this.Bind (fun _ -> XAxes)
-    member this.Ok() = this.Dispatch Ok
+    let app = App.app
 
-    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+    let local = 
         Program.mkAvaloniaSimple init update
         |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
-        //|> Program.withConsoleTrace // too much data
+        //|> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
-        |> Program.terminateOnViewUnloaded this Terminate
-        |> Program.runView this view
+        |> Program.mkStore
+        // Terminate all Elmish subscriptions on dispose (view is registered as Transient).
+        //|> Program.mkStoreWithTerminate this Terminate 
+
+    do  // Manually disable AutoUpdate (when view is registered as Singleton).
+        this.Subscribe(app.Observable, fun m -> 
+            if m.View = App.ChartView && not this.IsAutoUpdateChecked then
+                printfn "Enabling Chart AutoUpdate"
+                local.Dispatch (SetIsAutoUpdateChecked true)
+        )
+
+    member this.Actions = this.Bind (local, _.Actions)
+    member this.AddItem() = local.Dispatch AddItem
+    member this.RemoveItem() = local.Dispatch RemoveItem
+    member this.UpdateItem() = local.Dispatch UpdateItem
+    member this.ReplaceItem() = local.Dispatch ReplaceItem
+    member this.Reset() = local.Dispatch Reset
+    member this.IsAutoUpdateChecked 
+        with get () = this.Bind (local, _.IsAutoUpdateChecked)
+        and set value = local.Dispatch (SetIsAutoUpdateChecked value)
+    member this.Series = this.Bind (local, _.Series)
+    member this.XAxes = this.Bind (local, fun _ -> XAxes)
+    member this.Ok() = app.Dispatch App.GoHome
 
     static member DesignVM = new ChartViewModel()

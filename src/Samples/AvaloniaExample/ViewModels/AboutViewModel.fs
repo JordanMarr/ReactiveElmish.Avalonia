@@ -2,41 +2,13 @@
 
 open Elmish.Avalonia
 open Elmish
-open Messaging
-
-module About =
-
-    type Model = 
-        {
-            Version: string
-        }
-
-    type Msg = 
-        | Ok
-        | Terminate
-
-    let init() = 
-        { 
-            Version = "1.1"
-        }, Cmd.none
-
-    let update (msg: Msg) (model: Model) = 
-        match msg with
-        | Ok -> model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
-        | Terminate -> model, Cmd.none
-
-open About
+open App
 
 type AboutViewModel() =
-    inherit ReactiveElmishViewModel<Model, Msg>(init() |> fst)
+    inherit ReactiveElmishViewModel()
 
-    member this.Version = this.Bind _.Version
-    member this.Ok() = this.Dispatch Ok
+    member this.Version = "v1.0"
+    member this.Ok() = app.Dispatch GoHome
 
-    override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
-        Program.mkAvaloniaProgram init update
-        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
-        |> Program.withConsoleTrace
-        |> Program.runView this view
-
-    static member DesignVM = new AboutViewModel()
+    static member DesignVM = 
+        new AboutViewModel()

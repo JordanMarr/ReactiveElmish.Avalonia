@@ -69,7 +69,7 @@
 		    <Button Classes="tab" Content="About" Command="{Binding ShowAbout}" />
 		</StackPanel>
 		
-		<ContentControl Content="{Binding ContentVM}" />
+		<ContentControl Content="{Binding ContentView}" />
 		
 	</DockPanel>
 	
