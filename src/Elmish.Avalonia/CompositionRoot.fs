@@ -8,8 +8,12 @@ open ReactiveUI
 
 type VM = 
     private VMKey of string
+        [<Obsolete "Use 'VM.Key' instead.">]
         static member Create(vmType: Type) = VMKey vmType.FullName
+        [<Obsolete "Use 'VM.Key' instead.">]
         static member Create<'ViewModel & #IReactiveObject>() = VMKey typeof<'ViewModel>.FullName
+        static member Key(vmType: Type) = VMKey vmType.FullName
+        static member Key<'ViewModel & #IReactiveObject>() = VMKey typeof<'ViewModel>.FullName
 
 type View = 
     | SingletonView of view: Control
@@ -58,7 +62,7 @@ type CompositionRoot() as this =
 
     /// Gets or creates a view from the view registry by its VM type.
     member this.GetView(vmType: Type) = 
-        let vmKey = VM.Create vmType
+        let vmKey = VM.Key vmType
 
         // Returns a view/VM instance from the registry or creates a new one.
         match viewRegistry |> Map.tryFind vmKey with
