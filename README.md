@@ -54,11 +54,13 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
 
-## Master View
-The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
-Since the design preview is set for both the `MasterView` and the `CounterView`, we are able to see the counter on the `MasterView` design preview!
+## Composition Root
+The composition root is where you register your views/vms as well as any injected services.
+Views can be registered with two lifetimes:
+* `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
+* `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/e47e1662-b484-4524-b007-718f2d38d232)
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/212897e3-a73f-4143-849f-71c53434bbbd)
 
 
 # Project Setup
