@@ -23,8 +23,8 @@ type View =
         static member Singleton<'View & #Control>() = Activator.CreateInstance(typeof<'View>) :?> Control |> SingletonView
 
 type CompositionRoot() as this = 
-    let serviceCollection: Lazy<IServiceCollection> = lazy this.InitServices()
-    let mutable viewRegistry: Map<VM, View> = Map.empty
+    let serviceCollection = lazy this.InitServices()
+    let viewRegistry = lazy this.RegisterViews()
 
     interface ICompositionRoot with
         member this.ServiceProvider = this.ServiceProvider
@@ -37,7 +37,7 @@ type CompositionRoot() as this =
     abstract member RegisterServices: IServiceCollection -> IServiceCollection
     default this.RegisterServices(services: IServiceCollection) = services
     
-    member private this.InitServices() = 
+    member private this.InitServices() : IServiceCollection = 
         let services = ServiceCollection()
         // Find all IReactiveObject types in the assembly and add them as transient services.
         let vmType = typeof<IReactiveObject>
@@ -50,19 +50,15 @@ type CompositionRoot() as this =
     abstract member RegisterViews : unit -> Map<VM, View>
     default this.RegisterViews() = Map.empty
 
-    /// Initializes the view registry and returns the main window..
-    member this.GetMainWindow<'MainViewModel & #ReactiveElmishViewModel>() = 
-        viewRegistry <- this.RegisterViews()
-        match this.GetView(typeof<'MainViewModel>) |> box with
-        | :? Window as window -> window
-        | _ -> failwithf $"No main window registered for VM type {typeof<'MainViewModel>.FullName}"
+    /// Gets or creates a view from the view registry by its VM type.
+    member this.GetView<'ViewModel & #ReactiveElmishViewModel>() = this.GetView(typeof<'ViewModel>)
 
     /// Gets or creates a view from the view registry by its VM type.
     member this.GetView(vmType: Type) = 
         let vmKey = VM.Key vmType
 
         // Returns a view/VM instance from the registry or creates a new one.
-        match viewRegistry |> Map.tryFind vmKey with
+        match viewRegistry.Value |> Map.tryFind vmKey with
         | Some registration -> 
             match registration with
             | SingletonView view -> 

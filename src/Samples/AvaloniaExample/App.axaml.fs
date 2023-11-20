@@ -1,10 +1,9 @@
 namespace AvaloniaExample
 
 open Avalonia
+open Avalonia.Controls
 open Avalonia.Markup.Xaml
-open AvaloniaExample.Views
 open Avalonia.Controls.ApplicationLifetimes
-open Elmish.Avalonia
 
 type App() =
     inherit Application()
@@ -19,7 +18,7 @@ type App() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
             let appRoot = AppCompositionRoot()
-            desktop.MainWindow <- appRoot.GetMainWindow<ViewModels.MainViewModel>()
+            desktop.MainWindow <- appRoot.GetView<ViewModels.MainViewModel>() :?> Window
         | _ -> 
             // leave this here for design view re-renders
             ()
