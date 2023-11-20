@@ -2,46 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"        
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="40"
         Width="800"
         x:Class="AvaloniaXPlatExample.Views.MainWindow"        
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
-        Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
+		xmlns:views="using:AvaloniaXPlatExample.Views"
         Title="AvaloniaXPlatExample">
-    <TabControl>
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock VerticalAlignment="Center">ListBox</TextBlock>
-            </TabItem.Header>
-            <UserControl Content="{Binding ListBoxVM}"> </UserControl>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock VerticalAlignment="Center">Counter</TextBlock>
-            </TabItem.Header>
-            <UserControl Content="{Binding CounterVM}"> </UserControl>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock VerticalAlignment="Center">Chart</TextBlock>
-            </TabItem.Header>
-            <UserControl Content="{Binding ChartVM}"> </UserControl>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock VerticalAlignment="Center">FilePicker</TextBlock>
-            </TabItem.Header>
-            <UserControl Content="{Binding FilePickerVM}"> </UserControl>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock VerticalAlignment="Center">About</TextBlock>
-            </TabItem.Header>
-            <UserControl Content="{Binding AboutVM}"> </UserControl>
-        </TabItem>
-    </TabControl>
 
-    <!-- Content is resolved via the ViewLocator -->
+	<TextBlock Text="'Content' will be replaced with 'MainView' in App.xaml.fs" Margin="10" />
     
 </Window>

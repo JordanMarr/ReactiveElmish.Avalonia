@@ -3,41 +3,40 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
-        Width="400"
         x:Class="AvaloniaXPlatExample.Views.MainView"        
         xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
-        Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
+        Design.DataContext="{Binding Source={x:Static vm:MainViewModel.DesignVM}}"
         >
     <TabControl>
-        <TabItem>
+        <!--<TabItem>
             <TabItem.Header>
                 <TextBlock VerticalAlignment="Center">ListBox</TextBlock>
             </TabItem.Header>
             <UserControl Content="{Binding ListBoxVM}"> </UserControl>
-        </TabItem>
+        </TabItem>-->
         <TabItem>
             <TabItem.Header>
                 <TextBlock VerticalAlignment="Center">Counter</TextBlock>
             </TabItem.Header>
-            <UserControl Content="{Binding CounterVM}"> </UserControl>
+            <UserControl Content="{Binding CounterView}"> </UserControl>
         </TabItem>
         <TabItem>
             <TabItem.Header>
                 <TextBlock VerticalAlignment="Center">Chart</TextBlock>
             </TabItem.Header>
-            <UserControl Content="{Binding AboutVM}"> </UserControl>
-        </TabItem>
-        <TabItem>
-            <TabItem.Header>
-                <TextBlock VerticalAlignment="Center">Chart</TextBlock>
-            </TabItem.Header>
-            <UserControl Content="{Binding AboutVM}"> </UserControl>
+            <UserControl Content="{Binding ChartView}"> </UserControl>
         </TabItem>
         <TabItem>
             <TabItem.Header>
                 <TextBlock VerticalAlignment="Center">FilePicker</TextBlock>
             </TabItem.Header>
-            <UserControl Content="{Binding FilePickerVM}"> </UserControl>
+            <UserControl Content="{Binding FilePickerView}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">About</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding AboutView}"> </UserControl>
         </TabItem>
     </TabControl>
 

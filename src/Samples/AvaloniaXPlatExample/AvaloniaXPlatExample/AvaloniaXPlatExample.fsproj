@@ -6,10 +6,8 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Services\Services.fs" />        
-    <Compile Include="ViewModels\IElmishViewModel.fs" />        
-    <Compile Include="ViewModels\Messaging.fs" />        
-    <Compile Include="ViewModels\ListBoxViewModel.fs" />        
+    <Compile Include="Services\FileService.fs" />
+    <Compile Include="ViewModels\App.fs" />        
     <Compile Include="ViewModels\CounterViewModel.fs" />        
     <Compile Include="ViewModels\ChartViewModel.fs" />        
     <Compile Include="ViewModels\FilePickerViewModel.fs" />        
@@ -22,14 +20,14 @@
     <Compile Include="Views\AboutView.axaml.fs" />
     <Compile Include="Views\MainWindow.axaml.fs" />
     <Compile Include="Views\MainView.axaml.fs" />
+    <Compile Include="AppCompositionRoot.fs" />
     <Compile Include="App.axaml.fs" />
     <Compile Include="ViewLocator.fs" />
   </ItemGroup>
   <ItemGroup>
     <!-- for services, filepicker -->
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.5" />
-    <PackageReference Include="Elmish.Avalonia" Version="1.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-preview.5.23280.8" />
+    <PackageReference Include="Elmish.Avalonia" Version="2.0.0-gamma.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
 

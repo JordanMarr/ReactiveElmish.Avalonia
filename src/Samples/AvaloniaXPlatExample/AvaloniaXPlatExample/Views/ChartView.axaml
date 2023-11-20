@@ -3,10 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
-             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+			 Width="700"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"			 
              xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
              xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
-             Design.DataContext="{Binding Source={x:Static vm:ChartViewModel.designVM}}"
+             Design.DataContext="{Binding Source={x:Static vm:ChartViewModel.DesignVM}}"
              x:Class="AvaloniaXPlatExample.Views.ChartView">
     <StackPanel HorizontalAlignment="Center" Margin="10">
         <Grid>

@@ -1,50 +1,49 @@
-﻿module AvaloniaXPlatExample.ViewModels.FilePickerViewModel
+﻿namespace AvaloniaXPlatExample.ViewModels
 
 open Elmish.Avalonia
 open Elmish
-open Messaging
-open AvaloniaXPlatExample
+open AvaloniaXPlatExample.Services
 
-type Model =
-    {
-        FilePath: string option
-    }
+module FilePicker = 
 
-type Msg =
-    | Ok
-    | PickFile
-    | SetFilePath of string option
-    | Terminate
+    type Model = 
+        {
+            FilePath: string option
+        }
 
-let init () =
-    {
-        FilePath = None
-    }, Cmd.none
+    type Msg = 
+        | SetFilePath of string option
 
-let update tryPickFile (msg: Msg) (model: Model) =
-    match msg with
-    | Ok ->
-        model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
-    | PickFile  ->
-        model, Cmd.OfTask.perform tryPickFile () SetFilePath
-    | SetFilePath path ->
-        { model with FilePath = path }, Cmd.none
-    | Terminate ->
-        model, Cmd.none
+    let init () = 
+        { 
+            FilePath = None
+        }
 
-let bindings ()  : Binding<Model, Msg> list = [
-    "Ok" |> Binding.cmd Ok
-    "FilePath" |> Binding.oneWay (fun m -> m.FilePath |> Option.defaultValue "Not Set")
-    "PickFile" |> Binding.cmd PickFile
-]
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | SetFilePath path ->
+            { FilePath = path }
 
-let designVM =
-    ViewModel.designInstance (fst (init ())) (bindings())
 
-let vm () =
-    let tryPickFile () =
-        let fileProvider = Services.Get<FileService>()
-        fileProvider.TryPickFile()
+open FilePicker
 
-    AvaloniaProgram.mkProgram init (update tryPickFile) bindings
-    |> ElmishViewModel.create
+type FilePickerViewModel(fileSvc: FileService) =
+    inherit ReactiveElmishViewModel()
+
+    let app = App.app
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
+        //|> Program.withConsoleTrace
+        |> Program.mkStore
+
+    member this.FilePath = this.Bind (local, _.FilePath >> Option.defaultValue "Not Set")
+    member this.Ok() = app.Dispatch App.GoHome
+    member this.PickFile() = 
+        task {
+            let! path = fileSvc.TryPickFile()
+            local.Dispatch (SetFilePath path)
+        }
+
+    static member DesignVM = new FilePickerViewModel(Design.stub)
