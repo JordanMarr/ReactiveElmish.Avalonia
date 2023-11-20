@@ -10,5 +10,4 @@ type AboutViewModel() =
     member this.Version = "v1.0"
     member this.Ok() = app.Dispatch GoHome
 
-    static member DesignVM = 
-        new AboutViewModel()
+    static member DesignVM = new AboutViewModel()

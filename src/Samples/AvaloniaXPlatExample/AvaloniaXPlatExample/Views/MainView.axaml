@@ -7,7 +7,7 @@
         xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
         Design.DataContext="{Binding Source={x:Static vm:MainViewModel.DesignVM}}"
         >
-    <TabControl>
+    <TabControl SelectedIndex="{Binding SelectedTabIndex}">
         <!--<TabItem>
             <TabItem.Header>
                 <TextBlock VerticalAlignment="Center">ListBox</TextBlock>

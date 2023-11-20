@@ -52,5 +52,4 @@ type CounterViewModel() =
     member this.Reset() = local.Dispatch Reset
     member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
 
-    static member DesignVM = 
-        new CounterViewModel() 
+    static member DesignVM = new CounterViewModel() 

@@ -11,7 +11,7 @@
 			<TextBlock Text="Version:" />
 			<TextBlock Text="{Binding Version}" />
 		</StackPanel>
-        <!-- not needed in tab based layout -->
-		<!-- <Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />		 -->
+        
+		<Button Content="Ok" Command="{Binding Ok}" HorizontalAlignment="Center" />
 	</StackPanel>
 </UserControl>
