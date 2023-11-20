@@ -18,7 +18,7 @@ type ReactiveElmishViewModel() =
     let propertyChanged = Event<_, _>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
 
-    member val Root: ICompositionRoot = Unchecked.defaultof<_> with get, set
+    member val Root: ICompositionRoot = ICompositionRoot.instance
 
     member this.GetView<'ViewModel & #ReactiveUI.IReactiveObject>() = 
         let vmType = typeof<'ViewModel>
@@ -69,9 +69,3 @@ type ReactiveElmishViewModel() =
             propertySubscriptions.Values |> Seq.iter _.Dispose()
             propertySubscriptions.Clear()
 
-
-
-module internal ReactiveElmishViewModel = 
-    let trySetRoot (root: ICompositionRoot) (vm: ReactiveUI.IReactiveObject) =
-        if vm :? ReactiveElmishViewModel then
-            (vm :?> ReactiveElmishViewModel).Root <- root
