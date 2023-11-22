@@ -15,18 +15,23 @@ module Counter =
         | Reset
 
     let init() = 
-        let actions = new SourceList<Action>()
-        actions.Add { Description = "Initialized Counter"; Timestamp = DateTime.Now }
-        { Count = 0; Actions = actions }
+        { 
+            Count = 0
+            Actions = SourceList.createFrom [ { Description = "Initialized Counter"; Timestamp = DateTime.Now } ]
+        }
 
     let update (msg: Msg) (model: Model) = 
         match msg with
         | Increment ->
-            model.Actions.Add { Description = "Incremented"; Timestamp = DateTime.Now }
-            { model with Count = model.Count + 1 }
+            { 
+                Count = model.Count + 1 
+                Actions = model.Actions |> SourceList.add { Description = "Incremented"; Timestamp = DateTime.Now }
+            }
         | Decrement ->
-            model.Actions.Add { Description = "Decremented"; Timestamp = DateTime.Now }
-            { model with Count = model.Count - 1 }
+            { 
+                Count = model.Count - 1 
+                Actions = model.Actions |> SourceList.add { Description = "Decremented"; Timestamp = DateTime.Now }
+            }
         | Reset ->
             model.Actions.Clear()
             model.Actions.Add { Description = "Reset"; Timestamp = DateTime.Now }
