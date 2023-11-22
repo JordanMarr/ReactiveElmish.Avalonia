@@ -10,6 +10,8 @@ open System
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
+open DynamicData
+open System.Collections.ObjectModel
 
 type ReactiveElmishViewModel() = 
     inherit ReactiveUI.ReactiveObject()
@@ -47,12 +49,30 @@ type ReactiveElmishViewModel() =
                         printfn $"PropertyChanged: {vmPropertyName} by {this}"
                         #endif
                     )
-
-            // Stores the subscription and the boxed model projection ('Model -> obj) in a dictionary
             propertySubscriptions.Add(vmPropertyName, disposable)
 
-        // Returns the latest value from the model projection.
-        store.Model |> modelProjection
+        // Returns the initial value from the model projection.
+        modelProjection store.Model
+
+    /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
+    member this.BindSourceList<'Model, 'Msg, 'T>(store: IElmishStore<'Model, 'Msg>, selectSourceList: 'Model -> ISourceList<'T>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable sourceList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            // Creates a subscription to the 'Model SourceList<'T> property and stores it in a dictionary.
+            let disposable = selectSourceList store.Model |> _.Connect().Bind(&sourceList).Subscribe()
+            propertySubscriptions.Add(vmPropertyName, disposable)
+        sourceList
+
+    /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
+    member this.BindSourceCache<'Model, 'Msg, 'Value, 'Key>(store: IElmishStore<'Model, 'Msg>, selectSourceCache: 'Model -> IObservableCache<'Value, 'Key>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable sourceList: ReadOnlyObservableCollection<'Value> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            // Creates a subscription to the 'Model SourceList<'T> property and stores it in a dictionary.
+            let disposable = selectSourceCache store.Model |> _.Connect().Bind(&sourceList).Subscribe()
+            propertySubscriptions.Add(vmPropertyName, disposable)
+        sourceList
 
     /// Subscribes to an IObservable<> and adds the subscription to the list of disposables.
     member this.Subscribe(observable: IObservable<'T>, handler: 'T -> unit) =

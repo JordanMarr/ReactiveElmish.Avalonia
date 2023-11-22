@@ -32,21 +32,17 @@ module Counter =
             model.Actions.Add { Description = "Reset"; Timestamp = DateTime.Now }
             { model with Count = 0 }
 
-
 open Counter
 
-type CounterViewModel() as this =
+type CounterViewModel() =
     inherit ReactiveElmishViewModel()
 
     let local = 
         Program.mkAvaloniaSimple init update
         |> Program.mkStore
 
-    let mutable actions = Unchecked.defaultof<_>
-    do local.Model.Actions.Connect().Bind(&actions).Subscribe() |> this.AddDisposable
-
     member this.Count = this.Bind(local, _.Count)
-    member this.Actions = actions
+    member this.Actions = this.BindSourceList(local, _.Actions)
     member this.Increment() = local.Dispatch Increment
     member this.Decrement() = local.Dispatch Decrement
     member this.Reset() = local.Dispatch Reset
