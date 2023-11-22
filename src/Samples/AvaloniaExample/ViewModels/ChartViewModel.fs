@@ -85,38 +85,38 @@ module Chart =
         | AddItem ->
             values.Insert(values.Count, DateTimePoint(DateTime.Now, rnd.Next(0, 10)))
             { model with 
-                Actions = SourceList.add { Description = $"Added Item"; Timestamp = DateTime.Now } model.Actions }
+                Actions = model.Actions |> SourceList.add { Description = $"Added Item"; Timestamp = DateTime.Now } }
         | AddNull ->
             values.Insert(values.Count, DateTimePoint(DateTime.Now, System.Nullable()))
             { model with 
-                Actions = SourceList.add { Description = $"Added Null"; Timestamp = DateTime.Now } model.Actions }
+                Actions = model.Actions |> SourceList.add { Description = $"Added Null"; Timestamp = DateTime.Now } }
         | RemoveItem ->
             values.RemoveAt(0)
             { model with 
-                Actions = SourceList.add { Description = $"Removed Item"; Timestamp = DateTime.Now } model.Actions }
+                Actions = model.Actions |> SourceList.add { Description = $"Removed Item"; Timestamp = DateTime.Now } }
         | UpdateItem ->
             let item = rnd.Next(0, values.Count - 1)
             let fstValueTime = values[item].DateTime
             values[item] <- DateTimePoint(fstValueTime, rnd.Next(0, 10))
             { model with 
-                Actions = SourceList.add { Description = $"Updated Item: {item + 1}"; Timestamp = DateTime.Now } model.Actions }
+                Actions = model.Actions |> SourceList.add { Description = $"Updated Item: {item + 1}"; Timestamp = DateTime.Now } }
         | ReplaceItem ->
             let lastValueTime = values[values.Count - 1].DateTime
             values[values.Count - 1] <- DateTimePoint(lastValueTime, rnd.Next(0, 10))
             { model with 
-                Actions = SourceList.add { Description = $"Replaced Item: {values.Count}"; Timestamp = DateTime.Now } model.Actions }
+                Actions = model.Actions |> SourceList.add { Description = $"Replaced Item: {values.Count}"; Timestamp = DateTime.Now } }
         | Reset ->
             // insert new Series - send the current series length to the newSeries function
             model.Series[0].Values <- newSeries(Some values.Count)
             { model with
                 // deactivate the AutoUpdate ToggleButton in the UI
                 IsAutoUpdateChecked = false 
-                Actions = SourceList.add { Description = "Reset Chart"; Timestamp = DateTime.Now } model.Actions
+                Actions = model.Actions |> SourceList.clear |> SourceList.add { Description = "Reset Chart"; Timestamp = DateTime.Now }
             }
         | SetIsAutoUpdateChecked isChecked ->
             { model with 
                 IsAutoUpdateChecked = isChecked
-                Actions = SourceList.add { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now } model.Actions
+                Actions = model.Actions |> SourceList.add { Description = $"Is AutoUpdate Checked: {isChecked}"; Timestamp = DateTime.Now }
             }
         | Terminate ->
             model

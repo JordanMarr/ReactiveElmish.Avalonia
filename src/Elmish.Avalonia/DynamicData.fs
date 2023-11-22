@@ -25,6 +25,10 @@ module SourceList =
         sourceList.Remove item |> ignore
         sourceList
 
+    let clear<'T> (sourceList: SourceList<'T>) =
+        sourceList.Clear()
+        sourceList
+
 /// Functional helpers for DynamicData.SourceCache.
 module SourceCache = 
     let create<'TObject, 'TKey> (keySelector: 'TObject -> 'TKey) = 
@@ -48,4 +52,8 @@ module SourceCache =
 
     let removeKeys<'TObject, 'TKey> (keys: seq<'TKey>) (sourceCache: SourceCache<'TObject, 'TKey>) =
         sourceCache.RemoveKeys keys |> ignore
+        sourceCache
+
+    let clear<'TObject, 'TKey> (sourceCache: SourceCache<'TObject, 'TKey>) =
+        sourceCache.Clear()
         sourceCache
