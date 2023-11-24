@@ -31,8 +31,7 @@ My vision for this library departs from the typical "monolithic" Elmish app. Ins
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
 Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `Bind` method will take care of binding your view model properties to Elmish model projections. 
 
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/21d1fed5-5606-4cab-87f7-585d2c59d9ce)
-
+![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/5278afe4-ce05-4548-b9e9-6a1703394fd7)
 
 
 ### V2 Design Highlights
@@ -50,14 +49,6 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 
 ## Runtime View
 ![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
-
-## Composition Root
-The composition root is where you register your views/vms as well as any injected services.
-Views can be registered with two lifetimes:
-* `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
-* `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
-
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/212897e3-a73f-4143-849f-71c53434bbbd)
 
 # Elmish Stores
 V2 introduces the `ElmishStore` which is an Rx powered Elmish loop that can be used to power one or more view models.
@@ -245,6 +236,126 @@ let update (msg: Msg) (model: Model) =
         |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
         |> Program.mkStoreWithTerminate this Terminate 
 ```
+
+# View Model Bindings
+The `ReactiveElmishViewModel` base class contains binding methods that are used to bind data between your Elmish model and your view model.
+All binding methods on the `ReactiveElmishViewModel` are disposed when the view model is diposed.
+
+## `Bind`
+The `Bind` method binds data from an `IElmishStore` to a property on your view model. This can be a simple model propery or a projection based on the model.
+```F#
+type CounterViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.Count = this.Bind(local, _.Count)
+    member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
+```
+
+## `BindSourceList`
+The `BindSourceList` method binds a `ReactiveUI` [`SourceList`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
+This provides list `Add` and `Removed` notifications to the view.
+There is also a `SourceList` helper module that makes it a little nicer to work with.
+
+```F#
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | Increment ->
+            { 
+                Count = model.Count + 1 
+                Actions = model.Actions |> SourceList.add { Description = "Incremented"; Timestamp = DateTime.Now }
+            }
+        | Decrement ->
+            { 
+                Count = model.Count - 1 
+                Actions = model.Actions |> SourceList.add { Description = "Decremented"; Timestamp = DateTime.Now }
+            }
+        | Reset ->
+            {
+                Count = 0 
+                Actions = model.Actions |> SourceList.clear |> SourceList.add { Description = "Reset"; Timestamp = DateTime.Now }
+            }
+
+```
+```F#
+type CounterViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.Actions = this.BindSourceList(local, _.Actions)
+```
+
+## `BindSourceCache`
+The `BindSourceCache` method binds a `ReactiveUI` [`SourceCache`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
+This provides list `Add` and `Removed` notifications to the view for lists with items that have unique keys.
+There is also a `SourceCache` helper module that makes it a little nicer to work with.
+
+```F#
+    type Model =
+        {
+            FileQueue: SourceCache<File, string>
+        }
+
+    let init () =
+        {
+            FileQueue = SourceCache.create _.FullName
+        }
+
+    let update message model =
+        | QueueFile path ->
+            let file = mkFile path
+            { model with FileQueue = model.FileQueue |> SourceCache.addOrUpdate file }
+        | UpdateFileStatus (file, progress, moveFileStatus) ->
+            let updatedFile = { file with Progress = progress; Status = moveFileStatus }
+            { model with FileQueue = model.FileQueue |> SourceCache.addOrUpdate updatedFile }
+        | RemoveFile file ->
+            { model with FileQueue = model.FileQueue |> SourceCache.removeKey file.FullName}
+```
+```F#
+type MainWindowViewModel() as this =
+    inherit ReactiveElmishViewModel()
+
+    member this.FileQueue = this.BindSourceCache(store, _.FileQueue)
+```
+
+# Composition Root
+The composition root is where you register your views/vms as well as any injected services.
+Views can be registered with two lifetimes:
+* `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
+* `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
+
+```F#
+namespace AvaloniaExample
+
+open Elmish.Avalonia
+open Microsoft.Extensions.DependencyInjection
+open AvaloniaExample.ViewModels
+open AvaloniaExample.Views
+
+type AppCompositionRoot() =
+    inherit CompositionRoot()
+
+    let mainView = MainView()
+
+    override this.RegisterServices services = 
+        services.AddSingleton<FileService>(FileService(mainView))
+
+    override this.RegisterViews() = 
+        Map [
+            VM.Key<MainViewModel>(), View.Singleton(mainView)
+            VM.Key<CounterViewModel>(), View.Singleton<CounterView>()
+            VM.Key<AboutViewModel>(), View.Singleton<AboutView>()
+            VM.Key<ChartViewModel>(), View.Singleton<ChartView>()
+            VM.Key<FilePickerViewModel>(), View.Singleton<FilePickerView>()
+        ]
+```
+
 
 # Project Setup
 
