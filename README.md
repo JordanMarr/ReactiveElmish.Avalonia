@@ -222,8 +222,8 @@ let store =
 ### Program.mkStoreWithTerminate
 Creates a store that configures `Program.withTermination` using the given terminate `'Msg`, and fires the terminate `'Msg` when the `view` is `Unloaded`.
 This pattern will dispose your subscriptions when the view is `Unloaded`.
-NOTE 1: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
-NOTE 2: This requires that a store be created locally within a view model.
+* NOTE 1: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
+* NOTE 2: This requires that a store be created locally within a view model.
 
 ```F#
 let update (msg: Msg) (model: Model) =
@@ -237,12 +237,13 @@ let update (msg: Msg) (model: Model) =
         |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
         |> Program.mkStoreWithTerminate this Terminate 
 ```
+# ReactiveElmishViewModel
 
-# View Model Bindings
+## View Model Bindings
 The `ReactiveElmishViewModel` base class contains binding methods that are used to bind data between your Elmish model and your view model.
 All binding methods on the `ReactiveElmishViewModel` are disposed when the view model is diposed.
 
-## `Bind`
+### `Bind`
 The `Bind` method binds data from an `IElmishStore` to a property on your view model. This can be a simple model propery or a projection based on the model.
 ```F#
 type CounterViewModel() =
@@ -256,7 +257,7 @@ type CounterViewModel() =
     member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
 ```
 
-## `BindSourceList`
+### `BindSourceList`
 The `BindSourceList` method binds a `ReactiveUI` [`SourceList`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
 This provides list `Add` and `Removed` notifications to the view.
 There is also a `SourceList` helper module that makes it a little nicer to work with.
@@ -292,7 +293,7 @@ type CounterViewModel() =
     member this.Actions = this.BindSourceList(local, _.Actions)
 ```
 
-## `BindSourceCache`
+### `BindSourceCache`
 The `BindSourceCache` method binds a `ReactiveUI` [`SourceCache`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
 This provides list `Add` and `Removed` notifications to the view for lists with items that have unique keys.
 There is also a `SourceCache` helper module that makes it a little nicer to work with.
@@ -325,11 +326,30 @@ type MainWindowViewModel() as this =
     member this.FileQueue = this.BindSourceCache(store, _.FileQueue)
 ```
 
+## GetView
+The `GetView<'ViewModel>` method gets a view/VM (based on your `CompositionRoot` configuration).
+```F#
+type MainViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    member this.ContentView = 
+        this.Bind (app, fun m -> 
+            match m.View with
+            | CounterView -> this.GetView<CounterViewModel>()
+            | AboutView -> this.GetView<AboutViewModel>()
+            | ChartView -> this.GetView<ChartViewModel>()
+            | FilePickerView -> this.GetView<FilePickerViewModel>()
+        )
+```
+
 # Composition Root
 The composition root is where you register your views/vms as well as any injected services.
-Views can be registered with two lifetimes:
-* `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
-* `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
+
+* `RegisterServices` allows you to specify dependencies that can be injected into other view model and service constructors. View models are automatically injected on app load.
+* `RegisterViews` allows you to pair up your views and view models and assign them a lifetime. 
+* Views can be registered with two lifetimes:
+  * `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
+  * `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
 
 ```F#
 namespace AvaloniaExample
@@ -364,7 +384,41 @@ Steps to create a new project:
 
 1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
 2) Install the Elmish.Avalonia package from NuGet.
-3) Use the `AvaloniaExample` project in the `Samples` directory as a reference.
+3) Create an `AppCompositionRoot` that inherits from `CompositionRoot` to define your view/VM pairs and services.
+4) Launch the startup window using your `CompositionRoot` class in the `App.axaml.fs` 
+
+Refer to the `AvaloniaExample` project in the `Samples` directory as a reference.
+
+```F#
+namespace AvaloniaExample
+
+open Avalonia
+open Avalonia.Controls
+open Avalonia.Markup.Xaml
+open Avalonia.Controls.ApplicationLifetimes
+
+type App() =
+    inherit Application()
+
+    override this.Initialize() =
+        // Initialize Avalonia controls from NuGet packages:
+        let _ = typeof<Avalonia.Controls.DataGrid>
+
+        AvaloniaXamlLoader.Load(this)
+
+    override this.OnFrameworkInitializationCompleted() =
+        match this.ApplicationLifetime with
+        | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
+            let appRoot = AppCompositionRoot()
+            desktop.MainWindow <- appRoot.GetView<ViewModels.MainViewModel>() :?> Window
+        | _ -> 
+            // leave this here for design view re-renders
+            ()
+
+        base.OnFrameworkInitializationCompleted()
+
+```
+
 
 # Sample Project
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
