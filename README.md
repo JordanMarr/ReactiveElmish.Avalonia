@@ -41,9 +41,6 @@ Instead of using the V1 bindings, you now create a more standard view model that
 * The existing Elmish.WPF `DictionaryViewModel` was not able to bind to DataGrid row columns. The workarounds were pretty cumbersome, imo. Having more typical view models resolves this issue.
 * Elmish.Avalonia now takes a dependency on the Avalonia.ReactiveUI library. (The new `ReactiveElmishViewModel` class inherits from `ReactiveObject`.) Since this is the default view model library for Avalonia, this makes it easier to take advantage of existing patterns when needed.
 
-# Sample App
-The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
-
 ## Design View
 Don't forget to install the "Avalonia for Visual Studio 2022" extension.
 JetBrains Rider also supports Avalonia previews out-of-the-box!
@@ -62,37 +59,147 @@ Views can be registered with two lifetimes:
 
 ![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/212897e3-a73f-4143-849f-71c53434bbbd)
 
+# Elmish Stores
+V2 introduces the `ElmishStore` which is an Rx powered Elmish loop that can be used to power one or more view models.
+This provides flexibility for how you want to configure your viewmodels. 
+* Each view model can have its own `ElmishStore`.
+* View models may share a store.
+* Some view models may not need a store at all.
 
-# Project Setup
+## App Store
+A global app store can be shared between view models to provide view routing:
 
-Steps to create a new project:
+```F#
+module App
 
-1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
-2) Install the Elmish.Avalonia package from NuGet.
-3) Use the `AvaloniaExample` project in the `Samples` directory as a reference.
+open System
+open Elmish
+open Elmish.Avalonia
 
-# Sample Project
-Please view the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/v2-beta/src/Samples/AvaloniaExample).
+type Model =  
+    { 
+        View: View
+    }
+
+and View = 
+    | CounterView
+    | ChartView
+    | AboutView
+    | FilePickerView
+
+type Msg = 
+    | SetView of View
+    | GoHome
+
+let init () = 
+    { 
+        View = CounterView
+    }
+
+let update (msg: Msg) (model: Model) = 
+    match msg with
+    | SetView view -> { View = view }   
+    | GoHome -> { View = CounterView }
 
 
-# Elmish Program Extensions
+let app = 
+    Program.mkAvaloniaSimple init update
+    |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
+    |> Program.withConsoleTrace
+    |> Program.mkStore
+```
+
+## Accessing the Global App Store
+In this example, a simple `AboutViewModel` can access the global `App` store to dispatch a custom navigation message when the `Ok` button is clicked:
+```F#
+namespace AvaloniaExample.ViewModels
+
+open Elmish.Avalonia
+open Elmish
+open App
+
+type AboutViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    member this.Version = "v1.0"
+    member this.Ok() = app.Dispatch GoHome
+
+    static member DesignVM = 
+        new AboutViewModel()
+```
+
+## View Model with its own Store
+In this example, a view model has its own local store, and it also accesses the global App store:
+```F#
+namespace AvaloniaExample.ViewModels
+
+open Elmish.Avalonia
+open Elmish
+open AvaloniaExample
+
+module FilePicker = 
+
+    type Model = 
+        {
+            FilePath: string option
+        }
+
+    type Msg = 
+        | SetFilePath of string option
+
+    let init () = 
+        { 
+            FilePath = None
+        }
+
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | SetFilePath path ->
+            { FilePath = path }
+
+
+open FilePicker
+
+type FilePickerViewModel(fileSvc: FileService) =
+    inherit ReactiveElmishViewModel()
+
+    let app = App.app
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.FilePath = this.Bind (local, _.FilePath >> Option.defaultValue "Not Set")
+    member this.Ok() = app.Dispatch App.GoHome
+    member this.PickFile() = 
+        task {
+            let! path = fileSvc.TryPickFile()
+            local.Dispatch (SetFilePath path)
+        }
+
+    static member DesignVM = new FilePickerViewModel(Design.stub)
+
+```
+
+# Creating an Elmish Store
 Opening the `Elmish.Avalonia` and `Elmish` namespaces adds the following extensions to `Program`:
 
 ### Program.mkAvaloniaProgram
-Creates an Avalonia program via Program.mkProgram.
+Creates a store via Program.mkProgram (`init` and `update` functions return a `Model * Cmd` tuple).
 
 ```F#
-Program.mkAvaloniaProgram init update
-|> Program.runView this view
+let store = 
+   Program.mkAvaloniaProgram init update
+   |> Program.mkStore
 ```
 
 ### Program.mkAvaloniaSimple
-Creates an Avalonia program via Program.mkSimple.
+Creates an Avalonia program via Program.mkSimple. (`init` and `update` functions return a `Model`).
 
 ```F#
-override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+let store = 
    Program.mkAvaloniaSimple init update
-   |> Program.runView this view
+   |> Program.mkStore
 ```
 
 ### Program.withSubscription
@@ -114,17 +221,17 @@ let subscriptions (model: Model) : Sub<Msg> =
 
 ```
 ```F#
-override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
+let store = 
    Program.mkAvaloniaSimple init update
    |> Program.withSubscription subscriptions
-   |> Program.runView this view
+   |> Program.mkStore
 ```
 
-### Program.terminateOnViewUnloaded
-Configures `Program.withTermination` using the given `'Msg`, and fires the terminate `'Msg` when the `view` is `Unloaded`.
+### Program.mkStoreWithTerminate
+Creates a store that configures `Program.withTermination` using the given terminate `'Msg`, and fires the terminate `'Msg` when the `view` is `Unloaded`.
 This pattern will dispose your subscriptions when the view is `Unloaded`.
-
-NOTE: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
+NOTE 1: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
+NOTE 2: This requires that a store be created locally within a view model.
 
 ```F#
 let update (msg: Msg) (model: Model) =
@@ -133,12 +240,20 @@ let update (msg: Msg) (model: Model) =
 ```
 
 ```F#
-override this.StartElmishLoop(view: Avalonia.Controls.Control) = 
-   Program.mkAvaloniaSimple init update
-   |> Program.withSubscription subscriptions
-   |> Program.terminateOnViewUnloaded this Terminate
-   |> Program.runView this view
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
+        |> Program.mkStoreWithTerminate this Terminate 
 ```
 
-### Program.runView
-Binds the vm to the view and then runs the Elmish program.
+# Project Setup
+
+Steps to create a new project:
+
+1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
+2) Install the Elmish.Avalonia package from NuGet.
+3) Use the `AvaloniaExample` project in the `Samples` directory as a reference.
+
+# Sample Project
+The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
+Please view the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/v2-beta/src/Samples/AvaloniaExample).
