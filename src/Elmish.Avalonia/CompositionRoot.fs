@@ -8,10 +8,6 @@ open ReactiveUI
 
 type VM = 
     private VMKey of string
-        [<Obsolete "Use 'VM.Key' instead.">]
-        static member Create(vmType: Type) = VMKey vmType.FullName
-        [<Obsolete "Use 'VM.Key' instead.">]
-        static member Create<'ViewModel & #IReactiveObject>() = VMKey typeof<'ViewModel>.FullName
         static member Key(vmType: Type) = VMKey vmType.FullName
         static member Key<'ViewModel & #IReactiveObject>() = VMKey typeof<'ViewModel>.FullName
 
@@ -23,18 +19,9 @@ type View =
         static member Singleton<'View & #Control>() = Activator.CreateInstance(typeof<'View>) :?> Control |> SingletonView
 
 type CompositionRoot() as this = 
-    let serviceProvider = 
-        lazy 
-            let services = ServiceCollection()
-            // Scan for IReactiveObject types and add them as transient services.
-            let vmType = typeof<IReactiveObject>
-            this.GetType().Assembly.GetTypes() // Get types in the CompositionRoot subtype assembly.
-            |> Array.filter (fun t -> t.IsClass && not t.IsAbstract && t.GetInterfaces() |> Array.contains(vmType))
-            |> Array.iter (services.AddTransient >> ignore)
-            ICompositionRoot.instance <- this // Store so VMs can have instance immediately
-            // Add user-defined services.
-            this.RegisterServices(services).BuildServiceProvider()
-
+    
+    do ICompositionRoot.instance <- this 
+    let serviceProvider = lazy this.RegisterServices(ServiceCollection()).BuildServiceProvider()
     let viewRegistry = lazy this.RegisterViews()
 
     interface ICompositionRoot with
@@ -44,9 +31,17 @@ type CompositionRoot() as this =
     /// Gets the composition root service provider.
     member this.ServiceProvider : IServiceProvider = serviceProvider.Value
 
-    /// Registers services to be consumed by the application and VMs.
+    /// Registers services to be consumed by the application and VMs. 
+    /// Base implementation scans the CompositionRoot subtype assembly for IReactiveObject VM types and adds them as transient services.
     abstract member RegisterServices: IServiceCollection -> IServiceCollection
-    default this.RegisterServices(services: IServiceCollection) = services
+    default this.RegisterServices(services: IServiceCollection) = 
+        // Scan for IReactiveObject VM types and add them as transient services.
+        let vmType = typeof<IReactiveObject>
+        this.GetType().Assembly.GetTypes() // Get types in the CompositionRoot subtype assembly.
+        |> Array.filter (fun t -> t.IsClass && not t.IsAbstract && t.GetInterfaces() |> Array.contains(vmType))
+        |> Array.iter (services.AddTransient >> ignore)
+        services
+        
     
     /// Allows you to register views by VM type name.
     abstract member RegisterViews : unit -> Map<VM, View>

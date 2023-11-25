@@ -11,4 +11,5 @@ type ICompositionRoot =
     abstract GetView: Type -> Control
 
 module internal ICompositionRoot = 
+    /// Provides an internal reference to the composition root instance.
     let mutable instance : ICompositionRoot = Unchecked.defaultof<_>

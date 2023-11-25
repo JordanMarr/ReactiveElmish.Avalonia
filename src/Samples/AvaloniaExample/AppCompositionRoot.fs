@@ -11,6 +11,7 @@ type AppCompositionRoot() =
     let mainView = MainView()
 
     override this.RegisterServices services = 
+        base.RegisterServices services |> ignore
         services.AddSingleton<FileService>(FileService(mainView))
 
     override this.RegisterViews() = 
