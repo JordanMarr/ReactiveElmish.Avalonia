@@ -13,10 +13,17 @@ type VM =
 
 type View = 
     | SingletonView of view: Control
-    | TransientView of viewType: Type
-        static member Transient<'View & #Control>() = TransientView typeof<'View>
+    | TransientView of view: Control
+        /// Creates a new view instance on each request using `Activator.CreateInstance`.
+        static member Transient<'View & #Control>() = TransientView (Activator.CreateInstance(typeof<'View>) :?> Control)
+        /// Creates a new view instance on each request using the given `createView` function.
+        static member Transient<'View & #Control>(createView: unit -> 'View) = TransientView (createView())
+        /// Returns the given `view` instance on each request.
         static member Singleton<'View & #Control>(view: 'View) = SingletonView view
-        static member Singleton<'View & #Control>() = Activator.CreateInstance(typeof<'View>) :?> Control |> SingletonView
+        /// Creates a new view instance on the first request using the given `createView` function and returns it on each subsequent request.
+        static member Singleton<'View & #Control>(createView: unit -> 'View) = SingletonView (createView())
+        /// Creates a new view instance on the first request using `Activator.CreateInstance` and returns it on each subsequent request.
+        static member Singleton<'View & #Control>() = SingletonView (Activator.CreateInstance(typeof<'View>) :?> Control)
 
 type CompositionRoot() as this = 
     
@@ -50,24 +57,20 @@ type CompositionRoot() as this =
     /// Gets or creates a view from the view registry by its VM type.
     member this.GetView<'ViewModel & #ReactiveElmishViewModel>() = this.GetView(typeof<'ViewModel>)
 
-    /// Gets or creates a view from the view registry by its VM type.
+    /// Gets or creates a view/VM pair from the view registry by its VM type.
     member this.GetView(vmType: Type) = 
-        let vmKey = VM.Key vmType
-
-        // Returns a view/VM instance from the registry or creates a new one.
-        match viewRegistry.Value |> Map.tryFind vmKey with
+        match viewRegistry.Value |> Map.tryFind (VM.Key vmType) with
         | Some registration -> 
             match registration with
             | SingletonView view -> 
                 if view.DataContext = null then 
                     let vm = this.ServiceProvider.GetRequiredService(vmType) :?> IReactiveObject
-                    ViewBinder.bindSingleton (vm, view) |> snd
+                    ViewBinder.bind (vm, view) |> snd
                 else
                     view
-            | TransientView viewType -> 
+            | TransientView view -> 
                 let vm = this.ServiceProvider.GetRequiredService(vmType) :?> IReactiveObject
-                let view = Activator.CreateInstance(viewType) :?> Control
-                ViewBinder.bindWithDispose (vm, view) |> snd
+                ViewBinder.bindWithDisposeOnViewUnload (vm, view) |> snd
         | None ->
             failwithf $"No view registered for VM type {vmType.FullName}"
 
