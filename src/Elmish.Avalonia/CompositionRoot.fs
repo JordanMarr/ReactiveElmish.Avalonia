@@ -13,17 +13,22 @@ type VM =
 
 type View = 
     | SingletonView of view: Control
-    | TransientView of view: Control
-        /// Creates a new view instance on each request using `Activator.CreateInstance`.
-        static member Transient<'View & #Control>() = TransientView (Activator.CreateInstance(typeof<'View>) :?> Control)
+    | TransientView of view: (unit -> Control)
+        /// Creates a new view instance on each request using the view's parameterless constructor.
+        static member Transient<'View when 'View :> Control and 'View : (new : unit -> 'View)>() = 
+            TransientView (fun () -> new 'View() :> Control)
         /// Creates a new view instance on each request using the given `createView` function.
-        static member Transient<'View & #Control>(createView: unit -> 'View) = TransientView (createView())
+        static member Transient(createView: unit -> Control) = 
+            TransientView createView
         /// Returns the given `view` instance on each request.
-        static member Singleton<'View & #Control>(view: 'View) = SingletonView view
+        static member Singleton<'View & #Control>(view: 'View) = 
+            SingletonView view
         /// Creates a new view instance on the first request using the given `createView` function and returns it on each subsequent request.
-        static member Singleton<'View & #Control>(createView: unit -> 'View) = SingletonView (createView())
-        /// Creates a new view instance on the first request using `Activator.CreateInstance` and returns it on each subsequent request.
-        static member Singleton<'View & #Control>() = SingletonView (Activator.CreateInstance(typeof<'View>) :?> Control)
+        static member Singleton(createView: unit -> Control) = 
+            SingletonView (createView())
+        /// Creates a new view instance on the first request using the view's parameterless constructor and returns it on each subsequent request.
+        static member Singleton<'View when 'View :> Control and 'View : (new : unit -> 'View)>() = 
+            SingletonView (new 'View())
 
 type CompositionRoot() as this = 
     
@@ -68,9 +73,9 @@ type CompositionRoot() as this =
                     ViewBinder.bind (vm, view) |> snd
                 else
                     view
-            | TransientView view -> 
+            | TransientView createView -> 
                 let vm = this.ServiceProvider.GetRequiredService(vmType) :?> IReactiveObject
-                ViewBinder.bindWithDisposeOnViewUnload (vm, view) |> snd
+                ViewBinder.bindWithDisposeOnViewUnload (vm, createView()) |> snd
         | None ->
             failwithf $"No view registered for VM type {vmType.FullName}"
 
