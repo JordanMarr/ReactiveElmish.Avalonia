@@ -29,16 +29,16 @@ The V2 beta is evolving into a complete rewrite, and all the code that was copie
 My vision for this library departs from the typical "monolithic" Elmish app. Instead, it uses more of a modular Elmish approach where each view model can run its own Elmish loop.
 
 At the heart of V2 is the new `ReactiveElmishViewModel` base class, which inherits `ReactiveUI.ReactiveObject`. 
-Instead of using the V1 bindings, you now create a more standard view model that has bindable properties. A new `Bind` method will take care of binding your view model properties to Elmish model projections. 
+Instead of using the V1 ings, you now create a more standard view model that has able properties. A new `` method will take care of ing your view model properties to Elmish model projections. 
 
 ![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/5278afe4-ce05-4548-b9e9-6a1703394fd7)
 
 
 ### V2 Design Highlights
-* Works with Avalonia [Compiled Bindings](https://docs.avaloniaui.net/docs/next/basics/data/data-binding/compiled-bindings#enable-and-disable-compiled-bindings) for better performance and compile-time type checking in the views. With Compiled Bindings enabled, the build will fail if the view references a binding that doesn't exist in the VM! (The previous `DictionaryViewModel` brought over from Elmish.WPF was not able to take advantage of this because it relied on reflection-based bindings.)
+* Works with Avalonia [Compiled ings](https://docs.avaloniaui.net/docs/next/basics/data/data-ing/compiled-ings#enable-and-disable-compiled-ings) for better performance and compile-time type checking in the views. With Compiled ings enabled, the build will fail if the view references a ing that doesn't exist in the VM! (The previous `DictionaryViewModel` brought over from Elmish.WPF was not able to take advantage of this because it relied on reflection-based ings.)
 * More standard looking view model pattern while still maintaining the power of Elmish. For example, you can now create an instance of an Elmish view model and actually inspect its properties from the outside -- and even read / write to the properties in OOP fashion. (The fact that a view model is using Elmish internally should not matter because it's an implementation detail.) This is a perfect example of the benefits of OOP + FP side-by-side.
 * Elmish.Avalonia now takes a dependency on the Avalonia.ReactiveUI library. (The new `ReactiveElmishViewModel` class inherits from `ReactiveObject`.) Since this is the default view model library for Avalonia, this makes it easier to take advantage of existing patterns when needed.
-* Elmish.Avalonia provides custom integration for `ReactiveUI.DynamicData` which provides a very simple way to bind lists between the Elmish model and the view / view model.
+* Elmish.Avalonia provides custom integration for `ReactiveUI.DynamicData` which provides a very simple way to  lists between the Elmish model and the view / view model.
 * Built-in dependency injection using "Microsoft.Extensions.DependencyInjection".
 
 ## Design View
@@ -161,7 +161,7 @@ type FilePickerViewModel(fileSvc: FileService) =
         Program.mkAvaloniaSimple init update
         |> Program.mkStore
 
-    member this.FilePath = this.Bind (local, _.FilePath >> Option.defaultValue "Not Set")
+    member this.FilePath = this. (local, _.FilePath >> Option.defaultValue "Not Set")
     member this.Ok() = app.Dispatch App.GoHome
     member this.PickFile() = 
         task {
@@ -255,6 +255,30 @@ type CounterViewModel() =
 
     member this.Count = this.Bind(local, _.Count)
     member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
+```
+
+### `BindOnChanged`
+The `BindOnChanged` method binds a VM property to a `modelProjection` value and refreshes the VM property when the `onChanged` value changes. The `modelProjection` function will only be called when the `onChanged` value changes. `onChanged` usually returns a property value or a tuple of property values.
+
+This was added to avoid evaluating an expensive model projection more than once. For example, when evaluating the current `ContentView` property on the `MainViewModel`. Using `Bind` in this case would execute the `modelProjection` twice: once to determine if the value had changed, and then again to bind to the property. Using `BindOnChanged` will simply check to see if the `_.View` property changed on the model instead of evaluating the `modelProjection` twice, thereby creating the current view twice.
+
+```F#
+namespace AvaloniaExample.ViewModels
+
+open Elmish.Avalonia
+open App
+
+type MainViewModel() =
+    inherit ReactiveElmishViewModel()
+    
+    member this.ContentView = 
+        this.BindOnChanged (app, _.View, fun m -> 
+            match m.View with
+            | CounterView -> this.GetView<CounterViewModel>()
+            | AboutView -> this.GetView<AboutViewModel>()
+            | ChartView -> this.GetView<ChartViewModel>()
+            | FilePickerView -> this.GetView<FilePickerViewModel>()
+        )
 ```
 
 ### `BindSourceList`
