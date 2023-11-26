@@ -5,12 +5,12 @@ open System
 open ReactiveElmish
 
 module Program =
-    /// Makes an Avalonia program via Program.mkProgram.
-    let mkAvaloniaProgram (init: unit -> 'Model * Cmd<'Msg>) update = 
+    /// Makes a WPF program via Program.mkProgram.
+    let mkWpfProgram (init: unit -> 'Model * Cmd<'Msg>) update = 
         Program.mkProgram init update (fun _ _ -> ())
 
-    /// Makes an Avalonia program via Program.mkSimple.
-    let mkAvaloniaSimple (init: unit -> 'Model) update =
+    /// Makes a WPF program via Program.mkSimple.
+    let mkWpfSimple (init: unit -> 'Model) update =
         Program.mkSimple init update (fun _ _ -> ())
 
     /// Makes a reactive Elmish store from a program.
