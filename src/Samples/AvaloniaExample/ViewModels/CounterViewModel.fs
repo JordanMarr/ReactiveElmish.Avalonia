@@ -1,6 +1,7 @@
 ﻿namespace AvaloniaExample.ViewModels
 
 open System
+open ReactiveElmish
 open Elmish.Avalonia
 open Elmish
 open DynamicData

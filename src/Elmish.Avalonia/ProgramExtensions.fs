@@ -2,6 +2,7 @@
 
 open Elmish
 open System
+open ReactiveElmish
 
 module Program =
     /// Makes an Avalonia program via Program.mkProgram.

@@ -1,7 +1,6 @@
 ﻿namespace AvaloniaExample.ViewModels
 
-open Elmish.Avalonia
-open Elmish
+open ReactiveElmish
 open App
 
 type AboutViewModel() =

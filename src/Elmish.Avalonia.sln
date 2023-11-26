@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{7E33C4FF
 		publish.fsx = publish.fsx
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ReactiveElmish", "ReactiveElmish\ReactiveElmish.fsproj", "{F4B7DB42-DA9C-4891-B5AB-2E646932676B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{B5F6F996-01DD-410D-9D3B-A1E91A3D5CF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5F6F996-01DD-410D-9D3B-A1E91A3D5CF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5F6F996-01DD-410D-9D3B-A1E91A3D5CF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4B7DB42-DA9C-4891-B5AB-2E646932676B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4B7DB42-DA9C-4891-B5AB-2E646932676B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4B7DB42-DA9C-4891-B5AB-2E646932676B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4B7DB42-DA9C-4891-B5AB-2E646932676B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
