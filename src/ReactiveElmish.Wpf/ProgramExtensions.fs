@@ -1,4 +1,4 @@
-﻿namespace ReactiveElmish.WPF
+﻿namespace ReactiveElmish.Wpf
 
 open Elmish
 open System

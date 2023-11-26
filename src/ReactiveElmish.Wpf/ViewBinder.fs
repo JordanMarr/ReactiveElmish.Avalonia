@@ -1,4 +1,4 @@
-﻿namespace ReactiveElmish.WPF
+﻿namespace ReactiveElmish.Wpf
 
 open System
 open System.Windows.Controls
