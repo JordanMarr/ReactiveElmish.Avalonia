@@ -7,11 +7,8 @@ open System.ComponentModel
 open System.Reactive.Subjects
 open System.Reactive.Linq
 open System
-open System.Collections.Generic
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
 
-type IElmishStore<'Model, 'Msg> =
+type IStore<'Model, 'Msg> =
     inherit IDisposable       
     abstract member Dispatch: 'Msg -> unit
     abstract member Model: 'Model with get
@@ -21,7 +18,7 @@ module Design =
     /// Stubs a constructor injected dependency in design mode.
     let stub<'T> = Unchecked.defaultof<'T>
 
-type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =    
+type AvaloniaStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =    
     let _modelSubject = new Subject<'Model>()
     let mutable _model: 'Model = Unchecked.defaultof<'Model>
     let mutable _dispatch: 'Msg -> unit = 
@@ -31,7 +28,7 @@ type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as t
 
     do this.RunProgram(program)
 
-    interface IElmishStore<'Model, 'Msg> with
+    interface IStore<'Model, 'Msg> with
         member this.Dispatch msg = _dispatch msg
         member this.Model = _model
         member this.Observable = _modelSubject.AsObservable()        

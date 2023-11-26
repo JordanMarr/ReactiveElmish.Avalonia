@@ -1,10 +1,7 @@
 ﻿namespace Elmish.Avalonia
 
 open Elmish
-open Avalonia.Threading
-open Avalonia.Controls
 open System.ComponentModel
-open System.Reactive.Subjects
 open System.Reactive.Linq
 open System
 open System.Collections.Generic
@@ -20,12 +17,6 @@ type ReactiveElmishViewModel() =
     let propertyChanged = Event<_, _>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
 
-    member val Root: ICompositionRoot = ICompositionRoot.instance
-
-    member this.GetView<'ViewModel & #ReactiveUI.IReactiveObject>() = 
-        let vmType = typeof<'ViewModel>
-        this.Root.GetView(vmType)
-    
     interface INotifyPropertyChanged with
         [<CLIEvent>]
         member this.PropertyChanged = propertyChanged.Publish
@@ -35,7 +26,7 @@ type ReactiveElmishViewModel() =
         propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `modelProjection` value changes.
-    member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IElmishStore<'Model, 'Msg>, 
+    member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IStore<'Model, 'Msg>, 
                                                         modelProjection: 'Model -> 'ModelProjection, 
                                                         [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
         let vmPropertyName = vmPropertyName.Value
@@ -59,7 +50,7 @@ type ReactiveElmishViewModel() =
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `onChanged` value changes.
     /// The `modelProjection` function will only be called when the `onChanged` value changes.
     /// `onChanged` usually returns a property value or a tuple of property values.
-    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(store: IElmishStore<'Model, 'Msg>, 
+    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(store: IStore<'Model, 'Msg>, 
                                                         onChanged: 'Model -> 'OnChanged,
                                                         modelProjection: 'Model -> 'ModelProjection, 
                                                         [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
@@ -76,13 +67,13 @@ type ReactiveElmishViewModel() =
                         printfn $"PropertyChanged: {vmPropertyName} by {this}"
                         #endif
                     )
-            (store :?> ElmishStore<'Model, 'Msg>).Subject.OnNext(store.Model) // prime the pump
+            (store :?> AvaloniaStore<'Model, 'Msg>).Subject.OnNext(store.Model) // prime the pump
             propertySubscriptions.Add(vmPropertyName, disposable)
 
         modelProjection store.Model
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
-    member this.BindSourceList<'Model, 'Msg, 'T>(store: IElmishStore<'Model, 'Msg>, selectSourceList: 'Model -> ISourceList<'T>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.BindSourceList<'Model, 'Msg, 'T>(store: IStore<'Model, 'Msg>, selectSourceList: 'Model -> ISourceList<'T>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
         let vmPropertyName = vmPropertyName.Value
         let mutable sourceList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
@@ -92,7 +83,7 @@ type ReactiveElmishViewModel() =
         sourceList
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
-    member this.BindSourceCache<'Model, 'Msg, 'Value, 'Key>(store: IElmishStore<'Model, 'Msg>, selectSourceCache: 'Model -> IObservableCache<'Value, 'Key>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.BindSourceCache<'Model, 'Msg, 'Value, 'Key>(store: IStore<'Model, 'Msg>, selectSourceCache: 'Model -> IObservableCache<'Value, 'Key>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
         let vmPropertyName = vmPropertyName.Value
         let mutable sourceList: ReadOnlyObservableCollection<'Value> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then

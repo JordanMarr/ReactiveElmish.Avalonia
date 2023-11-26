@@ -1,9 +1,8 @@
 ﻿namespace Elmish.Avalonia
 
-open Elmish
-open Avalonia.Controls
 open System
 open Microsoft.Extensions.DependencyInjection
+open Avalonia.Controls
 open ReactiveUI
 
 type VM = 
@@ -32,13 +31,8 @@ type View =
 
 type CompositionRoot() as this = 
     
-    do ICompositionRoot.instance <- this 
     let serviceProvider = lazy this.RegisterServices(ServiceCollection()).BuildServiceProvider()
     let viewRegistry = lazy this.RegisterViews()
-
-    interface ICompositionRoot with
-        member this.ServiceProvider = this.ServiceProvider
-        member this.GetView(vmType: Type) = this.GetView(vmType)
 
     /// Gets the composition root service provider.
     member this.ServiceProvider : IServiceProvider = serviceProvider.Value
@@ -47,20 +41,22 @@ type CompositionRoot() as this =
     /// Base implementation scans the CompositionRoot subtype assembly for IReactiveObject VM types and adds them as transient services.
     abstract member RegisterServices: IServiceCollection -> IServiceCollection
     default this.RegisterServices(services: IServiceCollection) = 
+        // Add the composition root instance as a singleton service.
+        services.AddSingleton(this) |> ignore
         // Scan for IReactiveObject VM types and add them as transient services.
         let vmType = typeof<IReactiveObject>
         this.GetType().Assembly.GetTypes() // Get types in the CompositionRoot subtype assembly.
         |> Array.filter (fun t -> t.IsClass && not t.IsAbstract && t.GetInterfaces() |> Array.contains(vmType))
         |> Array.iter (services.AddTransient >> ignore)
-        services
-        
+        services        
     
     /// Allows you to register views by VM type name.
     abstract member RegisterViews : unit -> Map<VM, View>
     default this.RegisterViews() = Map.empty
 
     /// Gets or creates a view from the view registry by its VM type.
-    member this.GetView<'ViewModel & #ReactiveElmishViewModel>() = this.GetView(typeof<'ViewModel>)
+    member this.GetView<'ViewModel & #ReactiveElmishViewModel>() = 
+        this.GetView(typeof<'ViewModel>)
 
     /// Gets or creates a view/VM pair from the view registry by its VM type.
     member this.GetView(vmType: Type) = 
