@@ -244,7 +244,7 @@ The `ReactiveElmishViewModel` base class contains binding methods that are used 
 All binding methods on the `ReactiveElmishViewModel` are disposed when the view model is diposed.
 
 ### `Bind`
-The `Bind` method binds data from an `IElmishStore` to a property on your view model. This can be a simple model propery or a projection based on the model.
+The `Bind` method binds data from an `IElmishStore` to a property on your view model. This can be a simple model property or a projection based on the model.
 ```F#
 type CounterViewModel() =
     inherit ReactiveElmishViewModel()
