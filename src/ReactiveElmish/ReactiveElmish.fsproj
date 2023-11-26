@@ -13,7 +13,6 @@
 
   <ItemGroup>
 	<PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="ReactiveUI" Version="19.5.1" />
   </ItemGroup>
 

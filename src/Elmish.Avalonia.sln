@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{7E33C4FF
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ReactiveElmish", "ReactiveElmish\ReactiveElmish.fsproj", "{F4B7DB42-DA9C-4891-B5AB-2E646932676B}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ReactiveElmish.WPF", "ReactiveElmish.WPF\ReactiveElmish.WPF.fsproj", "{10E5E6FE-B05A-4EE4-9C85-660AD52A7F56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{F4B7DB42-DA9C-4891-B5AB-2E646932676B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4B7DB42-DA9C-4891-B5AB-2E646932676B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4B7DB42-DA9C-4891-B5AB-2E646932676B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10E5E6FE-B05A-4EE4-9C85-660AD52A7F56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10E5E6FE-B05A-4EE4-9C85-660AD52A7F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10E5E6FE-B05A-4EE4-9C85-660AD52A7F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10E5E6FE-B05A-4EE4-9C85-660AD52A7F56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
