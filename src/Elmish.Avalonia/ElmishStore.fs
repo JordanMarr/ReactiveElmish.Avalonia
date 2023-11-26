@@ -34,9 +34,10 @@ type ElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as t
     interface IElmishStore<'Model, 'Msg> with
         member this.Dispatch msg = _dispatch msg
         member this.Model = _model
-        member this.Observable = _modelSubject.AsObservable()
+        member this.Observable = _modelSubject.AsObservable()        
     
-        /// Binds this VM to the view `DataContext` and runs the Elmish loop.
+    member internal this.Subject = _modelSubject
+    
     member private this.RunProgram (program: Elmish.Program<unit, 'Model, 'Msg, unit>) =
         
         // Updates when the Elmish model changes and sends out an Rx stream.

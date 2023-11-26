@@ -34,8 +34,10 @@ type ReactiveElmishViewModel() =
     member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
         propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
 
-    /// Binds a VM property to a 'Model projection and refreshes the VM property when the 'Model projection changes.
-    member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IElmishStore<'Model, 'Msg>, modelProjection: 'Model -> 'ModelProjection, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `modelProjection` value changes.
+    member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IElmishStore<'Model, 'Msg>, 
+                                                        modelProjection: 'Model -> 'ModelProjection, 
+                                                        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
         let vmPropertyName = vmPropertyName.Value
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
@@ -52,6 +54,31 @@ type ReactiveElmishViewModel() =
             propertySubscriptions.Add(vmPropertyName, disposable)
 
         // Returns the initial value from the model projection.
+        modelProjection store.Model
+
+    /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `onChanged` value changes.
+    /// The `modelProjection` function will only be called when the `onChanged` value changes.
+    /// `onChanged` usually returns a property value or a tuple of property values.
+    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(store: IElmishStore<'Model, 'Msg>, 
+                                                        onChanged: 'Model -> 'OnChanged,
+                                                        modelProjection: 'Model -> 'ModelProjection, 
+                                                        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+        let vmPropertyName = vmPropertyName.Value
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            // Creates a subscription to the 'Model projection and stores it in a dictionary.
+            let disposable = 
+                store.Observable
+                    .DistinctUntilChanged(onChanged)
+                    .Subscribe(fun x -> 
+                        // Alerts the view that the 'Model projection / VM property has changed.
+                        this.OnPropertyChanged(vmPropertyName)
+                        #if DEBUG
+                        printfn $"PropertyChanged: {vmPropertyName} by {this}"
+                        #endif
+                    )
+            (store :?> ElmishStore<'Model, 'Msg>).Subject.OnNext(store.Model) // prime the pump
+            propertySubscriptions.Add(vmPropertyName, disposable)
+
         modelProjection store.Model
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
