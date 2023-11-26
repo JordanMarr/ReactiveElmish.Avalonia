@@ -1,8 +1,7 @@
 ﻿module App
 
-open System
 open Elmish
-open Elmish.Avalonia
+open ReactiveElmish.Avalonia
 
 type Model =  
     { 

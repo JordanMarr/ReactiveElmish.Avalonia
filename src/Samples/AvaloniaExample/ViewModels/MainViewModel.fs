@@ -1,7 +1,7 @@
 ﻿namespace AvaloniaExample.ViewModels
 
 open ReactiveElmish
-open Elmish.Avalonia
+open ReactiveElmish.Avalonia
 open App
 
 type MainViewModel(root: CompositionRoot) =

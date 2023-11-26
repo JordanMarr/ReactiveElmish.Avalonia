@@ -1,8 +1,8 @@
-﻿namespace Elmish.Avalonia
+﻿namespace ReactiveElmish.Avalonia
 
 open System.ComponentModel
-open Elmish
 open ReactiveElmish
+open Elmish
 open Avalonia.Threading
 open Avalonia.Controls
 

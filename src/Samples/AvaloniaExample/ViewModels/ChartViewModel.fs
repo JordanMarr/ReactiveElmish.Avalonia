@@ -4,9 +4,9 @@ open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
 open System.Reactive.Linq
-open Elmish
 open ReactiveElmish
-open Elmish.Avalonia
+open Elmish
+open ReactiveElmish.Avalonia
 open DynamicData
 open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches

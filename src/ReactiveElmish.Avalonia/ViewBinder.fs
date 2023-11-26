@@ -1,4 +1,4 @@
-﻿namespace Elmish.Avalonia
+﻿namespace ReactiveElmish.Avalonia
 
 open System
 open Avalonia.Controls

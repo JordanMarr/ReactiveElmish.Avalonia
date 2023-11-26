@@ -3,7 +3,7 @@
 open Microsoft.Extensions.DependencyInjection
 open AvaloniaExample.ViewModels
 open AvaloniaExample.Views
-open Elmish.Avalonia
+open ReactiveElmish.Avalonia
 
 type AppCompositionRoot() =
     inherit CompositionRoot()
