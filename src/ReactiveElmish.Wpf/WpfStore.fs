@@ -7,7 +7,7 @@ open System.Windows.Threading
 open System.Threading
 
 type WpfStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =
-    inherit ReactiveElmishStore<'Model, 'Msg>(program)
+    inherit ReactiveElmishStore<'Model, 'Msg>()
 
     let defaultDispatcher _ = 
         failwith "`Dispatch` failed because the Elmish loop has not been started."

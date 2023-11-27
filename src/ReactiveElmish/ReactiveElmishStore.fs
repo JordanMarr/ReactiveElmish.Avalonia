@@ -15,7 +15,7 @@ module Design =
     /// Stubs a constructor injected dependency in design mode.
     let stub<'T> = Unchecked.defaultof<'T>
 
-type ReactiveElmishStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =    
+type ReactiveElmishStore<'Model, 'Msg> () =
     let _modelSubject = new Subject<'Model>()
     let mutable _model: 'Model = Unchecked.defaultof<'Model>
     let mutable _dispatch: 'Msg -> unit = 

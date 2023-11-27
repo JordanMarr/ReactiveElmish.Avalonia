@@ -7,7 +7,7 @@ open Avalonia.Threading
 open Avalonia.Controls
 
 type AvaloniaStore<'Model, 'Msg> (program: Program<unit, 'Model, 'Msg, unit>) as this =
-    inherit ReactiveElmishStore<'Model, 'Msg>(program)
+    inherit ReactiveElmishStore<'Model, 'Msg>()
 
     let defaultDispatcher _ = 
         if not Design.IsDesignMode 
