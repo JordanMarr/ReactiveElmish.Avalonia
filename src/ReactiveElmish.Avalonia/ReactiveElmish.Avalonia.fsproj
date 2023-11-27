@@ -15,7 +15,7 @@
     <Authors>JordanMarr</Authors>
     <Description>F# bindings for using Elmish in Avalonia</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/JordanMarr/Elmish.Avalonia</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/JordanMarr/ReactiveElmish.Avalonia</PackageProjectUrl>
     <PackageTags>Avalonia F# fsharp Elmish Elm</PackageTags>
     <Version>1.0.0-beta.1</Version>
     <!--Turn on warnings for unused values (arguments and let bindings) -->
