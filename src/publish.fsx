@@ -22,9 +22,9 @@ pipeline "Publish" {
                 | None -> failwith $"Could not find a <Version> element in '{project.Name}'."
             
             let nugetKey = 
-                match ctx.TryGetEnvVar "ELMISH_AVALONIA_NUGET_KEY" with
+                match ctx.TryGetEnvVar "REACTIVE_ELMISH_NUGET_KEY" with
                 | ValueSome nugetKey -> nugetKey
-                | ValueNone -> failwith "The NuGet API key must be set in an 'ELMISH_AVALONIA_NUGET_KEY' environmental variable"
+                | ValueNone -> failwith "The NuGet API key must be set in an 'REACTIVE_ELMISH_NUGET_KEY' environmental variable"
             
             $"dotnet nuget push \"{src}/Elmish.Avalonia/bin/Release/Elmish.Avalonia.{version}.nupkg\" -s nuget.org -k {nugetKey} --skip-duplicate"
         )

@@ -1,9 +1,10 @@
-﻿namespace Elmish.Avalonia
+﻿namespace ReactiveElmish.Avalonia
 
 open System
 open Microsoft.Extensions.DependencyInjection
 open Avalonia.Controls
 open ReactiveUI
+open ReactiveElmish
 
 type VM = 
     private VMKey of string

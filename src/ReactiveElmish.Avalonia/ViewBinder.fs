@@ -1,8 +1,7 @@
-﻿namespace Elmish.Avalonia
+﻿namespace ReactiveElmish.Avalonia
 
-open Elmish
-open Avalonia.Controls
 open System
+open Avalonia.Controls
 
 module ViewBinder = 
 

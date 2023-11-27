@@ -34,10 +34,8 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>Elmish.Avalonia.Benchmarks</_Parameter1>
     </AssemblyAttribute>-->
-    <Compile Include="DynamicData.fs" />
-    <Compile Include="AvaloniaStore.fs" />
     <Compile Include="ViewBinder.fs" />
-    <Compile Include="ReactiveElmishViewModel.fs" />
+    <Compile Include="AvaloniaStore.fs" />
     <Compile Include="CompositionRoot.fs" />
     <Compile Include="ProgramExtensions.fs" />
   </ItemGroup>
@@ -45,9 +43,8 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.5" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
-    <PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[6.0.1, 99]" />
+    <PackageReference Include="ReactiveElmish" Version="1.0.0-beta.1" />
   </ItemGroup>
 
   <ItemGroup>

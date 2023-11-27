@@ -3,7 +3,7 @@ namespace AvaloniaExample
 open System
 open Avalonia.Controls
 open Avalonia.Controls.Templates
-open Elmish.Avalonia
+open ReactiveElmish.Avalonia
 
 type ViewLocator() =
     interface IDataTemplate with

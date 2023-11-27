@@ -1,7 +1,8 @@
-﻿namespace Elmish.Avalonia
+﻿namespace ReactiveElmish.Avalonia
 
-open Elmish
 open System
+open ReactiveElmish
+open Elmish
 
 module Program =
     /// Makes an Avalonia program via Program.mkProgram.

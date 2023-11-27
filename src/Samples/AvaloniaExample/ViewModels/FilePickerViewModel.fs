@@ -1,6 +1,7 @@
 ﻿namespace AvaloniaExample.ViewModels
 
-open Elmish.Avalonia
+open ReactiveElmish
+open ReactiveElmish.Avalonia
 open Elmish
 open AvaloniaExample
 

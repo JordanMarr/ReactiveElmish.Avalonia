@@ -4,13 +4,14 @@ open System
 open System.Collections.Generic
 open System.Collections.ObjectModel
 open System.Reactive.Linq
+open ReactiveElmish
+open ReactiveElmish.Avalonia
 open Elmish
-open Elmish.Avalonia
+open DynamicData
 open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView
 open LiveChartsCore.Defaults
-open DynamicData
 
 module Chart = 
 
