@@ -17,8 +17,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/JordanMarr/Elmish.Avalonia</PackageProjectUrl>
     <PackageTags>Avalonia F# fsharp Elmish Elm</PackageTags>
-    <!--<PackageIcon>elmish-avalonia-logo-128x128.png</PackageIcon>-->
-    <Version>2.0.0-gamma.9</Version>
+    <Version>1.0.0-beta.1</Version>
     <!--Turn on warnings for unused values (arguments and let bindings) -->
     <OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
   </PropertyGroup>

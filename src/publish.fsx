@@ -8,15 +8,15 @@ let src = __SOURCE_DIRECTORY__
 
 pipeline "Publish" {
 
-    stage "Build Elmish.Avalonia" {
-        run $"dotnet restore {src}/Elmish.Avalonia.sln"
-        run $"dotnet build {src}/Elmish.Avalonia.sln --configuration Release"
+    stage "Build ReactiveElmish.Avalonia" {
+        run $"dotnet restore {src}/ReactiveElmish.Avalonia.sln"
+        run $"dotnet build {src}/ReactiveElmish.Avalonia.sln --configuration Release"
     }
     
-    stage "Publish Elmish.Avalonia" {
+    stage "Publish ReactiveElmish.Avalonia" {
         run (fun ctx ->             
             let version = 
-                let project = (FileInfo $"{src}/Elmish.Avalonia/Elmish.Avalonia.fsproj")
+                let project = (FileInfo $"{src}/ReactiveElmish.Avalonia/ReactiveElmish.Avalonia.fsproj")
                 match XDocument.Load(project.FullName).Descendants("Version") |> Seq.tryHead with
                 | Some versionElement -> versionElement.Value
                 | None -> failwith $"Could not find a <Version> element in '{project.Name}'."
@@ -26,7 +26,7 @@ pipeline "Publish" {
                 | ValueSome nugetKey -> nugetKey
                 | ValueNone -> failwith "The NuGet API key must be set in an 'REACTIVE_ELMISH_NUGET_KEY' environmental variable"
             
-            $"dotnet nuget push \"{src}/Elmish.Avalonia/bin/Release/Elmish.Avalonia.{version}.nupkg\" -s nuget.org -k {nugetKey} --skip-duplicate"
+            $"dotnet nuget push \"{src}/ReactiveElmish.Avalonia/bin/Release/ReactiveElmish.Avalonia.{version}.nupkg\" -s nuget.org -k {nugetKey} --skip-duplicate"
         )
     }
 
