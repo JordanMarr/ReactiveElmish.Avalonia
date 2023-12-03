@@ -14,16 +14,18 @@
     </ItemGroup>
 
     <ItemGroup>        
-        <Compile Include="Views\FilePickerView.axaml.fs" />        
         <Compile Include="Views\AboutView.axaml.fs" />        
+        <Compile Include="Views\ChartView.axaml.fs" />        
         <Compile Include="Views\CounterView.axaml.fs" />        
-        <Compile Include="Views\ChartView.axaml.fs" />
-        <Compile Include="Views\MainView.axaml.fs" />
+        <Compile Include="Views\FilePickerView.axaml.fs" />        
+        <Compile Include="Views\MainView.axaml.fs" />        
+        <Compile Include="Views\TodoListView.axaml.fs" />
         <Compile Include="ViewModels\App.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        
         <Compile Include="ViewModels\ChartViewModel.fs" />        
         <Compile Include="ViewModels\FilePickerViewModel.fs" />        
+        <Compile Include="ViewModels\TodoListViewModel.fs" />        
         <Compile Include="ViewModels\MainViewModel.fs" />        
         <Compile Include="AppCompositionRoot.fs" />        
         <Compile Include="ViewLocator.fs" />
@@ -46,12 +48,7 @@
         <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.802" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-beta.802-11.0.0-rc1.1" />
         <ProjectReference Include="..\..\ReactiveElmish.Avalonia\ReactiveElmish.Avalonia.fsproj" />
+        <ProjectReference Include="..\..\ReactiveElmish\ReactiveElmish.fsproj" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     </ItemGroup>
-
-    <!--<ItemGroup>
-        <Reference Include="PresentationCore" />
-        <Reference Include="PresentationFramework" />
-        <Reference Include="WindowsBase" />
-    </ItemGroup>-->
 </Project>

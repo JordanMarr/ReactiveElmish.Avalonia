@@ -17,6 +17,7 @@ type AppCompositionRoot() =
     override this.RegisterViews() = 
         Map [
             VM.Key<MainViewModel>(), View.Singleton(mainView)
+            VM.Key<TodoListViewModel>(), View.Transient<TodoListView>()
             VM.Key<CounterViewModel>(), View.Singleton<CounterView>()
             VM.Key<AboutViewModel>(), View.Singleton<AboutView>()
             VM.Key<ChartViewModel>(), View.Singleton<ChartView>()

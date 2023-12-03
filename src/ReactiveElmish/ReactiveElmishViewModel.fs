@@ -1,4 +1,5 @@
-﻿namespace ReactiveElmish
+﻿#nowarn "0064" // FS0064: This construct causes code to be less generic than indicated by the type annotations.
+namespace ReactiveElmish
 
 open System.ComponentModel
 open System.Reactive.Linq
@@ -72,24 +73,51 @@ type ReactiveElmishViewModel() =
         modelProjection store.Model
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
-    member this.BindSourceList<'Model, 'Msg, 'T>(store: IStore<'Model, 'Msg>, selectSourceList: 'Model -> ISourceList<'T>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.BindSourceList<'T, 'Transformed>(
+            sourceList: ISourceList<'T>, 
+            ?map: 'T -> 'Transformed,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable sourceList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
-            // Creates a subscription to the 'Model SourceList<'T> property and stores it in a dictionary.
-            let disposable = selectSourceList store.Model |> _.Connect().Bind(&sourceList).Subscribe()
+            let transform = defaultArg map (fun x -> x |> unbox<'Transformed>)
+            // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
+            let disposable = 
+                sourceList
+                    .Connect()
+                    .Transform(transform)
+                    .Bind(&readOnlyList)
+                    .Subscribe()
             propertySubscriptions.Add(vmPropertyName, disposable)
-        sourceList
+        readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
-    member this.BindSourceCache<'Model, 'Msg, 'Value, 'Key>(store: IStore<'Model, 'Msg>, selectSourceCache: 'Model -> IObservableCache<'Value, 'Key>, [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.BindSourceCache<'Value, 'Key, 'Transformed>(
+            sourceCache: IObservableCache<'Value, 'Key>, 
+            ?map: 'Value -> 'Transformed,
+            ?sortBy: 'Transformed -> 'IComparable,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable sourceList: ReadOnlyObservableCollection<'Value> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
-            // Creates a subscription to the 'Model SourceList<'T> property and stores it in a dictionary.
-            let disposable = selectSourceCache store.Model |> _.Connect().Bind(&sourceList).Subscribe()
+            let transform = defaultArg map (fun x -> x |> unbox<'Transformed>)
+            // Creates a subscription to a SourceCache and stores it in a dictionary.
+            let disposable = 
+                sourceCache
+                    .Connect()
+                    .Transform(transform)
+                    |> fun x -> 
+                        match sortBy with
+                        | Some sortBy ->
+                            x.SortBy(sortBy)
+                        | None -> 
+                            x.Sort(Comparer.Create(fun _ _ -> 0))
+                    |> _.Bind(&readOnlyList)
+                    |> _.Subscribe()
             propertySubscriptions.Add(vmPropertyName, disposable)
-        sourceList
+        readOnlyList
 
     /// Subscribes to an IObservable<> and adds the subscription to the list of disposables.
     member this.Subscribe(observable: IObservable<'T>, handler: 'T -> unit) =

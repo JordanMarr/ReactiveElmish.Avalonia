@@ -167,7 +167,7 @@ type ChartViewModel() as this =
         )
 
     member this.Series = local.Model.Series
-    member this.Actions = this.BindSourceList(local, _.Actions)
+    member this.Actions = this.BindSourceList(local.Model.Actions)
     member this.AddItem() = local.Dispatch AddItem
     member this.RemoveItem() = local.Dispatch RemoveItem
     member this.UpdateItem() = local.Dispatch UpdateItem

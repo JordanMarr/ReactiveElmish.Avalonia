@@ -9,6 +9,7 @@ type Model =
     }
 
 and View = 
+    | TodoListView
     | CounterView
     | ChartView
     | AboutView
@@ -20,7 +21,7 @@ type Msg =
 
 let init () = 
     { 
-        View = CounterView
+        View = TodoListView
     }
 
 let update (msg: Msg) (model: Model) = 

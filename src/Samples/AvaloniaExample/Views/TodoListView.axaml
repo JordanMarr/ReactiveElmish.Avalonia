@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:AvaloniaExample.ViewModels"
+             Design.DataContext="{Binding Source={x:Static vm:TodoListViewModel.DesignVM}}"
+			 x:DataType="vm:TodoListViewModel"
+             x:Class="AvaloniaExample.Views.TodoListView">
+
+	<DockPanel LastChildFill="True" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Command="{Binding Clear}">Clear</Button>
+			<Button Command="{Binding AddTodo}">Add Todo</Button>
+		</StackPanel>
+		
+		<!-- List Todos -->
+		<DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Todos}" AutoGenerateColumns="False" Height="400" HorizontalAlignment="Center" SelectedIndex="-1">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Description" Width="500" Binding="{Binding Description}" />
+				<DataGridTemplateColumn Header="Completed">
+					<DataTemplate>
+						<CheckBox IsChecked="{Binding Completed}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>			
+		</DataGrid>
+	</DockPanel>
+  
+</UserControl>
