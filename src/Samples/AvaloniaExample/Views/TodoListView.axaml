@@ -7,7 +7,12 @@
              Design.DataContext="{Binding Source={x:Static vm:TodoListViewModel.DesignVM}}"
 			 x:DataType="vm:TodoListViewModel"
              x:Class="AvaloniaExample.Views.TodoListView">
-
+	<UserControl.Styles>
+		<Style Selector="TextBlock.completed">
+			<Setter Property="TextDecorations" Value="strikethrough" />
+			<Setter Property="FontStyle" Value="Italic" />
+		</Style>
+	</UserControl.Styles>
 	<DockPanel LastChildFill="True" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
 		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
 			<Button Command="{Binding Clear}">Clear</Button>
@@ -17,7 +22,11 @@
 		<!-- List Todos -->
 		<DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Todos}" AutoGenerateColumns="False" Height="400" HorizontalAlignment="Center" SelectedIndex="-1">
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Description" Width="500" Binding="{Binding Description}" />
+				<DataGridTemplateColumn Header="Completed" Width="500">
+					<DataTemplate>
+						<TextBlock Text="{Binding Description}" Classes.completed="{Binding Completed}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
 				<DataGridTemplateColumn Header="Completed">
 					<DataTemplate>
 						<CheckBox IsChecked="{Binding Completed}" />
