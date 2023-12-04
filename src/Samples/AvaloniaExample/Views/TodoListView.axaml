@@ -22,6 +22,11 @@
 		<!-- List Todos -->
 		<DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Todos}" AutoGenerateColumns="False" Height="400" HorizontalAlignment="Center" SelectedIndex="-1">
 			<DataGrid.Columns>
+				<DataGridTemplateColumn Header="Remove">
+					<DataTemplate>
+						<Button Command="{Binding RemoveTodo}">Remove</Button>
+					</DataTemplate>
+				</DataGridTemplateColumn>
 				<DataGridTemplateColumn Header="Completed" Width="500">
 					<DataTemplate>
 						<TextBlock Text="{Binding Description}" Classes.completed="{Binding Completed}" />
