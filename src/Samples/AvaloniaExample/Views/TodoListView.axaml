@@ -46,7 +46,7 @@
 				<!-- Todo Description -->
 				<DataGridTemplateColumn Header="Completed" Width="500">
 					<DataTemplate>
-						<TextBlock Text="{Binding Description}" Classes.completed="{Binding Completed}" FontSize="22" />
+						<TextBox Text="{Binding Description}" Classes.completed="{Binding Completed}" FontSize="22" BorderBrush="Transparent" />
 					</DataTemplate>
 				</DataGridTemplateColumn>
 				<!-- Todo Completed -->
