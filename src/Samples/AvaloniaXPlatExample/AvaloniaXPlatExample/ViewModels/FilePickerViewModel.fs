@@ -1,6 +1,7 @@
 ﻿namespace AvaloniaXPlatExample.ViewModels
 
-open Elmish.Avalonia
+open ReactiveElmish
+open ReactiveElmish.Avalonia
 open Elmish
 open AvaloniaXPlatExample.Services
 

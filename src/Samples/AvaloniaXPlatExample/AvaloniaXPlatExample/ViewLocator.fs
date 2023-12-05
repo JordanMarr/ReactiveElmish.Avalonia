@@ -3,7 +3,7 @@ namespace AvaloniaXPlatExample
 open System
 open Avalonia.Controls
 open Avalonia.Controls.Templates
-open Elmish.Avalonia
+open ReactiveElmish.Avalonia
 
 type ViewLocator() =
     interface IDataTemplate with
@@ -23,7 +23,7 @@ type ViewLocator() =
                 let view = downcast Activator.CreateInstance(viewType)
                 match data with 
                 | :? ReactiveUI.ReactiveObject as vm ->
-                    ViewBinder.bindWithDispose (vm, view) |> snd
+                    ViewBinder.bindWithDisposeOnViewUnload (vm, view) |> snd
                 | _ ->
                     TextBlock(Text = sprintf $"Not found: %s{name}")
                 

@@ -27,7 +27,6 @@
   <ItemGroup>
     <!-- for services, filepicker -->
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.5" />
-    <PackageReference Include="Elmish.Avalonia" Version="2.0.0-gamma.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
 
@@ -43,9 +42,10 @@
 
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.5" />
+    <PackageReference Include="ReactiveElmish.Avalonia" Version="1.0.0-beta.3" />
 
     <!--
-    <PackageReference Include="Elmish.Avalonia" Version="$(AvaloniaElmishVersion)" />
+    <PackageReference Include="ReactiveElmish.Avalonia" Version="$(AvaloniaElmishVersion)" />
     -->
 
 

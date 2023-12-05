@@ -22,8 +22,7 @@ type App() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
             desktop.MainWindow <- 
-                MainWindow(
-                    Content = appRoot.GetView<ViewModels.MainViewModel>())
+                MainWindow(Content = appRoot.GetView<ViewModels.MainViewModel>())
 
         | :? ISingleViewApplicationLifetime as singleViewLifetime ->
             try

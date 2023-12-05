@@ -5,7 +5,8 @@ open System.Collections.Generic
 open System.Collections.ObjectModel
 open System.Reactive.Linq
 open Elmish
-open Elmish.Avalonia
+open ReactiveElmish
+open ReactiveElmish.Avalonia
 open LiveChartsCore
 open LiveChartsCore.Kernel.Sketches
 open LiveChartsCore.SkiaSharpView

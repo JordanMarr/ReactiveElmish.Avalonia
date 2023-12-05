@@ -1,12 +1,13 @@
 namespace AvaloniaXPlatExample.ViewModels
 
-open Elmish.Avalonia
+open ReactiveElmish
+open ReactiveElmish.Avalonia
 open Elmish
 open AvaloniaXPlatExample.ViewModels
 open Avalonia.Controls
 open App
 
-type MainViewModel() =
+type MainViewModel(root: CompositionRoot) =
     inherit ReactiveElmishViewModel()
 
     member this.SelectedTabIndex 
@@ -25,9 +26,9 @@ type MainViewModel() =
             | 3 -> app.Dispatch (SetView AboutView)
             | _ -> ()
 
-    member this.CounterView = this.GetView<CounterViewModel>()
-    member this.AboutView = this.GetView<AboutViewModel>()
-    member this.ChartView = this.GetView<ChartViewModel>()
-    member this.FilePickerView = this.GetView<FilePickerViewModel>()
+    member this.CounterView = root.GetView<CounterViewModel>()
+    member this.AboutView = root.GetView<AboutViewModel>()
+    member this.ChartView = root.GetView<ChartViewModel>()
+    member this.FilePickerView = root.GetView<FilePickerViewModel>()
 
-    static member DesignVM = new MainViewModel()
+    static member DesignVM = new MainViewModel(Design.stub)

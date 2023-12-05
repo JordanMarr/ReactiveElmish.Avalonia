@@ -1,7 +1,7 @@
 ﻿module AvaloniaXPlatExample.ViewModels.App
 
 open Elmish
-open Elmish.Avalonia
+open ReactiveElmish.Avalonia
 
 type Model =  
     { 
