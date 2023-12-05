@@ -12,6 +12,8 @@
 		<Style Selector="TextBlock.completed">
 			<Setter Property="TextDecorations" Value="strikethrough" />
 			<Setter Property="FontStyle" Value="Italic" />
+			<Setter Property="Foreground" Value="Gray" />
+			<Setter Property="Margin" Value="8,0" />
 		</Style>
 	</UserControl.Styles>
 	<DockPanel LastChildFill="True" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
@@ -46,7 +48,10 @@
 				<!-- Todo Description -->
 				<DataGridTemplateColumn Header="Completed" Width="500">
 					<DataTemplate>
-						<TextBox Text="{Binding Description}" Classes.completed="{Binding Completed}" FontSize="22" BorderBrush="Transparent" />
+						<Grid>
+							<TextBox Text="{Binding Description}" FontSize="22" BorderBrush="Transparent" IsVisible="{Binding !Completed}" />
+							<TextBlock Text="{Binding Description}" FontSize="22" Classes="completed" IsVisible="{Binding Completed}" />
+						</Grid>
 					</DataTemplate>
 				</DataGridTemplateColumn>
 				<!-- Todo Completed -->

@@ -4,6 +4,7 @@ open ReactiveElmish
 open ReactiveElmish.Avalonia
 open App
 open System
+open Avalonia.Controls
 
 module TodoApp = 
     open Elmish
@@ -18,8 +19,15 @@ module TodoApp =
         | Clear
 
     let init() = 
-        { Todos = SourceCache.create(_.Id)
-        }, Cmd.ofMsg AddTodo
+        if Design.IsDesignMode then 
+            { Todos = 
+                SourceCache.create(_.Id) 
+                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false }
+                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = true }
+            }, Cmd.none
+        else
+            { Todos = SourceCache.create(_.Id) 
+            }, Cmd.ofMsg AddTodo
 
 
     let update (msg: Msg) (model: Model) = 
