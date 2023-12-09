@@ -1,29 +1,23 @@
-# ReactiveElmish.Avalonia [![NuGet version (ReactiveElmish.Avalonia)](https://img.shields.io/nuget/v/ReactiveElmish.Avalonia.svg?style=flat-square)](https://www.nuget.org/packages/ReactiveElmish.Avalonia/)
+## ReactiveElmish.Avalonia [![NuGet version (ReactiveElmish.Avalonia)](https://img.shields.io/nuget/v/ReactiveElmish.Avalonia.svg?style=flat-square)](https://www.nuget.org/packages/ReactiveElmish.Avalonia/)
 
-## What is it?
+_Elmish Stores + Custom Bindings + Avalonia Static Views_
 
-```mermaid
-    flowchart LR
-    A[Avalonia Static Views]
-    B[Custom View Model Bindings]
-    C[Elmish Stores]
-    C-->B
-    B-->A
-```
+###  Elmish Stores +  Custom bindings
+* Create an [Elmish Store](#elmish-stores) to share global app state between views.
+* Create an [Elmish Store](#elmish-stores) to manage local view state.
+* Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
 
-### Elmish Stores +  Custom bindings 
-Create one store to share app state between views, another to manage local view state, or use both!
-
-Custom bindings in the `ReactiveElmishViewModel` bind data from your Elmish Stores to your Views.
-
+_This example shows using an Elmish Store to manage local view state:_
 ![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/5278afe4-ce05-4548-b9e9-6a1703394fd7)
 
-### Avalonia Views + Design View
+### Avalonia Views
 Create views using Avalonia xaml.
-Install the "Avalonia for Visual Studio 2022" extension for a design preview panel.
+
+Install the _Avalonia for Visual Studio 2022_ extension for a design preview panel.
 JetBrains Rider also supports Avalonia previews out-of-the-box!
 https://docs.avaloniaui.net/docs/getting-started/ide-support
 
+_This screenshot shows the Avalonia design preview in Visual Studio:_
 ![image](https://user-images.githubusercontent.com/1030435/219173023-a47d5d9b-8926-4f9d-833b-1406661e1c82.png)
 
 ### Benefits
@@ -40,7 +34,7 @@ https://docs.avaloniaui.net/docs/getting-started/ide-support
 * More standard looking view model pattern while still maintaining the power of Elmish. For example, you can now create an instance of an Elmish view model and actually inspect its properties from the outside -- and even read / write to the properties in OOP fashion. (The fact that a view model is using Elmish internally should not matter because it's an implementation detail.) This is a perfect example of the benefits of OOP + FP side-by-side.
 * ReactiveElmish.Avalonia now takes a dependency on the Avalonia.ReactiveUI library. (The new `ReactiveElmishViewModel` class inherits from `ReactiveObject`.) Since this is the default view model library for Avalonia, this makes it easier to take advantage of existing patterns when needed.
 * ReactiveElmish.Avalonia integrates with `DynamicData` which provides a very simple way to  lists between the Elmish model and the view / view model.
-* Built-in dependency injection using "Microsoft.Extensions.DependencyInjection".
+* Built-in dependency injection using `Microsoft.Extensions.DependencyInjection`.
 
 
 # Elmish Stores
@@ -51,7 +45,7 @@ This provides flexibility for how you want to configure your viewmodels.
 * Some view models may not need a store at all.
 
 ## App Store
-A global app store can be shared between view models to provide view routing:
+A global app store can be shared between view models to, for example, provide view routing:
 
 ```F#
 module App
