@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="runtimeconfig.template.json" />
     <None Include="Properties\**" />
     <None Include="AppBundle\**" />
     <WasmExtraFilesToDeploy Include="AppBundle\**" />
@@ -17,11 +18,13 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avalonia.Browser" Version="11.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AvaloniaXPlatExample\AvaloniaXPlatExample.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 
 </Project>
