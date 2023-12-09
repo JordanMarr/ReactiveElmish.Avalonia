@@ -25,8 +25,14 @@ module SourceList =
         sourceList.Remove item |> ignore
         sourceList
 
-    let clear<'T> (sourceList: SourceList<'T>) =
-        sourceList.Clear()
+    // Removed because it would cause list to permanently disappear (unsubscribe maybe?).
+    //let clear<'T> (sourceList: SourceList<'T>) =
+    //    sourceList.Clear()
+    //    sourceList
+
+    let removeAll<'T> (sourceList: SourceList<'T>) =
+        for item in sourceList.Items do
+            sourceList.Remove item |> ignore
         sourceList
 
 /// Functional helpers for DynamicData.SourceCache.

@@ -112,7 +112,7 @@ module Chart =
             { model with
                 // deactivate the AutoUpdate ToggleButton in the UI
                 IsAutoUpdateChecked = false 
-                Actions = model.Actions |> SourceList.clear |> SourceList.add { Description = "Reset Chart"; Timestamp = DateTime.Now }
+                Actions = model.Actions |> SourceList.removeAll |> SourceList.add { Description = "Reset Chart"; Timestamp = DateTime.Now }
             }
         | SetIsAutoUpdateChecked isChecked ->
             { model with 

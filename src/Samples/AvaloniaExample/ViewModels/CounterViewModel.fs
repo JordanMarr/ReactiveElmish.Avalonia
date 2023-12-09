@@ -36,7 +36,7 @@ module Counter =
         | Reset ->
             {
                 Count = 0 
-                Actions = model.Actions |> SourceList.clear |> SourceList.add { Description = "Reset"; Timestamp = DateTime.Now }
+                Actions = model.Actions |> SourceList.removeAll |> SourceList.add { Description = "Reset"; Timestamp = DateTime.Now }
             }
 
 open Counter
