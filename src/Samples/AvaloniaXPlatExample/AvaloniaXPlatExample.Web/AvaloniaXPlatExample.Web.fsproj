@@ -24,8 +24,10 @@
   <ItemGroup>
     <ProjectReference Include="..\AvaloniaXPlatExample\AvaloniaXPlatExample.fsproj" />
   </ItemGroup>
+    <!--
   <ItemGroup>
     <PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
   </ItemGroup>
+  -->
 
 </Project>
