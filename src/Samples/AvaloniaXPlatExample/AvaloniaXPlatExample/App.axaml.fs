@@ -19,23 +19,26 @@ type App() =
         printfn "loaded - end of initialize"
 
     override this.OnFrameworkInitializationCompleted() =
-        
-        let appRoot = AppCompositionRoot()
+
 
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            desktop.MainWindow <- 
+            let appRoot = AppCompositionRoot()
+            desktop.MainWindow <-
                 MainWindow(Content = appRoot.GetView<ViewModels.MainViewModel>())
+            base.OnFrameworkInitializationCompleted()
 
         | :? ISingleViewApplicationLifetime as singleViewLifetime ->
             printfn "OnFrameworkInitializationCompleted - ISingleViewApplicationLifetime"
             try
                 printfn "get mainview"
-                let view = MainView()
+                let appRoot = AppCompositionRoot()
+                // let view = MainView()
                 singleViewLifetime.MainView <- appRoot.GetView<ViewModels.MainViewModel>()
-                let x = ViewModels.MainViewModel.vm
+                // let x = ViewModels.MainViewModel.DesignVM
                 printfn "start elmish loop"
-                x.StartElmishLoop(view)
+                // x.StartElmishLoop(view)
+                base.OnFrameworkInitializationCompleted()
             with x ->
                 printfn $"Exception: {x.Message} \n {x.StackTrace}"
 
