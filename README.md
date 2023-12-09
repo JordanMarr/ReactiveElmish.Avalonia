@@ -147,12 +147,12 @@ type FilePickerViewModel(fileSvc: FileService) =
         Program.mkAvaloniaSimple init update
         |> Program.mkStore
 
-    member this.FilePath = this. (local, _.FilePath >> Option.defaultValue "Not Set")
+    member this.FilePath = this.Bind(local, _.FilePath >> Option.defaultValue "Not Set")
     member this.Ok() = app.Dispatch App.GoHome
     member this.PickFile() = 
         task {
             let! path = fileSvc.TryPickFile()
-            local.Dispatch (SetFilePath path)
+            local.Dispatch(SetFilePath path)
         }
 
     static member DesignVM = new FilePickerViewModel(Design.stub)
@@ -267,10 +267,10 @@ type MainViewModel(root: CompositionRoot) =
             | FilePickerView -> root.GetView<FilePickerViewModel>()
         )
 
-    member this.ShowChart() = app.Dispatch (SetView ChartView)
-    member this.ShowCounter() = app.Dispatch (SetView CounterView)
-    member this.ShowAbout() = app.Dispatch (SetView AboutView)
-    member this.ShowFilePicker() = app.Dispatch (SetView FilePickerView)
+    member this.ShowChart() = app.Dispatch(SetView ChartView)
+    member this.ShowCounter() = app.Dispatch(SetView CounterView)
+    member this.ShowAbout() = app.Dispatch(SetView AboutView)
+    member this.ShowFilePicker() = app.Dispatch(SetView FilePickerView)
 
     static member DesignVM = new MainViewModel(Design.stub)
 ```
