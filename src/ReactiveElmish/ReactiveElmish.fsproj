@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+		<NoWarn>FS0044</NoWarn>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net48</TargetFrameworks>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<DebugType>Embedded</DebugType>
+		<EmbedAllSources>True</EmbedAllSources>
+		<Authors>JordanMarr</Authors>
+		<Description>F# bindings for using Elmish in Avalonia</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/JordanMarr/ReactiveElmish</PackageProjectUrl>
+		<PackageTags>F# fsharp Elmish MVU MVVM</PackageTags>
+		<Version>1.0.0-beta</Version>
+		<!--Turn on warnings for unused values (arguments and let bindings) -->
+		<OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="DynamicData.fs" />
+		<Compile Include="ReactiveElmishStore.fs" />
+		<Compile Include="ReactiveElmishViewModel.fs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
+		<PackageReference Include="ReactiveUI" Version="19.5.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="FSharp.Core" Version="6.0.7" />
+	</ItemGroup>
+
+</Project>

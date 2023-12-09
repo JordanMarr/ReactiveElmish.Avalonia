@@ -1,8 +1,8 @@
 namespace AvaloniaExample
 
 open Avalonia
+open Avalonia.Controls
 open Avalonia.Markup.Xaml
-open AvaloniaExample.Views
 open Avalonia.Controls.ApplicationLifetimes
 
 type App() =
@@ -17,10 +17,8 @@ type App() =
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
-            let view = MainView()
-            desktop.MainWindow <- view
-            Services.Init view           
-            ViewModels.MainViewModel.vm.StartElmishLoop(view)
+            let appRoot = AppCompositionRoot()
+            desktop.MainWindow <- appRoot.GetView<ViewModels.MainViewModel>() :?> Window
         | _ -> 
             // leave this here for design view re-renders
             ()

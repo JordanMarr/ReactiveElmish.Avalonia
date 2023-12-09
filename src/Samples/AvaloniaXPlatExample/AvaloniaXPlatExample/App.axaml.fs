@@ -1,6 +1,7 @@
 namespace AvaloniaXPlatExample
 
 open Avalonia
+open Avalonia.Controls
 open Avalonia.Markup.Xaml
 open AvaloniaXPlatExample.Views
 open Avalonia.Controls.ApplicationLifetimes
@@ -18,21 +19,20 @@ type App() =
         printfn "loaded - end of initialize"
 
     override this.OnFrameworkInitializationCompleted() =
+        
+        let appRoot = AppCompositionRoot()
+
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            let view = MainWindow()
-            desktop.MainWindow <- view
-            Services.Init view
-            try
-                ViewModels.MainViewModel.vm.StartElmishLoop(view)
-            with x ->
-                printfn $"Exception: {x.Message} \n {x.StackTrace}"
+            desktop.MainWindow <- 
+                MainWindow(Content = appRoot.GetView<ViewModels.MainViewModel>())
+
         | :? ISingleViewApplicationLifetime as singleViewLifetime ->
             printfn "OnFrameworkInitializationCompleted - ISingleViewApplicationLifetime"
             try
                 printfn "get mainview"
                 let view = MainView()
-                singleViewLifetime.MainView <- view
+                singleViewLifetime.MainView <- appRoot.GetView<ViewModels.MainViewModel>()
                 let x = ViewModels.MainViewModel.vm
                 printfn "start elmish loop"
                 x.StartElmishLoop(view)

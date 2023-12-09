@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:AvaloniaExample.ViewModels"
+             Design.DataContext="{Binding Source={x:Static vm:TodoListViewModel.DesignVM}}"
+			 x:DataType="vm:TodoListViewModel"
+             x:Class="AvaloniaExample.Views.TodoListView">
+	<UserControl.Styles>
+		<Style Selector="TextBlock.completed">
+			<Setter Property="TextDecorations" Value="strikethrough" />
+			<Setter Property="FontStyle" Value="Italic" />
+			<Setter Property="Foreground" Value="Gray" />
+			<Setter Property="Margin" Value="8,0" />
+		</Style>
+	</UserControl.Styles>
+	<DockPanel LastChildFill="True" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
+		
+		<!--Bottom: Button Panel-->
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+			<!-- Clear All -->
+			<Button Command="{Binding Clear}">
+				<StackPanel Orientation="Horizontal">
+					<i:Icon Value="mdi-playlist-remove" FontSize="18" />
+					<TextBlock Text="Clear" />
+				</StackPanel>
+			</Button>
+			<!-- Add Todo -->
+			<Button Command="{Binding AddTodo}">
+				<StackPanel Orientation="Horizontal">
+					<i:Icon Value="fa-plus" FontSize="18" />
+					<TextBlock Text="Add Todo" />
+				</StackPanel>
+			</Button>
+		</StackPanel>
+		
+		<!-- Top: Todo List Table -->
+		<DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Todos}" AutoGenerateColumns="False" Height="400" HorizontalAlignment="Center" SelectedIndex="-1">
+			<DataGrid.Columns>
+				<!-- Remove Button -->
+				<DataGridTemplateColumn Header="Remove">
+					<DataTemplate>
+						<Button i:Attached.Icon="fa-trash-can" FontSize="18" Command="{Binding RemoveTodo}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
+				<!-- Todo Description -->
+				<DataGridTemplateColumn Header="Completed" Width="500">
+					<DataTemplate>
+						<Grid>
+							<TextBox Text="{Binding Description}" FontSize="22" BorderBrush="Transparent" IsVisible="{Binding !Completed}" />
+							<TextBlock Text="{Binding Description}" FontSize="22" Classes="completed" IsVisible="{Binding Completed}" />
+						</Grid>
+					</DataTemplate>
+				</DataGridTemplateColumn>
+				<!-- Todo Completed -->
+				<DataGridTemplateColumn Header="Completed">
+					<DataTemplate>
+						<CheckBox IsChecked="{Binding Completed}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>			
+		</DataGrid>
+	</DockPanel>
+  
+</UserControl>

@@ -2,7 +2,7 @@ namespace AvaloniaXPlatExample.Desktop
 open System
 open Avalonia
 open AvaloniaXPlatExample
-open Elmish.Avalonia.AppBuilder
+open Avalonia.ReactiveUI
 
 open System.Diagnostics
 module Program =
@@ -21,7 +21,7 @@ module Program =
                                 //Logging.LogArea.Visual
                             |]
                         )
-            .UseElmishBindings()
+            .UseReactiveUI()
 
 
     [<EntryPoint; STAThread>]

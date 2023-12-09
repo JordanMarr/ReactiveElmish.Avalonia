@@ -7,7 +7,8 @@
         x:Class="AvaloniaExample.Views.MainView"        
         Icon="/Assets/avalonia-logo.ico"
         xmlns:vm="using:AvaloniaExample.ViewModels"
-        Design.DataContext="{Binding Source={x:Static vm:MainViewModel.designVM}}"
+        Design.DataContext="{Binding Source={x:Static vm:MainViewModel.DesignVM}}"
+		x:DataType="vm:MainViewModel"
         Title="AvaloniaExample">
 
 	<Window.Styles>
@@ -62,13 +63,14 @@
 	<DockPanel LastChildFill="true">
 
 		<StackPanel Classes="nav" Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Stretch">
+			<Button Classes="tab" Content="Todo List" Command="{Binding ShowTodoList}" />
 			<Button Classes="tab" Content="Counter" Command="{Binding ShowCounter}" />
 			<Button Classes="tab" Content="Chart" Command="{Binding ShowChart}" />
 			<Button Classes="tab" Content="File Picker" Command="{Binding ShowFilePicker}" />
 		    <Button Classes="tab" Content="About" Command="{Binding ShowAbout}" />
 		</StackPanel>
 		
-		<ContentControl Content="{Binding ContentVM}" />
+		<ContentControl Content="{Binding ContentView}" />
 		
 	</DockPanel>
 	

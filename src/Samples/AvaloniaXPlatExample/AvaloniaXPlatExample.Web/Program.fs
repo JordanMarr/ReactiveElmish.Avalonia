@@ -1,9 +1,8 @@
 open System.Runtime.Versioning
 open Avalonia
 open Avalonia.Browser
-
+open Avalonia.ReactiveUI
 open AvaloniaXPlatExample
-open Elmish.Avalonia.AppBuilder
 
 module Program =
     [<assembly: SupportedOSPlatform("browser")>]
@@ -13,7 +12,7 @@ module Program =
     [<CompiledName "BuildAvaloniaApp">]
     let buildAvaloniaApp () =
         AppBuilder
-            .Configure<App>()
+            .Configure<App>()            
 
     [<EntryPoint>]
     let main argv =
@@ -22,21 +21,20 @@ module Program =
             try
                 let app = buildAvaloniaApp()
                 do! app.StartBrowserAppAsync("out")
-                app.UseElmishBindings()
+                app.UseReactiveUI() |> ignore
+                app.LogToTrace(
+                    level = Logging.LogEventLevel.Debug
+                        //areas = [|
+                        //    //Logging.LogArea.Binding
+                        //    //Logging.LogArea.Win32Platform
+                        //    //Logging.LogArea.Control
+                        //    //Logging.LogArea.Property
+                        //    //Logging.LogArea.Visual
+                        //    //Logging.LogArea.Animations
+                        //    //Logging.LogArea.Platform
+                        //|]
+                )
                 |> ignore
-                    (*
-                    app.LogToTrace(Logging.LogEventLevel.Debug
-                                areas=[|
-                                    //Logging.LogArea.Binding
-                                    //Logging.LogArea.Win32Platform
-                                    //Logging.LogArea.Control
-                                    //Logging.LogArea.Property
-                                    //Logging.LogArea.Visual
-                                    //Logging.LogArea.Animations
-                                    //Logging.LogArea.Platform
-                                |]
-                            )
-                    *)
                 return 0
             with ex ->
                 printfn $"Exception: {ex.Message}\n{ex.StackTrace}"

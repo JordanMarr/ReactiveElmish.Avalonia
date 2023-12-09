@@ -1,4 +1,4 @@
-#r "nuget: Fun.Build, 1.0.2"
+#r "nuget: Fun.Build, 1.0.5"
 
 open System.IO
 open System.Xml.Linq
@@ -8,25 +8,25 @@ let src = __SOURCE_DIRECTORY__
 
 pipeline "Publish" {
 
-    stage "Build Elmish.Avalonia" {
-        run $"dotnet restore {src}/Elmish.Avalonia.sln"
-        run $"dotnet build {src}/Elmish.Avalonia.sln --configuration Release"
+    stage "Build ReactiveElmish.Avalonia" {
+        run $"dotnet restore {src}/ReactiveElmish.Avalonia/ReactiveElmish.Avalonia.fsproj"
+        run $"dotnet build {src}/ReactiveElmish.Avalonia/ReactiveElmish.Avalonia.fsproj --configuration Release"
     }
-    
-    stage "Publish Elmish.Avalonia" {
+
+    stage "Publish ReactiveElmish.Avalonia" {
         run (fun ctx ->             
             let version = 
-                let project = (FileInfo $"{src}/Elmish.Avalonia/Elmish.Avalonia.fsproj")
+                let project = FileInfo $"{src}/ReactiveElmish.Avalonia/ReactiveElmish.Avalonia.fsproj"
                 match XDocument.Load(project.FullName).Descendants("Version") |> Seq.tryHead with
                 | Some versionElement -> versionElement.Value
                 | None -> failwith $"Could not find a <Version> element in '{project.Name}'."
             
             let nugetKey = 
-                match ctx.TryGetEnvVar "ELMISH_AVALONIA_NUGET_KEY" with
+                match ctx.TryGetEnvVar "REACTIVE_ELMISH_NUGET_KEY" with
                 | ValueSome nugetKey -> nugetKey
-                | ValueNone -> failwith "The NuGet API key must be set in an 'ELMISH_AVALONIA_NUGET_KEY' environmental variable"
+                | ValueNone -> failwith "The NuGet API key must be set in an 'REACTIVE_ELMISH_NUGET_KEY' environmental variable"
             
-            $"dotnet nuget push \"{src}/Elmish.Avalonia/bin/Release/Elmish.Avalonia.{version}.nupkg\" -s nuget.org -k {nugetKey} --skip-duplicate"
+            $"dotnet nuget push \"{src}/ReactiveElmish.Avalonia/bin/Release/ReactiveElmish.Avalonia.{version}.nupkg\" -s nuget.org -k {nugetKey} --skip-duplicate"
         )
     }
 

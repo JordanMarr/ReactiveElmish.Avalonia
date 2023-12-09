@@ -1,42 +1,13 @@
-﻿module AvaloniaExample.ViewModels.AboutViewModel
+﻿namespace AvaloniaExample.ViewModels
 
-open Elmish.Avalonia
-open Elmish
-open Messaging
+open ReactiveElmish
+open App
 
-type Model = 
-    {
-        Version: string
-    }
+type AboutViewModel() =
+    inherit ReactiveElmishViewModel()
 
-type Msg = 
-    | Ok
-    | Terminate
+    member this.Version = "v1.0"
+    member this.Ok() = app.Dispatch GoHome
 
-let init() = 
-    { 
-        Version = "1.1"
-    }, Cmd.none
-
-let update (msg: Msg) (model: Model) = 
-    match msg with
-    | Ok -> model, Cmd.ofEffect (fun _ -> bus.OnNext(GlobalMsg.GoHome))
-    | Terminate -> model, Cmd.none
-
-
-let bindings ()  : Binding<Model, Msg> list = [
-    "Version" |> Binding.oneWay (fun m -> m.Version)
-    "Ok" |> Binding.cmd Ok
-]
-
-let designVM = ViewModel.designInstance (fst (init())) (bindings())
-
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
-    |> ElmishViewModel.subscribe (fun view model dispatch -> 
-        view.Loaded |> Observable.subscribe (fun _ -> 
-            printfn "View Loaded!"
-        )
-    )
+    static member DesignVM = 
+        new AboutViewModel()

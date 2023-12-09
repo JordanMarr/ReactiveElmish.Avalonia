@@ -3,8 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650"
+			 Width="700"
 			 xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
-			 Design.DataContext="{Binding Source={x:Static vm:FilePickerViewModel.designVM}}"
+			 Design.DataContext="{Binding Source={x:Static vm:FilePickerViewModel.DesignVM}}"
              x:Class="AvaloniaXPlatExample.Views.FilePickerView">
 	<StackPanel HorizontalAlignment="Center" Margin="10">
 		<StackPanel Orientation="Horizontal" Margin="10" Spacing="6">

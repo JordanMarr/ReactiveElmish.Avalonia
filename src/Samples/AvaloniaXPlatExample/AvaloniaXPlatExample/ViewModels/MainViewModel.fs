@@ -1,59 +1,34 @@
-module AvaloniaXPlatExample.ViewModels.MainViewModel
+namespace AvaloniaXPlatExample.ViewModels
 
-open Elmish.Avalonia
+open ReactiveElmish
+open ReactiveElmish.Avalonia
+open Elmish
+open AvaloniaXPlatExample.ViewModels
+open Avalonia.Controls
+open App
 
-type Model =
-    {
-        // ContentVM: IStart // TODO
-        ContentVM: IElmishViewModel
-    }
+type MainViewModel(root: CompositionRoot) =
+    inherit ReactiveElmishViewModel()
 
-type Msg =
-    | ShowAbout
-    | ShowChart
-    | ShowCounter
-    | ShowFilePicker
-    | ShowHome
-    | ShowListBox
+    member this.SelectedTabIndex 
+        with get () = 
+            this.Bind(app, fun m -> 
+                match m.View with
+                | CounterView -> 0
+                | ChartView -> 1
+                | FilePickerView -> 2
+                | AboutView -> 3)
+        and set value = 
+            match value with
+            | 0 -> app.Dispatch (SetView CounterView)
+            | 1 -> app.Dispatch (SetView ChartView)
+            | 2 -> app.Dispatch (SetView FilePickerView)
+            | 3 -> app.Dispatch (SetView AboutView)
+            | _ -> ()
 
-let init() =
-    {
-        // ContentVM = CounterViewModel.vm
-        ContentVM = ListBoxViewModel.vm
-    }
+    member this.CounterView = root.GetView<CounterViewModel>()
+    member this.AboutView = root.GetView<AboutViewModel>()
+    member this.ChartView = root.GetView<ChartViewModel>()
+    member this.FilePickerView = root.GetView<FilePickerViewModel>()
 
-let rec update (msg: Msg) (model: Model) =
-    match msg with
-    | ShowAbout ->
-        {model with ContentVM = AboutViewModel.vm}
-    | ShowChart ->
-        {model with ContentVM = ChartViewModel.vm}
-    | ShowFilePicker ->
-        {model with ContentVM = FilePickerViewModel.vm()}
-    | ShowHome ->
-        {model with ContentVM = vm}
-    | ShowCounter ->
-        {model with ContentVM = CounterViewModel.vm}
-    | ShowListBox ->
-        {model with ContentVM = ListBoxViewModel.vm}
-
-and bindings() : Binding<Model, Msg> list =
-    [
-    // Properties
-    "AboutVM" |> Binding.oneWay (fun _ -> AboutViewModel.vm)
-    "CounterVM" |> Binding.oneWay (fun _ -> CounterViewModel.vm)
-    "ListBoxVM" |> Binding.oneWay (fun _ -> ListBoxViewModel.vm)
-    "ChartVM" |> Binding.oneWay (fun _ -> ChartViewModel.vm)
-    "FilePickerVM" |> Binding.oneWay (fun _ -> FilePickerViewModel.vm())
-    ]
-
-and designVM = ViewModel.designInstance (init()) (bindings())
-
-and vm : IElmishViewModel =
-    ElmishViewModel(
-            AvaloniaProgram.mkSimple init update bindings
-            |> AvaloniaProgram.withElmishErrorHandler
-                (fun msg exn ->
-                    printfn $"ElmishErrorHandler: msg={msg}\n{exn.Message}\n{exn.StackTrace}"
-                )
-    )
+    static member DesignVM = new MainViewModel(Design.stub)

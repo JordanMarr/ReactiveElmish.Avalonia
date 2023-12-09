@@ -1,121 +1,216 @@
-# Elmish.Avalonia [![NuGet version (Elmish.Avalonia)](https://img.shields.io/nuget/v/Elmish.Avalonia.svg?style=flat-square)](https://www.nuget.org/packages/Elmish.Avalonia/)
-Static Avalonia views for Elmish programs
+## ReactiveElmish.Avalonia [![NuGet version (ReactiveElmish.Avalonia)](https://img.shields.io/nuget/v/ReactiveElmish.Avalonia.svg?style=flat-square)](https://www.nuget.org/packages/ReactiveElmish.Avalonia/)
 
-This project is a port of the awesome [Elmish.WPF](https://github.com/elmish/Elmish.WPF) library.
-Most of the codebase is directly copied, but the WPF bits have been replaced with Avalonia bits and adapted where necessary.
-There is a sample project here to get you started, but there is a plethora of [Elmish.WPF examples](https://github.com/elmish/Elmish.WPF/tree/master/src/Samples) that you can also refer to.
+_Elmish Stores + Custom Bindings + Avalonia Static Views_
 
-## Why?
-Avalonia.FuncUI already exists and it is fantastic. So then why make an Elmish.Avalonia port?
+###  Elmish Stores +  Custom bindings
+* Create an [Elmish Store](#elmish-stores) to share global app state between views.
+* Create an [Elmish Store](#elmish-stores) to manage local view state.
+* Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
 
-### Benefits
-* Some people may prefer using xaml, and it can be an easier sell for some teams due to the immediate availability of all community controls.
-* Bindings have to be created for controls in FuncUI. While most of the controls have bindings provided, third party will not have bindings out-of-the-box. Elmish.Avalonia sidesteps this problem by using xaml directly.
-* There is not currently a reliable design preview tool for FuncUI (although there is currently a project, [Avalonia.FuncUI.LiveView](https://github.com/SilkyFowl/Avalonia.FuncUI.LiveView), that is working to solve this problem). For me to do any kind of real project work with Avalonia and F#, a design preview is a necessity, and using xaml allows you to utilize the custom Avalonia design preview extension. After recently trying Elmish.WPF, I fell in love with the `ViewModel.designInstance` preview functionality that lets you preview your `init` values in the design preview panel, and this also works with Elmish.Avalonia!
-* You can use Avalonia.FuncUI and Elmish.Avalonia side-by-side to have the best of both worlds!
+_This example shows using an Elmish Store to manage local view state:_
+![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/5278afe4-ce05-4548-b9e9-6a1703394fd7)
 
-### Other reasons
-* Avalonia UI is a big deal in the .NET OSS community; it is always nice for F# community to be able to participate in the latest and greatest with as many options as possible.
-* Avalonia already provides first class templates to create an F# project that include creating .axaml views within the same project! (Not possible with WPF!)
-* While the built-in F# templates do allow you to do classic MVVM style, Elmish is more powerful and has become the standard for F# UI projects.
-* The "Avalonia UI for Visual Studio 2022" extension provides a xaml preview pane that works with F#! 😄 (Also not possible with WPF!)
-* The Elmish.WPF `ViewModel.designInstance` concept works with this extension very well. This allows you populate your "Design Preview" window with the defaults from your Elmish `init` function!
-* Keeping with tradition that the F# community will [provide important libraries, developer tools and workload support](https://learn.microsoft.com/en-us/dotnet/fsharp/strategy).
+### Avalonia Static Views
+Create views using Avalonia xaml.
 
-# Sample App
-The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
-
-## Design View
-Don't forget to install the "Avalonia for Visual Studio 2022" extension.
+Install the _Avalonia for Visual Studio 2022_ extension for a design preview panel.
 JetBrains Rider also supports Avalonia previews out-of-the-box!
 https://docs.avaloniaui.net/docs/getting-started/ide-support
 
+_This screenshot shows the Avalonia design preview in Visual Studio:_
 ![image](https://user-images.githubusercontent.com/1030435/219173023-a47d5d9b-8926-4f9d-833b-1406661e1c82.png)
 
-## Runtime View
-![image](https://user-images.githubusercontent.com/1030435/219145003-b4168921-ddab-41bc-92ea-d3f432fbc844.png)
+### Benefits
+* Some people may prefer using static xaml views, and it can be an easier sell for some teams due familiarity, and the immediate availability of all community controls.
+* Ability to use the excellent Avalonia design previewer. For me to do any kind of real project work with Avalonia and F#, a design previewer is a necessity. Also, being able to easily construct `DesignInstance` VM for each view that utilizes the Elmish `init` function. 
+* Avalonia UI is a big deal in the .NET OSS community; it is always nice for F# community to be able to participate in the latest and greatest with as many options as possible.
+* Avalonia already provides first class templates to create an F# project that include creating .axaml views within the same project! (Not possible with WPF!)
+* While the built-in F# templates do allow you to do classic MVVM style, Elmish provides a powerful form of state management that has become standard for F# UI projects.
+* The "Avalonia UI for Visual Studio 2022" extension provides a xaml preview pane that works with F#! 😄 (Also not possible with WPF!)
+* Keeping with tradition that the F# community will [provide important libraries, developer tools and workload support](https://learn.microsoft.com/en-us/dotnet/fsharp/strategy).
 
-## View Model
-![image](https://github.com/JordanMarr/Elmish.Avalonia/assets/1030435/975bc487-b5ff-4e10-a968-a249cd11488f)
+### Feature Highlights
+* Works with Avalonia [Compiled bindings](https://docs.avaloniaui.net/docs/next/basics/data/data-binding/compiled-bindings#enable-and-disable-compiled-bindings) for better performance and compile-time type checking in the views. With Compiled bindings enabled, the build will fail if the view references a binding that doesn't exist in the VM! (The previous `DictionaryViewModel` brought over from Elmish.WPF was not able to take advantage of this because it relied on reflection-based bindings.)
+* More standard looking view model pattern while still maintaining the power of Elmish. For example, you can now create an instance of an Elmish view model and actually inspect its properties from the outside -- and even read / write to the properties in OOP fashion. (The fact that a view model is using Elmish internally should not matter because it's an implementation detail.) This is a perfect example of the benefits of OOP + FP side-by-side.
+* ReactiveElmish.Avalonia now takes a dependency on the Avalonia.ReactiveUI library. (The new `ReactiveElmishViewModel` class inherits from `ReactiveObject`.) Since this is the default view model library for Avalonia, this makes it easier to take advantage of existing patterns when needed.
+* ReactiveElmish.Avalonia integrates with `DynamicData` which provides a very simple way to  lists between the Elmish model and the view / view model.
+* Built-in dependency injection using `Microsoft.Extensions.DependencyInjection`.
 
 
-## Master View
-The sample project uses the `ViewLocator` to instantiate the view, bind the Elmish view model and start the Elmish loop.
-Since the design preview is set for both the `MasterView` and the `CounterView`, we are able to see the counter on the `MasterView` design preview!
+# Elmish Stores
+ReactiveElmish.Avalonia introduces the `ElmishStore` which is an Rx powered Elmish loop that can be used to power one or more view models.
+This provides flexibility for how you want to configure your viewmodels. 
+* Each view model can have its own `ElmishStore`.
+* View models may share a store.
+* Some view models may not need a store at all.
 
-![image](https://user-images.githubusercontent.com/1030435/219421157-cfa2254c-a1aa-417c-9a8b-69a5bc4ef038.png)
-
-# Project Setup
-
-Steps to create a new project:
-
-1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
-2) Install the Elmish.Avalonia package from NuGet.
-3) Remove the `Avalonia.ReactiveUI` package.
-4) In `Program.fs`, replace `.UseReactiveUI()` with `.UseElmishBindings()`.
-5) Replace the [`ViewLocator.fs`](https://github.com/JordanMarr/Elmish.Avalonia/blob/main/src/Samples/AvaloniaExample/ViewLocator.fs) with the one from from the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample). This makes it easier to bind the view/viewmodel and start the Elmish loop using convention.
-   Looking at the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample), this allows us to bind the `MainView.axaml` `Content` via the `ViewLocator` to locate the appropriate view and start the Elmish loop.
-
-# Sample Project
-Please view the [AvaloniaExample project](https://github.com/JordanMarr/Elmish.Avalonia/tree/main/src/Samples/AvaloniaExample).
-
-# AvaloniaProgram
-The `AvaloniaProgram` module contains functions that configure an Elmish program.
-
-### AvaloniaProgram.startElmishLoop
-Starts the Elmish loop and binds the given view to the bindings.
+## App Store
+A global app store can be shared between view models to, for example, provide view routing:
 
 ```F#
-let start view = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> AvaloniaProgram.startElmishLoop view
+module App
+
+open System
+open Elmish
+open ReactiveElmish.Avalonia
+open ReactiveElmish
+
+type Model =  
+    { 
+        View: View
+    }
+
+and View = 
+    | CounterView
+    | ChartView
+    | AboutView
+    | FilePickerView
+
+type Msg = 
+    | SetView of View
+    | GoHome
+
+let init () = 
+    { 
+        View = CounterView
+    }
+
+let update (msg: Msg) (model: Model) = 
+    match msg with
+    | SetView view -> { View = view }   
+    | GoHome -> { View = CounterView }
+
+
+let app = 
+    Program.mkAvaloniaSimple init update
+    |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
+    |> Program.withConsoleTrace
+    |> Program.mkStore
 ```
 
-### AvaloniaProgram.withSubscription
+## Accessing the Global App Store
+In this example, a simple `AboutViewModel` can access the global `App` store to dispatch a custom navigation message when the `Ok` button is clicked:
+```F#
+namespace AvaloniaExample.ViewModels
+
+open ReactiveElmish
+open App
+
+type AboutViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    member this.Version = "v1.0"
+    member this.Ok() = app.Dispatch GoHome
+
+    static member DesignVM = new AboutViewModel()
+```
+
+## View Model with its own Store
+In this example, a view model has its own local store, and it also accesses the global App store:
+```F#
+namespace AvaloniaExample.ViewModels
+
+open ReactiveElmish.Avalonia
+open ReactiveElmish
+open Elmish
+open AvaloniaExample
+
+module FilePicker = 
+
+    type Model = 
+        {
+            FilePath: string option
+        }
+
+    type Msg = 
+        | SetFilePath of string option
+
+    let init () = 
+        { 
+            FilePath = None
+        }
+
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | SetFilePath path ->
+            { FilePath = path }
+
+
+open FilePicker
+
+type FilePickerViewModel(fileSvc: FileService) =
+    inherit ReactiveElmishViewModel()
+
+    let app = App.app
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.FilePath = this.Bind(local, _.FilePath >> Option.defaultValue "Not Set")
+    member this.Ok() = app.Dispatch App.GoHome
+    member this.PickFile() = 
+        task {
+            let! path = fileSvc.TryPickFile()
+            local.Dispatch(SetFilePath path)
+        }
+
+    static member DesignVM = new FilePickerViewModel(Design.stub)
+
+```
+
+# Creating an Elmish Store
+Opening the `ReactiveElmish.Avalonia`, and `Elmish` namespaces adds the following extensions to `Program`:
+
+### Program.mkAvaloniaProgram
+Creates a store via Program.mkProgram (`init` and `update` functions return a `Model * Cmd` tuple).
+
+```F#
+let store = 
+   Program.mkAvaloniaProgram init update
+   |> Program.mkStore
+```
+
+### Program.mkAvaloniaSimple
+Creates an Avalonia program via Program.mkSimple. (`init` and `update` functions return a `Model`).
+
+```F#
+let store = 
+   Program.mkAvaloniaSimple init update
+   |> Program.mkStore
+```
+
+### Program.withSubscription
 Creates one or more Elmish subscriptions that can dispatch messages and be enabled/disabled based on the model.
 
 ```F#
 let subscriptions (model: Model) : Sub<Msg> =
-    let autoUpdateSub (dispatch: Msg -> unit) = 
-        let timer = new System.Timers.Timer(1000) 
-        let disposable = 
-            timer.Elapsed.Subscribe(fun _ -> 
-                dispatch AddItem
-            )
-        timer.Start()
-        disposable
+   let autoUpdateSub (dispatch: Msg -> unit) = 
+      Observable
+          .Interval(TimeSpan.FromSeconds(1))
+          .Subscribe(fun _ -> 
+              dispatch AddItem
+          )
 
-    [
-        if model.IsAutoUpdateChecked then
-            [ nameof autoUpdateSub ], autoUpdateSub
-    ]
+   [
+      if model.IsAutoUpdateChecked then
+         [ nameof autoUpdateSub ], autoUpdateSub
+   ]
 
-
-let vm = 
-    AvaloniaProgram.mkSimple init update bindings
-    |> AvaloniaProgram.withSubscription subscriptions
-    |> ElmishViewModel.create
 ```
-
-# ElmishViewModel
-The `ElmishViewModel` module contains functions that configure an `IElmishViewModel`. 
-The `IElmishViewModel` has a single method, `StartElmishLoop`, which takes an Avalonia view, binds it with the bindings and starts the Elmish loop.
-Use of the `ElmishViewModel` is optional and exists primarily to facilitate the `ViewLocator` pattern.
-
-### ElmishViewModel.create
-Creates an `ElmishViewModel<'model, 'msg>`
-
 ```F#
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
+let store = 
+   Program.mkAvaloniaSimple init update
+   |> Program.withSubscription subscriptions
+   |> Program.mkStore
 ```
 
+### Program.mkStoreWithTerminate
+Creates a store that configures `Program.withTermination` using the given terminate `'Msg`, and fires the terminate `'Msg` when the `view` is `Unloaded`.
+This pattern will dispose your subscriptions when the view is `Unloaded`.
+* NOTE 1: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
+* NOTE 2: This requires that a store be created locally within a view model.
 
-### ElmishViewModel.terminateOnViewUnloaded
-Creates an Elmish subscription when the view `Unloaded` event fires that dispatches the passed-in termination `'msg` to terminate the Elmish loop.
-
-NOTE: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
 ```F#
 let update (msg: Msg) (model: Model) =
     // ...
@@ -123,25 +218,210 @@ let update (msg: Msg) (model: Model) =
 ```
 
 ```F#
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
+        |> Program.mkStoreWithTerminate this Terminate 
+```
+## ReactiveElmishViewModel
+
+## View Model Bindings
+The `ReactiveElmishViewModel` base class contains binding methods that are used to bind data between your Elmish model and your view model.
+All binding methods on the `ReactiveElmishViewModel` are disposed when the view model is diposed.
+
+### `Bind`
+The `Bind` method binds data from an `IStore` to a property on your view model. This can be a simple model property or a projection based on the model.
+```F#
+type CounterViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.Count = this.Bind(local, _.Count)
+    member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
 ```
 
-### ElmishViewModel.subscribe
-Adds an Elmish subscription.
-You will be passed the `view`, `model` and `dispatch`.
-NOTE: If you need the ability to toggle a subscription on and off, you will need to use [`AvaloniaProgram.withSubscription`](https://github.com/JordanMarr/Elmish.Avalonia#avaloniaprogramwithsubscription) instead.
+### `BindOnChanged`
+The `BindOnChanged` method binds a VM property to a `modelProjection` value and refreshes the VM property when the `onChanged` value changes. The `modelProjection` function will only be called when the `onChanged` value changes. `onChanged` usually returns a property value or a tuple of property values.
+
+This was added to avoid evaluating an expensive model projection more than once. For example, when evaluating the current `ContentView` property on the `MainViewModel`. Using `Bind` in this case would execute the `modelProjection` twice: once to determine if the value had changed, and then again to bind to the property. Using `BindOnChanged` will simply check to see if the `_.View` property changed on the model instead of evaluating the `modelProjection` twice, thereby creating the current view twice.
 
 ```F#
-let vm = 
-    AvaloniaProgram.mkProgram init update bindings
-    |> ElmishViewModel.create
-    |> ElmishViewModel.terminateOnViewUnloaded Terminate
-    |> ElmishViewModel.subscribe (fun view model dispatch -> 
-        view.Loaded |> Observable.subscribe (fun _ -> 
-            printfn "View Loaded!"
+namespace AvaloniaExample.ViewModels
+
+open ReactiveElmish.Avalonia
+open ReactiveElmish
+open App
+
+type MainViewModel(root: CompositionRoot) =
+    inherit ReactiveElmishViewModel()
+    
+    member this.ContentView = 
+        this.BindOnChanged (app, _.View, fun m -> 
+            match m.View with
+            | CounterView -> root.GetView<CounterViewModel>()
+            | AboutView -> root.GetView<AboutViewModel>()
+            | ChartView -> root.GetView<ChartViewModel>()
+            | FilePickerView -> root.GetView<FilePickerViewModel>()
         )
-    )
+
+    member this.ShowChart() = app.Dispatch(SetView ChartView)
+    member this.ShowCounter() = app.Dispatch(SetView CounterView)
+    member this.ShowAbout() = app.Dispatch(SetView AboutView)
+    member this.ShowFilePicker() = app.Dispatch(SetView FilePickerView)
+
+    static member DesignVM = new MainViewModel(Design.stub)
 ```
+
+### `BindSourceList`
+The `BindSourceList` method binds a `DynamicData` [`SourceList`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
+This provides list `Add` and `Removed` notifications to the view.
+There is also a `SourceList` helper module that makes it a little nicer to work with.
+
+```F#
+    let update (msg: Msg) (model: Model) = 
+        match msg with
+        | Increment ->
+            { 
+                Count = model.Count + 1 
+                Actions = model.Actions |> SourceList.add { Description = "Incremented"; Timestamp = DateTime.Now }
+            }
+        | Decrement ->
+            { 
+                Count = model.Count - 1 
+                Actions = model.Actions |> SourceList.add { Description = "Decremented"; Timestamp = DateTime.Now }
+            }
+        | Reset ->
+            {
+                Count = 0 
+                Actions = model.Actions |> SourceList.clear |> SourceList.add { Description = "Reset"; Timestamp = DateTime.Now }
+            }
+
+```
+```F#
+type CounterViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.Actions = this.BindSourceList(local, _.Actions)
+```
+
+### `BindSourceCache`
+The `BindSourceCache` method binds a `DynamicData` [`SourceCache`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
+This provides list `Add` and `Removed` notifications to the view for lists with items that have unique keys.
+There is also a `SourceCache` helper module that makes it a little nicer to work with.
+
+```F#
+    type Model =
+        {
+            FileQueue: SourceCache<File, string>
+        }
+
+    let init () =
+        {
+            FileQueue = SourceCache.create _.FullName
+        }
+
+    let update message model =
+        | QueueFile path ->
+            let file = mkFile path
+            { model with FileQueue = model.FileQueue |> SourceCache.addOrUpdate file }
+        | UpdateFileStatus (file, progress, moveFileStatus) ->
+            let updatedFile = { file with Progress = progress; Status = moveFileStatus }
+            { model with FileQueue = model.FileQueue |> SourceCache.addOrUpdate updatedFile }
+        | RemoveFile file ->
+            { model with FileQueue = model.FileQueue |> SourceCache.removeKey file.FullName}
+```
+```F#
+type MainWindowViewModel() as this =
+    inherit ReactiveElmishViewModel()
+
+    member this.FileQueue = this.BindSourceCache(store, _.FileQueue)
+```
+
+# Composition Root
+The composition root is where you register your views/vms as well as any injected services.
+
+* `RegisterServices` allows you to specify dependencies that can be injected into other view model and service constructors. View models are automatically injected on app load.
+* `RegisterViews` allows you to pair up your views and view models and assign them a lifetime. 
+* Views can be registered with two lifetimes:
+  * `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
+  * `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
+
+```F#
+namespace AvaloniaExample
+
+open ReactiveElmish.Avalonia
+open Microsoft.Extensions.DependencyInjection
+open AvaloniaExample.ViewModels
+open AvaloniaExample.Views
+
+type AppCompositionRoot() =
+    inherit CompositionRoot()
+
+    let mainView = MainView()
+
+    override this.RegisterServices services = 
+        services.AddSingleton<FileService>(FileService(mainView))
+
+    override this.RegisterViews() = 
+        Map [
+            VM.Key<MainViewModel>(), View.Singleton(mainView)
+            VM.Key<CounterViewModel>(), View.Singleton<CounterView>()
+            VM.Key<AboutViewModel>(), View.Singleton<AboutView>()
+            VM.Key<ChartViewModel>(), View.Singleton<ChartView>()
+            VM.Key<FilePickerViewModel>(), View.Singleton<FilePickerView>()
+        ]
+```
+
+
+# Project Setup
+
+Steps to create a new project:
+
+1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
+2) Install the ReactiveElmish.Avalonia package from NuGet.
+3) Create an `AppCompositionRoot` that inherits from `CompositionRoot` to define your view/VM pairs and services.
+4) Launch the startup window using your `CompositionRoot` class in the `App.axaml.fs` 
+
+Refer to the `AvaloniaExample` project in the `Samples` directory as a reference.
+
+```F#
+namespace AvaloniaExample
+
+open Avalonia
+open Avalonia.Controls
+open Avalonia.Markup.Xaml
+open Avalonia.Controls.ApplicationLifetimes
+
+type App() =
+    inherit Application()
+
+    override this.Initialize() =
+        // Initialize Avalonia controls from NuGet packages:
+        let _ = typeof<Avalonia.Controls.DataGrid>
+
+        AvaloniaXamlLoader.Load(this)
+
+    override this.OnFrameworkInitializationCompleted() =
+        match this.ApplicationLifetime with
+        | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
+            let appRoot = AppCompositionRoot()
+            desktop.MainWindow <- appRoot.GetView<ViewModels.MainViewModel>() :?> Window
+        | _ -> 
+            // leave this here for design view re-renders
+            ()
+
+        base.OnFrameworkInitializationCompleted()
+
+```
+
+
+# Sample Project
+The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
+Please view the [AvaloniaExample project](https://github.com/JordanMarr/ReactiveElmish.Avalonia/tree/v2-beta/src/Samples/AvaloniaExample).

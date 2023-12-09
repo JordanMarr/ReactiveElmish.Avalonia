@@ -4,14 +4,14 @@ open Fun.Build
 
 let src = __SOURCE_DIRECTORY__
 
-pipeline "CI" {
+pipeline "CI Build" {
 
-    stage "Build Elmish.Avalonia" {
-        run $"dotnet restore {src}/Elmish.Avalonia.sln"
-        run $"dotnet build {src}/Elmish.Avalonia.sln --configuration Release"
+    stage "Build ReactiveElmish.sln" {
+        run $"dotnet restore {src}/ReactiveElmish.sln"
+        run $"dotnet build {src}/ReactiveElmish.sln --configuration Release"
     }
     
-    stage "Build AvaloniaXPlatExample" {
+    stage "Build AvaloniaXPlatExample.sln" {
         run "dotnet workload install android"
         run "dotnet workload install wasm-tools"
         run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
