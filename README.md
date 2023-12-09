@@ -223,7 +223,7 @@ let update (msg: Msg) (model: Model) =
         |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
         |> Program.mkStoreWithTerminate this Terminate 
 ```
-# ReactiveElmishViewModel
+## ReactiveElmishViewModel
 
 ## View Model Bindings
 The `ReactiveElmishViewModel` base class contains binding methods that are used to bind data between your Elmish model and your view model.
@@ -342,22 +342,6 @@ type MainWindowViewModel() as this =
     inherit ReactiveElmishViewModel()
 
     member this.FileQueue = this.BindSourceCache(store, _.FileQueue)
-```
-
-## GetView
-The `GetView<'ViewModel>` method gets a view/VM (based on your `CompositionRoot` configuration).
-```F#
-type MainViewModel() =
-    inherit ReactiveElmishViewModel()
-
-    member this.ContentView = 
-        this.Bind (app, fun m -> 
-            match m.View with
-            | CounterView -> this.GetView<CounterViewModel>()
-            | AboutView -> this.GetView<AboutViewModel>()
-            | ChartView -> this.GetView<ChartViewModel>()
-            | FilePickerView -> this.GetView<FilePickerViewModel>()
-        )
 ```
 
 # Composition Root
