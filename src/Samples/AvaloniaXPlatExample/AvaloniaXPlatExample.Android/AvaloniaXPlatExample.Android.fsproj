@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0-android</TargetFramework>
+    <TargetFramework>net8.0-android</TargetFramework>
     <SupportedOSPlatformVersion>30</SupportedOSPlatformVersion>
     <ApplicationId>com.CompanyName.AvaloniaXPlatExample</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Android" Version="11.0.5" />
+    <PackageReference Include="Avalonia.Android" Version="11.0.6" />
   </ItemGroup>
 
   <ItemGroup>

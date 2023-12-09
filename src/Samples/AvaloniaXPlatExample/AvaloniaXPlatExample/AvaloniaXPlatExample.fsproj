@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>    
     <AvaloniaResource Include="Assets\**" />
@@ -26,14 +26,14 @@
   </ItemGroup>
   <ItemGroup>
     <!-- for services, filepicker -->
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.6" />
 
     <!-- behaviors support for converting doubleclicks into commands -->
     <!-- <PackageReference Include="Avalonia.Xaml.Behaviors" Version="$(AvaloniaVersion)" /> -->
     <!-- pinned to earlier version - no .0.4 available -->
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.2" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.5" />
 
     <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.802" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.802" />
@@ -41,7 +41,7 @@
 
 
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.5" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.6" />
     <PackageReference Include="ReactiveElmish.Avalonia" Version="1.0.0" />
 
     <!--
