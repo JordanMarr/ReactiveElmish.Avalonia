@@ -3,6 +3,8 @@ open Android.App
 open Android.Content
 open Android.Content.PM
 open Android.OS
+open Avalonia.Android
+open Avalonia.ReactiveUI
 type Application = Android.App.Application
 
 open Avalonia.Android
@@ -17,13 +19,11 @@ open AvaloniaXPlatExample
     LaunchMode = LaunchMode.SingleTop,
     ConfigurationChanges = (ConfigChanges.Orientation ||| ConfigChanges.ScreenSize))>]
 type MainActivity() =
-    inherit AvaloniaMainActivity()
+    inherit AvaloniaMainActivity<App>()
 
-    //override _.CustomizeAppBuilder(builder) =
-    //    base.CustomizeAppBuilder(builder)
-    //        .WithInterFont()
-    //        .UseReactiveUI()
-
+    override _.CustomizeAppBuilder(builder) =
+        base.CustomizeAppBuilder(builder)
+            .UseReactiveUI()
 
 //[<Activity(Theme = "@style/MyTheme.Splash", MainLauncher = true, NoHistory = true)>]
 //type SplashActivity() =
