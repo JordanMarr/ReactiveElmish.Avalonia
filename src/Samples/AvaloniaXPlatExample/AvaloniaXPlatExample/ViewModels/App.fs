@@ -3,33 +3,34 @@
 open Elmish
 open ReactiveElmish.Avalonia
 
-type Model =  
-    { 
+type Model =
+    {
         View: View
     }
 
-and View = 
+and View =
     | CounterView
     | ChartView
     | AboutView
     | FilePickerView
+    | ListBoxView
 
-type Msg = 
+type Msg =
     | SetView of View
     | GoHome
 
-let init () = 
-    { 
+let init () =
+    {
         View = CounterView
     }
 
-let update (msg: Msg) (model: Model) = 
+let update (msg: Msg) (model: Model) =
     match msg with
-    | SetView view -> { View = view }   
+    | SetView view -> { View = view }
     | GoHome -> { View = CounterView }
 
 
-let app = 
+let app =
     Program.mkAvaloniaSimple init update
     |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
     //|> Program.withConsoleTrace

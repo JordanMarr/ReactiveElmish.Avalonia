@@ -6,7 +6,7 @@
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:Interactions="using:Avalonia.Xaml.Interactions.Core"
              xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
-             Design.DataContext="{Binding Source={x:Static vm:ListBoxViewModel.designVM}}"
+             Design.DataContext="{Binding Source={x:Static vm:ListBoxViewModel.DesignVM}}"
              x:Class="AvaloniaXPlatExample.Views.ListBoxView">
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal">

@@ -27,5 +27,6 @@ type AppCompositionRoot(isSingleWindow:bool) =
             VM.Key<AboutViewModel>(), View.Singleton<AboutView>()
             VM.Key<ChartViewModel>(), View.Singleton<ChartView>()
             VM.Key<FilePickerViewModel>(), View.Singleton<FilePickerView>()
+            VM.Key<ListBoxViewModel>(), View.Singleton<ListBoxView>()
         ]
 

@@ -34,6 +34,12 @@
         </TabItem>
         <TabItem>
             <TabItem.Header>
+                <TextBlock VerticalAlignment="Center">ListBox</TextBlock>
+            </TabItem.Header>
+            <UserControl Content="{Binding ListBoxView}"> </UserControl>
+        </TabItem>
+        <TabItem>
+            <TabItem.Header>
                 <TextBlock VerticalAlignment="Center">About</TextBlock>
             </TabItem.Header>
             <UserControl Content="{Binding AboutView}"> </UserControl>
