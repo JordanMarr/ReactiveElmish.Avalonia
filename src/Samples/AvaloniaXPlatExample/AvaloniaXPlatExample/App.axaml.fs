@@ -11,22 +11,33 @@ type App() =
 
     override this.Initialize() =
         // Initialize Avalonia controls from NuGet packages:
+        printfn "Initializing Avalonia"
         let _ = typeof<Avalonia.Controls.DataGrid>
+        printfn "loading Avalonia"
 
         AvaloniaXamlLoader.Load(this)
+        printfn "loaded - end of initialize"
 
     override this.OnFrameworkInitializationCompleted() =
-        
-        let appRoot = AppCompositionRoot()
+
 
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            desktop.MainWindow <- 
+            let appRoot = AppCompositionRoot(false)
+            desktop.MainWindow <-
                 MainWindow(Content = appRoot.GetView<ViewModels.MainViewModel>())
+            base.OnFrameworkInitializationCompleted()
 
         | :? ISingleViewApplicationLifetime as singleViewLifetime ->
+            printfn "OnFrameworkInitializationCompleted - ISingleViewApplicationLifetime"
             try
+                printfn "get appRoot"
+                let appRoot = AppCompositionRoot(true)
+                printfn "set mainview"
                 singleViewLifetime.MainView <- appRoot.GetView<ViewModels.MainViewModel>()
+                printfn "call base"
+
+                base.OnFrameworkInitializationCompleted()
             with x ->
                 printfn $"Exception: {x.Message} \n {x.StackTrace}"
 
