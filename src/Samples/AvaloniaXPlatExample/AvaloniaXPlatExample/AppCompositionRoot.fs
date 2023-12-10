@@ -1,21 +1,26 @@
 ﻿namespace AvaloniaXPlatExample
 
+open Avalonia.Controls
 open ReactiveElmish.Avalonia
 open AvaloniaXPlatExample.ViewModels
 open AvaloniaXPlatExample.Views
 open AvaloniaXPlatExample.Services
 open Microsoft.Extensions.DependencyInjection
 
-type AppCompositionRoot() =
+type AppCompositionRoot(isSingleWindow:bool) =
     inherit CompositionRoot()
 
-    let mainWindow = MainWindow()
 
-    override this.RegisterServices services = 
+    override this.RegisterServices services =
         base.RegisterServices services |> ignore
-        services.AddSingleton<FileService>(FileService(mainWindow))
+        // For web version, we can't pass a window to the file service
+        if isSingleWindow then
+            services
+        else
+            let mainWindow = MainWindow()
+            services.AddSingleton<FileService>(FileService(mainWindow))
 
-    override this.RegisterViews() = 
+    override this.RegisterViews() =
         Map [
             VM.Key<MainViewModel>(), View.Singleton<MainView>()
             VM.Key<CounterViewModel>(), View.Singleton<CounterView>()
@@ -23,4 +28,4 @@ type AppCompositionRoot() =
             VM.Key<ChartViewModel>(), View.Singleton<ChartView>()
             VM.Key<FilePickerViewModel>(), View.Singleton<FilePickerView>()
         ]
-        
+

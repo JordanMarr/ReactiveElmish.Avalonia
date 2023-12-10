@@ -7,21 +7,29 @@ open AvaloniaXPlatExample
 module Program =
     [<assembly: SupportedOSPlatform("browser")>]
     do
+        printfn "AvaloniaXPlatExample.Program starting"
         ()
 
+    printfn "AvaloniaXPlatExample.Program build AvaloniaApp"
     [<CompiledName "BuildAvaloniaApp">]
     let buildAvaloniaApp () =
         AppBuilder
-            .Configure<App>()            
+            .Configure<App>()
 
     [<EntryPoint>]
     let main argv =
-        // System.Diagnostics.Trace.Listeners.Add( new System.Diagnostics.ConsoleTraceListener()) |> ignore
-        task { 
+        printfn "AvaloniaXPlatExample.main entry point"
+        System.Diagnostics.Trace.Listeners.Add( new System.Diagnostics.ConsoleTraceListener()) |> ignore
+        printfn "AvaloniaXPlatExample.main pre task"
+        task {
             try
+                printfn "AvaloniaXPlatExample.main build app"
                 let app = buildAvaloniaApp()
+                printfn "AvaloniaXPlatExample.main start app async"
                 do! app.StartBrowserAppAsync("out")
+                printfn "AvaloniaXPlatExample.main use reactive"
                 app.UseReactiveUI() |> ignore
+                printfn "AvaloniaXPlatExample.main set up logging"
                 app.LogToTrace(
                     level = Logging.LogEventLevel.Debug
                         //areas = [|
@@ -35,10 +43,10 @@ module Program =
                         //|]
                 )
                 |> ignore
-                return 0
+                printfn "AvaloniaXPlatExample.main exit"
             with ex ->
                 printfn $"Exception: {ex.Message}\n{ex.StackTrace}"
-                return 1
-        }
-        |> Async.AwaitTask
-        |> Async.RunSynchronously
+            printfn "AvaloniaXPlatExample.main dropping out of task"
+            return 0
+        } |> ignore
+        0
