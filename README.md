@@ -367,7 +367,8 @@ type AppCompositionRoot() =
     let mainView = MainView()
 
     override this.RegisterServices services = 
-        services.AddSingleton<FileService>(FileService(mainView))
+        base.RegisterServices(services)                        // Auto-registers view models
+            .AddSingleton<FileService>(FileService(mainView))  // Add any additional services
 
     override this.RegisterViews() = 
         Map [
