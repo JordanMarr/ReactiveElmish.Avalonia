@@ -2,13 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+             xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:Interactions="using:Avalonia.Xaml.Interactions.Core"
-             xmlns:vm="using:AvaloniaXPlatExample.ViewModels"
-             Design.DataContext="{Binding Source={x:Static vm:ListBoxViewModel.DesignVM}}"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+			 Design.DataContext="{Binding Source={x:Static vm:ListBoxViewModel.DesignVM}}"
              x:Class="AvaloniaXPlatExample.Views.ListBoxView">
-    <StackPanel Orientation="Vertical">
+	<StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal">
             <Button Margin="5" Command="{Binding Add}">Add </Button>
             <Button Margin="5" Command="{Binding Delete}">Delete </Button>
@@ -30,7 +30,7 @@
             </ListBox.Styles>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="gray" CornerRadius="4" Padding="5,0,5,0" BorderBrush="red" Margin="0">
+                    <Border Background="Gainsboro" CornerRadius="4" Padding="5,0,5,0" BorderBrush="red" Margin="0">
                         <StackPanel Orientation="Horizontal" >
                             <TextBlock Width = "200" VerticalAlignment="Center" Text="{Binding Name}" />
                             <TextBlock Padding="5" Text="{Binding Count}"/>

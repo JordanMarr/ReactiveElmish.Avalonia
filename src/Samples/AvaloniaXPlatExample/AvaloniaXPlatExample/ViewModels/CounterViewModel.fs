@@ -1,12 +1,13 @@
 namespace AvaloniaXPlatExample.ViewModels
 
 open System
+open DynamicData
 open ReactiveElmish
 open ReactiveElmish.Avalonia
 open Elmish
 
 module Counter = 
-    type Model =  { Count: int; Actions: Action list }
+    type Model =  { Count: int; Actions: SourceList<Action> }
     and Action = { Description: string; Timestamp: DateTime }
 
     type Msg = 
@@ -17,7 +18,7 @@ module Counter =
     let init() = 
         { 
             Count = 0
-            Actions = [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
+            Actions = SourceList.createFrom [ { Description = "Initialized count."; Timestamp = DateTime.Now } ]
         }
 
     let update (msg: Msg) (model: Model) = 
@@ -25,15 +26,18 @@ module Counter =
         | Increment ->
             { 
                 Count = model.Count + 1 
-                Actions = model.Actions @ [ { Description = "Incremented"; Timestamp = DateTime.Now } ]
+                Actions = model.Actions |> SourceList.add { Description = "Incremented"; Timestamp = DateTime.Now }
             }
         | Decrement ->
             { 
                 Count = model.Count - 1 
-                Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ] 
+                Actions = model.Actions |> SourceList.add { Description = "Decremented"; Timestamp = DateTime.Now }
             }
         | Reset ->
-            init()
+            {
+                Count = 0
+                Actions = model.Actions |> SourceList.removeAll |> SourceList.add { Description = "Reset"; Timestamp = DateTime.Now }
+            }
 
 
 open Counter
@@ -43,11 +47,10 @@ type CounterViewModel() =
 
     let local = 
         Program.mkAvaloniaSimple init update
-        //|> Program.withConsoleTrace
         |> Program.mkStore
 
     member this.Count = this.Bind(local, _.Count)
-    member this.Actions = this.Bind(local, _.Actions)
+    member this.Actions = this.BindSourceList(local.Model.Actions)
     member this.Increment() = local.Dispatch Increment
     member this.Decrement() = local.Dispatch Decrement
     member this.Reset() = local.Dispatch Reset

@@ -7,15 +7,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Services\FileService.fs" />
-    <Compile Include="ViewModels\App.fs" />        
-    <Compile Include="ViewModels\CounterViewModel.fs" />        
+    <Compile Include="ViewModels\App.fs" />
+    <Compile Include="ViewModels\AboutViewModel.fs" />
     <Compile Include="ViewModels\ChartViewModel.fs" />        
-    <Compile Include="ViewModels\ListBoxViewModel.fs" />        
-    <Compile Include="ViewModels\FilePickerViewModel.fs" />        
-    <Compile Include="ViewModels\AboutViewModel.fs" />        
+    <Compile Include="ViewModels\CounterViewModel.fs" />        
+    <Compile Include="ViewModels\FilePickerViewModel.fs" />
+	<Compile Include="ViewModels\ListBoxViewModel.fs" />
     <Compile Include="ViewModels\MainViewModel.fs" />        
-    <Compile Include="Views\ListBoxView.fs" />
-    <Compile Include="Views\CounterView.fs" />
+    <Compile Include="Views\ListBoxView.axaml.fs" />
+    <Compile Include="Views\CounterView.axaml.fs" />
     <Compile Include="Views\ChartView.axaml.fs" />
     <Compile Include="Views\FilePickerView.axaml.fs" />
     <Compile Include="Views\AboutView.axaml.fs" />

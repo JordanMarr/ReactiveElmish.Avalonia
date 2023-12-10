@@ -23,21 +23,19 @@ type App() =
 
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            let appRoot = AppCompositionRoot(false)
-            desktop.MainWindow <-
-                MainWindow(Content = appRoot.GetView<ViewModels.MainViewModel>())
-            base.OnFrameworkInitializationCompleted()
+            let mainWindow = MainWindow()
+            let appRoot = AppCompositionRoot(mainWindow)
+            mainWindow.Content <- appRoot.GetView<ViewModels.MainViewModel>()
+            desktop.MainWindow <- mainWindow
 
         | :? ISingleViewApplicationLifetime as singleViewLifetime ->
             printfn "OnFrameworkInitializationCompleted - ISingleViewApplicationLifetime"
             try
                 printfn "get appRoot"
-                let appRoot = AppCompositionRoot(true)
+                let appRoot = AppCompositionRoot()
                 printfn "set mainview"
                 singleViewLifetime.MainView <- appRoot.GetView<ViewModels.MainViewModel>()
                 printfn "call base"
-
-                base.OnFrameworkInitializationCompleted()
             with x ->
                 printfn $"Exception: {x.Message} \n {x.StackTrace}"
 

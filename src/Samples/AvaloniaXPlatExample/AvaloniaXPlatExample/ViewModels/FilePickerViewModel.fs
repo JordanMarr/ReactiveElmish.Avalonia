@@ -28,7 +28,7 @@ module FilePicker =
 
 open FilePicker
 
-type FilePickerViewModel(fileSvc: FileService) =
+type FilePickerViewModel(fileSvc: IFileService) =
     inherit ReactiveElmishViewModel()
 
     let app = App.app

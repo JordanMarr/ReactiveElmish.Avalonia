@@ -7,18 +7,19 @@ open AvaloniaXPlatExample.Views
 open AvaloniaXPlatExample.Services
 open Microsoft.Extensions.DependencyInjection
 
-type AppCompositionRoot(isSingleWindow:bool) =
+type AppCompositionRoot(?mainWindow: MainWindow) =
     inherit CompositionRoot()
 
 
     override this.RegisterServices services =
         base.RegisterServices services |> ignore
+        
         // For web version, we can't pass a window to the file service
-        if isSingleWindow then
-            services
-        else
-            let mainWindow = MainWindow()
-            services.AddSingleton<FileService>(FileService(mainWindow))
+        match mainWindow with
+        | Some mainWindow ->
+            services.AddSingleton<IFileService>(FileService(mainWindow))
+        | None ->
+            services.AddSingleton<IFileService>(WebFileService())
 
     override this.RegisterViews() =
         Map [
