@@ -1,21 +1,22 @@
-# Elmish.Avalonia Counter App cross platform
+# ReactiveElmish.Avalonia Cross Platform Sample
 
-This is adapted from the wonderful [Avalonia cross platform solution](https://docs.avaloniaui.net/tutorials/developing-for-mobile/create-a-cross-platform-solution) to use Elmish.Avalonia.  Thanks to @JordanMarr / @AngelMunoz for lots of help getting it running 
+This is adapted from the wonderful [Avalonia cross platform solution](https://docs.avaloniaui.net/tutorials/developing-for-mobile/create-a-cross-platform-solution) to use ReactiveElmish.Avalonia.  Thanks to @JordanMarr / @AngelMunoz for lots of help getting it running 
 
 The core application is in `AvaloniaXPlatExample` with the platform specific folders just being lightweight wrappers.  Desktop and Web have been tested.  The iOS/Android versions have not been deployed but should work in theory.
 
-- Darren
+-- Darren
 
 ## Requirements 
 
 For various platforms e.g. Android,  Web, additional tools are required.
+The projects are configured for `net8.0`
 
-The projects are configured for `net7`
+## Build and Install Workloads
+To install the required workloads and build the solution, go to the `src` folder and run the build script:
 
-## Workloads
-The following workload must be installed (once) prior to compilation
-
-- `dotnet workload install ios android wasm-experimental wasm-tools`
+```F#
+dotnet fsi build.fsx
+```
 
 ## Addition web information 
 - See the [avalonia web docs](https://docs.avaloniaui.net/tutorials/running-in-the-browser) for more information.
