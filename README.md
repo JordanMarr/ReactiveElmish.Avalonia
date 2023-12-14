@@ -308,7 +308,7 @@ type CounterViewModel() =
         Program.mkAvaloniaSimple init update
         |> Program.mkStore
 
-    member this.Actions = this.BindSourceList(local, _.Actions)
+    member this.Actions = this.BindSourceList(local.Model.Actions)
 ```
 
 ### `BindSourceCache`
@@ -341,7 +341,7 @@ There is also a `SourceCache` helper module that makes it a little nicer to work
 type MainWindowViewModel() as this =
     inherit ReactiveElmishViewModel()
 
-    member this.FileQueue = this.BindSourceCache(store, _.FileQueue)
+    member this.FileQueue = this.BindSourceCache(store.Model.FileQueue)
 ```
 
 # Composition Root
