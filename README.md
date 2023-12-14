@@ -350,8 +350,8 @@ The composition root is where you register your views/vms as well as any injecte
 * `RegisterServices` allows you to specify dependencies that can be injected into other view model and service constructors. View models are automatically injected on app load.
 * `RegisterViews` allows you to pair up your views and view models and assign them a lifetime. 
 * Views can be registered with two lifetimes:
-  * `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
-  * `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
+  * `Transient` - view/VM will both be recreated every time `GetView` is called; VM and its subscriptions will be disposed on view `Unloaded`.
+  * `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM and subscriptions are not Disposed on view `Unloaded`.)
 
 ```F#
 namespace AvaloniaExample
