@@ -79,9 +79,9 @@ type TodoListViewModel() =
 
     member this.Todos = 
         this.BindSourceCache(
-            store.Model.Todos 
-            , fun todo -> TodoViewModel(store, todo)
-            , fun todo -> todo.Completed, todo.Description
+            store.Model.Todos
+            , map = fun todo -> TodoViewModel(store, todo)
+            , sortBy = fun todo -> todo.Completed, todo.Description
         )
     member this.AddTodo() = store.Dispatch AddTodo
     member this.Clear() = store.Dispatch Clear

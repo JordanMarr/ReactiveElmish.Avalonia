@@ -21,7 +21,7 @@ type Msg =
 
 let init () = 
     { 
-        View = TodoListView
+        View = CounterView
     }
 
 let update (msg: Msg) (model: Model) = 

@@ -18,8 +18,8 @@
         <Compile Include="Views\ChartView.axaml.fs" />        
         <Compile Include="Views\CounterView.axaml.fs" />        
         <Compile Include="Views\FilePickerView.axaml.fs" />        
-        <Compile Include="Views\MainView.axaml.fs" />        
         <Compile Include="Views\TodoListView.axaml.fs" />
+        <Compile Include="Views\MainView.axaml.fs" />        
         <Compile Include="ViewModels\App.fs" />        
         <Compile Include="ViewModels\AboutViewModel.fs" />        
         <Compile Include="ViewModels\CounterViewModel.fs" />        

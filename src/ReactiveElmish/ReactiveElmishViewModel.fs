@@ -73,41 +73,80 @@ type ReactiveElmishViewModel() =
         modelProjection store.Model
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
+    member this.BindSourceList<'T>(
+            sourceList: ISourceList<'T>,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable readOnlyList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
+            let disposable = 
+                sourceList
+                    .Connect()
+                    .Bind(&readOnlyList)
+                    .Subscribe()
+            propertySubscriptions.Add(vmPropertyName, disposable)
+        readOnlyList
+
+    /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T, 'Transformed>(
             sourceList: ISourceList<'T>, 
-            ?map: 'T -> 'Transformed,
+            map: 'T -> 'Transformed,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
         let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
-            let transform = defaultArg map (fun x -> x |> unbox<'Transformed>)
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 
                 sourceList
                     .Connect()
-                    .Transform(transform)
+                    .Transform(map)
                     .Bind(&readOnlyList)
                     .Subscribe()
             propertySubscriptions.Add(vmPropertyName, disposable)
         readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
+    member this.BindSourceCache<'Value, 'Key>(
+            sourceCache: IObservableCache<'Value, 'Key>, 
+            ?sortBy: 'Value -> 'IComparable,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Value> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            // Creates a subscription to a SourceCache and stores it in a dictionary.
+            let disposable = 
+                sourceCache
+                    .Connect()
+                    |> fun x -> 
+                        match sortBy with
+                        | Some sortBy ->
+                            x.SortBy(sortBy)
+                        | None -> 
+                            x.Sort(Comparer.Create(fun _ _ -> 0))
+                    |> _.Bind(&readOnlyList)
+                    |> _.Subscribe()
+            propertySubscriptions.Add(vmPropertyName, disposable)
+        readOnlyList
+
+    /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
     member this.BindSourceCache<'Value, 'Key, 'Transformed>(
             sourceCache: IObservableCache<'Value, 'Key>, 
-            ?map: 'Value -> 'Transformed,
+            map: 'Value -> 'Transformed,
             ?sortBy: 'Transformed -> 'IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
         let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
-            let transform = defaultArg map (fun x -> x |> unbox<'Transformed>)
             // Creates a subscription to a SourceCache and stores it in a dictionary.
             let disposable = 
                 sourceCache
                     .Connect()
-                    .Transform(transform)
+                    .Transform(map)
                     |> fun x -> 
                         match sortBy with
                         | Some sortBy ->
