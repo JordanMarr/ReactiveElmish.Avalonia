@@ -210,6 +210,7 @@ Creates a store that configures `Program.withTermination` using the given termin
 This pattern will dispose your subscriptions when the view is `Unloaded`.
 * NOTE 1: You must create a `Terminate` `'Msg` that will be registered to trigger loop termination.
 * NOTE 2: This requires that a store be created locally within a view model.
+* NOTE 3: `mkStoreWithTerminate` only works with "Transient" views (see View Registration section). "Singleton" views do not call `Dispose` on view models on view `Unloaded`, so Terminate will be ignored. For Singleton views, you are responsible for manually enabling/disabling any Elmish subscriptions.
 
 ```F#
 let update (msg: Msg) (model: Model) =
@@ -308,7 +309,7 @@ type CounterViewModel() =
         Program.mkAvaloniaSimple init update
         |> Program.mkStore
 
-    member this.Actions = this.BindSourceList(local, _.Actions)
+    member this.Actions = this.BindSourceList(local.Model.Actions)
 ```
 
 ### `BindSourceCache`
@@ -341,7 +342,7 @@ There is also a `SourceCache` helper module that makes it a little nicer to work
 type MainWindowViewModel() as this =
     inherit ReactiveElmishViewModel()
 
-    member this.FileQueue = this.BindSourceCache(store, _.FileQueue)
+    member this.FileQueue = this.BindSourceCache(store.Model.FileQueue)
 ```
 
 # Composition Root
@@ -350,8 +351,8 @@ The composition root is where you register your views/vms as well as any injecte
 * `RegisterServices` allows you to specify dependencies that can be injected into other view model and service constructors. View models are automatically injected on app load.
 * `RegisterViews` allows you to pair up your views and view models and assign them a lifetime. 
 * Views can be registered with two lifetimes:
-  * `Transient` - view/VM will both be recreated every time `GetView` is called; VM and it subscriptions will be disposed on view Unloaded.
-  * `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. (VM is never Disposed.)
+  * `Transient` - view/VM will both be recreated every time `GetView` is called; VM will be disposed on view `Unloaded`, along with any Elmish subscriptions if `Program.mkStoreWithTerminate` is configured.
+  * `Singleton` - view/VM will both be created only once and then reused on subsequent calls to `GetView`. The VM is not Disposed on view `Unloaded`.  `Program.mkStoreWithTerminate` will be ignored in Singleton views.)
 
 ```F#
 namespace AvaloniaExample
