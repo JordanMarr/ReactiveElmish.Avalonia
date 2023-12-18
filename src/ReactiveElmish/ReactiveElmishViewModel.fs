@@ -9,21 +9,17 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open DynamicData
 open System.Collections.ObjectModel
+open ReactiveUI
 
 type ReactiveElmishViewModel() = 
     inherit ReactiveUI.ReactiveObject()
 
     let disposables = ResizeArray<IDisposable>()
-    let propertyChanged = Event<_, _>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
-
-    interface INotifyPropertyChanged with
-        [<CLIEvent>]
-        member this.PropertyChanged = propertyChanged.Publish
 
     /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
     member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
-        propertyChanged.Trigger(this, PropertyChangedEventArgs(propertyName.Value))
+        this.RaisePropertyChanged(propertyName.Value)
 
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `modelProjection` value changes.
     member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IStore<'Model, 'Msg>, 
