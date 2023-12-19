@@ -1,7 +1,6 @@
 ﻿#nowarn "0064" // FS0064: This construct causes code to be less generic than indicated by the type annotations.
 namespace ReactiveElmish
 
-open System.ComponentModel
 open System.Reactive.Linq
 open System
 open System.Collections.Generic
@@ -22,9 +21,11 @@ type ReactiveElmishViewModel() =
         this.RaisePropertyChanged(propertyName.Value)
 
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `modelProjection` value changes.
-    member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IStore<'Model, 'Msg>, 
-                                                        modelProjection: 'Model -> 'ModelProjection, 
-                                                        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.Bind<'Model, 'Msg, 'ModelProjection>(
+            store: IStore<'Model, 'Msg>,
+            modelProjection: 'Model -> 'ModelProjection,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) =
         let vmPropertyName = vmPropertyName.Value
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
@@ -46,10 +47,12 @@ type ReactiveElmishViewModel() =
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `onChanged` value changes.
     /// The `modelProjection` function will only be called when the `onChanged` value changes.
     /// `onChanged` usually returns a property value or a tuple of property values.
-    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(store: IStore<'Model, 'Msg>, 
-                                                        onChanged: 'Model -> 'OnChanged,
-                                                        modelProjection: 'Model -> 'ModelProjection, 
-                                                        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(
+            store: IStore<'Model, 'Msg>,
+            onChanged: 'Model -> 'OnChanged,
+            modelProjection: 'Model -> 'ModelProjection,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) =
         let vmPropertyName = vmPropertyName.Value
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
