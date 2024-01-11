@@ -3,7 +3,7 @@
 _Elmish Stores + Custom Bindings + Avalonia Static Views_
 
 ###  Elmish Stores +  Custom bindings
-* Create an [Elmish Store](#elmish-stores) to share global app state between views.
+* Create an [Elmish Store](#elmish-stores) to manage global app state between views.
 * Create an [Elmish Store](#elmish-stores) to manage local view state.
 * Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
 
@@ -224,9 +224,7 @@ let update (msg: Msg) (model: Model) =
         |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
         |> Program.mkStoreWithTerminate this Terminate 
 ```
-## ReactiveElmishViewModel
-
-## View Model Bindings
+## ReactiveElmishViewModel Bindings
 The `ReactiveElmishViewModel` base class contains binding methods that are used to bind data between your Elmish model and your view model.
 All binding methods on the `ReactiveElmishViewModel` are disposed when the view model is diposed.
 
@@ -426,4 +424,4 @@ type App() =
 
 # Sample Project
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
-Please view the [AvaloniaExample project](https://github.com/JordanMarr/ReactiveElmish.Avalonia/tree/v2-beta/src/Samples/AvaloniaExample).
+Please view the [AvaloniaExample project](https://github.com/JordanMarr/ReactiveElmish.Avalonia/tree/main/src/Samples/AvaloniaExample).
