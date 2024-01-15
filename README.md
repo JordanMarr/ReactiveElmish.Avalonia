@@ -277,7 +277,7 @@ type MainViewModel(root: CompositionRoot) =
 ### `BindSourceList`
 The `BindSourceList` method binds a `DynamicData` [`SourceList`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
 This provides list `Add` and `Removed` notifications to the view.
-There is also a `SourceList` helper module that makes it a little nicer to work with.
+There is also a `SourceList` helper module that makes it a little nicer to work with by allowing you to _mutate_ the collection inline.
 
 ```F#
     let update (msg: Msg) (model: Model) = 
@@ -313,7 +313,7 @@ type CounterViewModel() =
 ### `BindSourceCache`
 The `BindSourceCache` method binds a `DynamicData` [`SourceCache`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
 This provides list `Add` and `Removed` notifications to the view for lists with items that have unique keys.
-There is also a `SourceCache` helper module that makes it a little nicer to work with.
+There is also a `SourceCache` helper module that makes it a little nicer to work with by allowing you to _mutate_ the collection inline.
 
 ```F#
     type Model =
