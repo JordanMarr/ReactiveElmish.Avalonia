@@ -386,7 +386,7 @@ Steps to create a new project:
 
 1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
 2) Install the ReactiveElmish.Avalonia package from NuGet.
-3) Create an `AppCompositionRoot` (see [sample](https://github.com/JordanMarr/ReactiveElmish.Avalonia/blob/main/src/Samples/AvaloniaExample/AppCompositionRoot.fs)) that inherits from `CompositionRoot` to define your view/VM pairs (required) and services (optional).
+3) Create an `AppCompositionRoot` (see the [Composition Root](#composition-root) section above) that inherits from `CompositionRoot` to define your view/VM pairs (required) and any DI services (optional).
 4) Launch the startup window using your `CompositionRoot` class in the `App.axaml.fs` 
 
 Refer to the `AvaloniaExample` project in the `Samples` directory as a reference.
