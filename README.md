@@ -105,7 +105,7 @@ type AboutViewModel() =
     static member DesignVM = new AboutViewModel()
 ```
 
-## View Model with its own Store
+## View Model with its own local Store
 In this example, a view model has its own local store, and it also accesses the global App store:
 ```F#
 namespace AvaloniaExample.ViewModels
