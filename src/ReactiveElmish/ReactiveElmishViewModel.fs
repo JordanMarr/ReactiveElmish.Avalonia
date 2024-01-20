@@ -68,6 +68,27 @@ type ReactiveElmishViewModel() =
 
         modelProjection store.Model
 
+    /// Binds a model collection property to a DynamicData.ISourceList<'T>.
+    member this.BindList<'Model, 'Msg, 'ModelProjection>(
+            store: IStore<'Model, 'Msg>, 
+            modelProjectionSeq: 'Model -> 'ModelProjection seq,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable readOnlyList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
+            readOnlyList <- this.BindSourceList(sourceList, vmPropertyName)
+            let disposable = 
+                store.Observable
+                    .Select(modelProjectionSeq)
+                    //.DistinctUntilChanged()
+                    .Subscribe(sourceList.EditDiff)
+
+            this.AddDisposable(sourceList)
+            this.AddDisposable(disposable)
+        readOnlyList
+
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(
             sourceList: ISourceList<'T>,
@@ -105,9 +126,8 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
-    member this.BindSourceCache<'Value, 'Key>(
+    member this.BindSourceCache(
             sourceCache: IObservableCache<'Value, 'Key>, 
-            ?sortBy: 'Value -> 'IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
@@ -117,16 +137,30 @@ type ReactiveElmishViewModel() =
             let disposable = 
                 sourceCache
                     .Connect()
-                    |> fun x -> 
-                        match sortBy with
-                        | Some sortBy ->
-                            x.SortBy(sortBy)
-                        | None -> 
-                            x.Sort(Comparer.Create(fun _ _ -> 0))
                     |> _.Bind(&readOnlyList)
                     |> _.Subscribe()
             propertySubscriptions.Add(vmPropertyName, disposable)
         readOnlyList
+
+    /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
+    member this.BindSourceCache<'Value, 'Key>(
+            sourceCache: IObservableCache<'Value, 'Key>, 
+            sortBy: 'Value -> 'IComparable,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Value> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            // Creates a subscription to a SourceCache and stores it in a dictionary.
+            let disposable = 
+                sourceCache
+                    .Connect()
+                    |> fun x -> x.SortBy(sortBy)
+                    |> _.Bind(&readOnlyList)
+                    |> _.Subscribe()
+            propertySubscriptions.Add(vmPropertyName, disposable)
+        readOnlyList
+
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
     member this.BindSourceCache<'Value, 'Key, 'Transformed>(

@@ -7,7 +7,7 @@ open Elmish
 open DynamicData
 
 module Counter = 
-    type Model =  { Count: int; Actions: SourceList<Action> }
+    type Model =  { Count: int; Actions: Action list }
     and Action = { Description: string; Timestamp: DateTime }
 
     type Msg = 
@@ -18,7 +18,7 @@ module Counter =
     let init() = 
         { 
             Count = 0
-            Actions = SourceList.createFrom [ { Description = "Initialized Counter"; Timestamp = DateTime.Now } ]
+            Actions = [ { Description = "Initialized Counter"; Timestamp = DateTime.Now } ]
         }
 
     let update (msg: Msg) (model: Model) = 
@@ -26,17 +26,17 @@ module Counter =
         | Increment ->
             { 
                 Count = model.Count + 1 
-                Actions = model.Actions |> SourceList.add { Description = "Incremented"; Timestamp = DateTime.Now }
+                Actions = model.Actions @ [ { Description = "Incremented"; Timestamp = DateTime.Now } ]
             }
         | Decrement ->
             { 
                 Count = model.Count - 1 
-                Actions = model.Actions |> SourceList.add { Description = "Decremented"; Timestamp = DateTime.Now }
+                Actions = model.Actions @ [ { Description = "Decremented"; Timestamp = DateTime.Now } ]
             }
         | Reset ->
             {
                 Count = 0 
-                Actions = model.Actions |> SourceList.removeAll |> SourceList.add { Description = "Reset"; Timestamp = DateTime.Now }
+                Actions = [ { Description = "Reset"; Timestamp = DateTime.Now } ]
             }
 
 open Counter
@@ -50,11 +50,11 @@ type CounterViewModel() =
         |> Program.mkStore
 
     member this.Count = this.Bind(local, _.Count)
-    member this.Actions = this.BindSourceList(local.Model.Actions)
+    member this.Actions = this.BindList(local, _.Actions)
     member this.Increment() = local.Dispatch Increment
     member this.Decrement() = local.Dispatch Decrement
     member this.Reset() = local.Dispatch Reset
-    member this.IsResetEnabled = this.Bind(local, fun m -> m.Count <> 0)
+    member this.IsResetEnabled = this.Bind(local, fun m -> m.Actions.Length > 1)
 
     static member DesignVM = 
         new CounterViewModel()
