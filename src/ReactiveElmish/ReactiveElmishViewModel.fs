@@ -90,60 +90,6 @@ type ReactiveElmishViewModel() =
             this.AddDisposable(disposable)
         readOnlyList
 
-    
-    /// Binds a keyed model collection property to a DynamicData.ISourceList<'T>.
-    member this.BindKeyedList<'Model, 'Msg, 'Projection, 'Key, 'Transformed when 'Transformed : not struct>(
-            store: IStore<'Model, 'Msg>, 
-            modelProjectionSeq: 'Model -> 'Projection seq,
-            getKey: 'Projection -> 'Key,
-            create: 'Projection -> 'Transformed,
-            ?update,
-            ?sortBy: 'Transformed -> IComparable,
-            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
-        ) = 
-        let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
-            let sourceCache = SourceCache.createFrom getKey (modelProjectionSeq store.Model)
-            let mutable isUpdate = false
-            // Creates a subscription to a SourceCache and stores it in a dictionary.
-            let disposable = 
-                sourceCache
-                    .Connect()
-                    |> fun x -> 
-                        match update with 
-                        | Some update -> 
-                            x.TransformWithInlineUpdate(
-                                create, 
-                                fun dest src -> 
-                                    isUpdate <- true
-                                    update dest src
-                            )
-                        | None ->
-                            x.Transform(create)
-                    |> fun x -> 
-                        match sortBy with
-                        | Some sortBy ->
-                            x.SortBy(sortBy)
-                        | None -> 
-                            x.Sort(Comparer.Create(fun _ _ -> 0))
-                    |> _.Bind(&readOnlyList)
-                    |> _.Subscribe()
-            propertySubscriptions.Add(vmPropertyName, disposable)
-
-            store.Observable
-                .Select(modelProjectionSeq)
-                .DistinctUntilChanged()
-                .Subscribe(fun lst -> 
-                    if isUpdate 
-                    then isUpdate <- false
-                    else sourceCache.EditDiff(lst, EqualityComparer<_>.Default)
-                )
-                |> this.AddDisposable
-
-            this.AddDisposable(sourceCache)
-        readOnlyList    
-
     /// Binds a keyed model collection property to a DynamicData.ISourceList<'T>.
     member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Transformed : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
