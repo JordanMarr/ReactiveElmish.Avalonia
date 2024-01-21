@@ -4,6 +4,7 @@ namespace ReactiveElmish
 open System.ComponentModel
 open System.Reactive.Linq
 open System
+open System.Linq
 open System.Collections.Generic
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
@@ -141,7 +142,88 @@ type ReactiveElmishViewModel() =
                 |> this.AddDisposable
 
             this.AddDisposable(sourceCache)
-        readOnlyList
+        readOnlyList    
+
+    /// Binds a keyed model collection property to a DynamicData.ISourceList<'T>.
+    member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Transformed : not struct and 'Key : comparison>(
+            store: IStore<'Model, 'Msg>, 
+            modelProjection: 'Model -> Map<'Key, 'Value>,
+            create: 'Value -> 'Transformed,
+            getKey: 'Transformed -> 'Key,
+            //?update,
+            //?sortBy: 'Transformed -> IComparable,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable lastModelMap: Map<'Key, 'Value> = Unchecked.defaultof<_>
+        let mutable observableCollection: ObservableCollection<'Transformed> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            observableCollection <- ObservableCollection()
+            lastModelMap <- Map.empty
+            
+            let mapToObservableCollection (currentModelMap: Map<'Key, 'Value>) = 
+                // Get items from the currentModelMap that are missing from the lastModelMap
+                let newItems = 
+                    currentModelMap
+                    |> Map.filter (fun k _ -> not (lastModelMap.ContainsKey k))
+                    |> Map.toSeq
+                    |> Seq.map (snd >> create)
+
+                //update 
+                //|> Option.iter (fun update -> 
+                //    // Get items from the lastModelMap that exist in the currentModelMap
+                //    let existingItems = 
+                //        lastModelMap
+                //            |> Map.filter (fun k _ -> currentModelMap.ContainsKey k)
+                //            |> Map.toSeq
+
+                //)
+
+                // Add new items to the observableCollection
+                newItems |> Seq.iter observableCollection.Add
+
+                // Get items that have been removed from the currentModelMap
+                let removedKeys = 
+                    lastModelMap
+                    |> Map.filter (fun k _ -> not (currentModelMap.ContainsKey k))
+                    |> Map.toArray
+                    |> Seq.map fst
+                    |> Set.ofSeq
+
+                if removedKeys.Count > 0 then 
+                    // Remove items from the observableCollection in reverse loop
+                    //observableCollection |> Seq.findIndex (fun item -> getKey item = removedKeys.[0])
+                    //observableCollection.Where(fun item idx -> getKey item = key)
+
+                    let indexesToRemove = 
+                        observableCollection
+                        |> Seq.mapi (fun idx item -> idx, getKey item)
+                        |> Seq.filter (fun (_, key) -> removedKeys.Contains(key))
+                        |> Seq.map fst
+                        |> Set.ofSeq
+                    
+                    for idx = observableCollection.Count - 1 downto 0 do
+                        if indexesToRemove.Contains(idx) then
+                            observableCollection.RemoveAt(idx)
+
+                    // Refresh observableCollection in UI
+                    //this.OnPropertyChanged(vmPropertyName)
+
+                // Finally, update the lastModelMap
+                lastModelMap <- currentModelMap
+
+            // Create an initial observable collection from the modelProjection
+            modelProjection store.Model |> mapToObservableCollection
+
+            // Creates a subscription to a SourceCache and stores it in a dictionary.
+            let disposable = 
+                store.Observable
+                    .Select(modelProjection)
+                    .DistinctUntilChanged()
+                    .Subscribe(mapToObservableCollection)
+
+            propertySubscriptions.Add(vmPropertyName, disposable)
+        observableCollection
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(

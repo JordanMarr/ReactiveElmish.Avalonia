@@ -9,7 +9,7 @@ open Avalonia.Controls
 module TodoApp = 
     open Elmish
 
-    type Model = { Todos: Todo list }
+    type Model = { Todos: Map<Guid, Todo> }
     and Todo = { Id: Guid; Description: string; Completed: bool }
 
     type Msg = 
@@ -21,33 +21,37 @@ module TodoApp =
     let init() = 
         if Design.IsDesignMode then 
             { Todos = 
-                [ 
-                    { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false }
-                    { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = true }
+                Map [ 
+                    let guid1 = Guid.NewGuid()
+                    guid1, { Id = guid1; Description = "Todo 1"; Completed = false }
+                    let guid2 = Guid.NewGuid()
+                    guid2, { Id = guid2; Description = "Todo 2"; Completed = true }
                 ]                
             }, Cmd.none
         else
-            { Todos = []
+            { Todos = Map.empty
             }, Cmd.ofMsg AddTodo
 
 
     let update (msg: Msg) (model: Model) = 
         match msg with
         | AddTodo ->
-            { Todos = model.Todos @ [ { Id = Guid.NewGuid(); Description = $"Todo {model.Todos.Length + 1}"; Completed = false } ]
+            { Todos = 
+                let guid = Guid.NewGuid()
+                model.Todos.Add(guid, { Id = guid; Description = $"Todo {model.Todos.Count + 1}"; Completed = false })
             }, Cmd.none
 
         | RemoveTodo id ->
-            { Todos = model.Todos |> List.filter (fun t -> t.Id <> id)
+            { Todos = model.Todos.Remove(id)
             }, Cmd.none
 
         | UpdateTodo todo ->
             { Todos = 
-                model.Todos |> List.map (fun t -> if t.Id = todo.Id then todo else t)
+                model.Todos.Add(todo.Id, todo)
             }, Cmd.none
 
         | Clear -> 
-            { Todos = []
+            { Todos = Map.empty
             }, Cmd.none
 
 
@@ -87,16 +91,14 @@ type TodoListViewModel() =
         |> Program.mkStore
 
     member this.Todos = 
-        this.BindKeyedList(
+        this.BindMap(
             store
             , _.Todos
-            , getKey = _.Id
             , create = fun todo -> new TodoViewModel(store, todo)
+            , getKey = fun todo -> todo.Id
             //, update = fun vm todo -> 
             //    vm.Completed <- todo.Completed
             //    vm.Description <- todo.Description; 
-            , sortBy = 
-                fun todo -> todo.Completed, todo.Description
         )
 
     member this.AddTodo() = store.Dispatch AddTodo
