@@ -9,7 +9,7 @@ open Avalonia.Controls
 module TodoApp = 
     open Elmish
 
-    type Model = { Todos: DynamicData.SourceCache<Todo, Guid> }
+    type Model = { Todos: Todo list }
     and Todo = { Id: Guid; Description: string; Completed: bool }
 
     type Msg = 
@@ -21,50 +21,59 @@ module TodoApp =
     let init() = 
         if Design.IsDesignMode then 
             { Todos = 
-                SourceCache.create(_.Id) 
-                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false }
-                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = true }
+                [ 
+                    { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false }
+                    { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = true }
+                ]                
             }, Cmd.none
         else
-            { Todos = SourceCache.create(_.Id) 
+            { Todos = []
             }, Cmd.ofMsg AddTodo
 
 
     let update (msg: Msg) (model: Model) = 
         match msg with
         | AddTodo ->
-            { Todos = 
-                model.Todos 
-                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = $"Todo {model.Todos.Count + 1}"; Completed = false }
+            { Todos = model.Todos @ [ { Id = Guid.NewGuid(); Description = $"Todo {model.Todos.Length + 1}"; Completed = false } ]
             }, Cmd.none
 
         | RemoveTodo id ->
-            { Todos = model.Todos |> SourceCache.removeKey id
+            { Todos = model.Todos |> List.filter (fun t -> t.Id <> id)
             }, Cmd.none
 
         | UpdateTodo todo ->
-            { Todos = model.Todos |> SourceCache.addOrUpdate todo
+            { Todos = 
+                model.Todos |> List.map (fun t -> if t.Id = todo.Id then todo else t)
             }, Cmd.none
 
         | Clear -> 
-            { Todos = model.Todos |> SourceCache.clear
+            { Todos = []
             }, Cmd.none
 
 
 open TodoApp
 
 type TodoViewModel(store: IStore<Model, Msg>, todo: Todo) = 
-    inherit ReactiveUI.ReactiveObject()
+    inherit ReactiveElmishViewModel()
+
+    let mutable completed = todo.Completed
+    let mutable description = todo.Description
 
     member this.Id with get () = todo.Id
 
     member this.Description 
-        with get () = todo.Description
-        and set value = store.Dispatch(UpdateTodo { todo with Description = value })
+        with get () = description
+        and set value = 
+            description <- value
+            store.Dispatch(UpdateTodo { todo with Description = value })
+            base.OnPropertyChanged()
 
     member this.Completed
-        with get () = todo.Completed
-        and set value = store.Dispatch(UpdateTodo { todo with Completed = value })
+        with get () = completed
+        and set value = 
+            completed <- value
+            store.Dispatch(UpdateTodo { todo with Completed = value })
+            base.OnPropertyChanged()
 
     member this.RemoveTodo() = 
         store.Dispatch(RemoveTodo todo.Id)
@@ -78,11 +87,18 @@ type TodoListViewModel() =
         |> Program.mkStore
 
     member this.Todos = 
-        this.BindSourceCache(
-            store.Model.Todos
-            , map = fun todo -> TodoViewModel(store, todo)
-            , sortBy = fun todo -> todo.Completed, todo.Description
+        this.BindKeyedList(
+            store
+            , _.Todos
+            , getKey = _.Id
+            , create = fun todo -> new TodoViewModel(store, todo)
+            //, update = fun vm todo -> 
+            //    vm.Completed <- todo.Completed
+            //    vm.Description <- todo.Description; 
+            , sortBy = 
+                fun todo -> todo.Completed, todo.Description
         )
+
     member this.AddTodo() = store.Dispatch AddTodo
     member this.Clear() = store.Dispatch Clear
 
