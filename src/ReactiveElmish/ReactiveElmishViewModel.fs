@@ -90,7 +90,7 @@ type ReactiveElmishViewModel() =
             this.AddDisposable(disposable)
         readOnlyList
 
-    /// Binds a keyed model collection property to a DynamicData.ISourceList<'T>.
+    /// Binds a model Map property to an ObservableCollection.
     member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Transformed : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
@@ -175,6 +175,21 @@ type ReactiveElmishViewModel() =
 
             propertySubscriptions.Add(vmPropertyName, disposable)
         observableCollection
+
+    /// Binds a model Map property to an ObservableCollection.
+    member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Value : not struct and 'Key : comparison>(
+            store: IStore<'Model, 'Msg>, 
+            modelProjection: 'Model -> Map<'Key, 'Value>,
+            getKey: 'Value -> 'Key,
+            ?sortBy: 'Value -> IComparable,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
+        match sortBy with 
+        | Some sortBy ->
+            this.BindMap(store, modelProjection, id, getKey, sortBy, vmPropertyName = vmPropertyName.Value)
+        | None ->
+            this.BindMap(store, modelProjection, id, getKey, vmPropertyName = vmPropertyName.Value)
+
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(
