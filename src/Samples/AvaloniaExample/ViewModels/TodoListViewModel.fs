@@ -99,6 +99,7 @@ type TodoListViewModel() =
             //, update = fun vm todo -> 
             //    vm.Completed <- todo.Completed
             //    vm.Description <- todo.Description; 
+            , sortBy = fun todo -> todo.Completed
         )
 
     member this.AddTodo() = store.Dispatch AddTodo

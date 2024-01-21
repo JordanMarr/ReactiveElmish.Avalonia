@@ -97,7 +97,7 @@ type ReactiveElmishViewModel() =
             create: 'Value -> 'Transformed,
             getKey: 'Transformed -> 'Key,
             //?update,
-            //?sortBy: 'Transformed -> IComparable,
+            ?sortBy: 'Transformed -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
@@ -152,8 +152,13 @@ type ReactiveElmishViewModel() =
                         if indexesToRemove.Contains(idx) then
                             observableCollection.RemoveAt(idx)
 
-                    // Refresh observableCollection in UI
-                    //this.OnPropertyChanged(vmPropertyName)
+                // Sort the observableCollection
+                sortBy
+                |> Option.iter (fun sortBy ->
+                    observableCollection
+                    |> Seq.sortBy sortBy
+                    |> Seq.iteri (fun idx item -> observableCollection[idx] <- item)
+                )
 
                 // Finally, update the lastModelMap
                 lastModelMap <- currentModelMap
