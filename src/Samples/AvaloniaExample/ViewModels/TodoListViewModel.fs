@@ -21,9 +21,11 @@ module TodoApp =
     let init() = 
         if Design.IsDesignMode then 
             { Todos = 
-                Map [ 
+                Map [
                     { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false } |> fun todo -> todo.Id, todo
                     { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = false } |> fun todo -> todo.Id, todo
+                    { Id = Guid.NewGuid(); Description = "Todo 3"; Completed = true } |> fun todo -> todo.Id, todo
+                    { Id = Guid.NewGuid(); Description = "Todo 4"; Completed = false } |> fun todo -> todo.Id, todo
                 ]                
             }, Cmd.none
         else
