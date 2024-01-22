@@ -239,26 +239,9 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
-    member this.BindSourceCache(
-            sourceCache: IObservableCache<'Value, 'Key>, 
-            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
-        ) = 
-        let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Value> = Unchecked.defaultof<_>
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
-            // Creates a subscription to a SourceCache and stores it in a dictionary.
-            let disposable = 
-                sourceCache
-                    .Connect()
-                    |> _.Bind(&readOnlyList)
-                    |> _.Subscribe()
-            propertySubscriptions.Add(vmPropertyName, disposable)
-        readOnlyList
-
-    /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
     member this.BindSourceCache<'Value, 'Key>(
             sourceCache: IObservableCache<'Value, 'Key>, 
-            sortBy: 'Value -> 'IComparable,
+            ?sortBy: 'Value -> 'IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
@@ -268,12 +251,16 @@ type ReactiveElmishViewModel() =
             let disposable = 
                 sourceCache
                     .Connect()
-                    |> fun x -> x.SortBy(sortBy)
+                    |> fun x -> 
+                        match sortBy with
+                        | Some sortBy ->
+                            x.SortBy(sortBy)
+                        | None -> 
+                            x.Sort(Comparer.Create(fun _ _ -> 0))
                     |> _.Bind(&readOnlyList)
                     |> _.Subscribe()
             propertySubscriptions.Add(vmPropertyName, disposable)
         readOnlyList
-
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
     member this.BindSourceCache<'Value, 'Key, 'Transformed>(
