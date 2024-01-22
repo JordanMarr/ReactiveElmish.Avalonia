@@ -192,7 +192,7 @@ type ReactiveElmishViewModel() =
         observableCollection
 
     /// Binds a model Map property to an ObservableCollection.
-    member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Key : comparison>(
+    member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
             getKey: 'Value -> 'Key,
@@ -200,7 +200,7 @@ type ReactiveElmishViewModel() =
             ?sortBy: 'Value -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string
         ) = 
-        this.BindMap(store, modelProjection, getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        this.BindMap(store = store, modelProjection = modelProjection, create = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(
