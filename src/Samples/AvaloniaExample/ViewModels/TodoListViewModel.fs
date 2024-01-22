@@ -68,19 +68,21 @@ type TodoViewModel(store: IStore<Model, Msg>, todo: Todo) =
     member this.Description 
         with get () = description
         and set value = 
-            description <- value
             store.Dispatch(UpdateTodo { todo with Description = value })
             base.OnPropertyChanged()
 
     member this.Completed
         with get () = completed
         and set value = 
-            completed <- value
             store.Dispatch(UpdateTodo { todo with Completed = value })
             base.OnPropertyChanged()
 
     member this.RemoveTodo() = 
         store.Dispatch(RemoveTodo todo.Id)
+
+    member this.Update(todo: Todo) = 
+        completed <- todo.Completed
+        description <- todo.Description
 
 
 type TodoListViewModel() =
@@ -96,10 +98,8 @@ type TodoListViewModel() =
             , _.Todos
             , create = fun todo -> new TodoViewModel(store, todo)
             , getKey = fun todo -> todo.Id
-            //, update = fun vm todo -> 
-            //    vm.Completed <- todo.Completed
-            //    vm.Description <- todo.Description; 
-            , sortBy = fun todo -> todo.Completed
+            , update = fun todo todoVM -> todoVM.Update(todo)
+            , sortBy = fun todo -> todo.Completed, todo.Description
         )
 
     member this.AddTodo() = store.Dispatch AddTodo

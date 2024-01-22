@@ -91,12 +91,12 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// Binds a model Map property to an ObservableCollection.
-    member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Transformed : not struct and 'Key : comparison>(
+    member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Value : equality and 'Transformed : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
             create: 'Value -> 'Transformed,
             getKey: 'Transformed -> 'Key,
-            //?update,
+            ?update,
             ?sortBy: 'Transformed -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
@@ -108,25 +108,38 @@ type ReactiveElmishViewModel() =
             lastModelMap <- Map.empty
             
             let mapToObservableCollection (currentModelMap: Map<'Key, 'Value>) = 
+
+                // Apply updates to existing items (excluding new or removed items)
+                update 
+                |> Option.iter (fun update -> 
+                    // Get items from the lastModelMap that exist in the currentModelMap
+                    let existingItems = 
+                        observableCollection
+                        |> Seq.map (fun item -> getKey item, item)
+                        |> Seq.filter (fun (key, _) -> 
+                            // Only include items that exist in the currentModelMap
+                            currentModelMap.ContainsKey key
+                        )
+
+                    existingItems
+                    |> Seq.iter (fun (key, item) ->
+                        let newItem = currentModelMap[key]
+                        let oldItem = lastModelMap[key]
+                        if newItem <> oldItem then
+                            update newItem item
+                    )
+                )
+
                 // Get items from the currentModelMap that are missing from the lastModelMap
                 let newItems = 
                     currentModelMap
                     |> Map.filter (fun k _ -> not (lastModelMap.ContainsKey k))
                     |> Map.toSeq
-                    |> Seq.map (snd >> create)
-
-                //update 
-                //|> Option.iter (fun update -> 
-                //    // Get items from the lastModelMap that exist in the currentModelMap
-                //    let existingItems = 
-                //        lastModelMap
-                //            |> Map.filter (fun k _ -> currentModelMap.ContainsKey k)
-                //            |> Map.toSeq
-
-                //)
 
                 // Add new items to the observableCollection
-                newItems |> Seq.iter observableCollection.Add
+                newItems 
+                |> Seq.map (snd >> create)
+                |> Seq.iter observableCollection.Add
 
                 // Get items that have been removed from the currentModelMap
                 let removedKeys = 
@@ -137,10 +150,6 @@ type ReactiveElmishViewModel() =
                     |> Set.ofSeq
 
                 if removedKeys.Count > 0 then 
-                    // Remove items from the observableCollection in reverse loop
-                    //observableCollection |> Seq.findIndex (fun item -> getKey item = removedKeys.[0])
-                    //observableCollection.Where(fun item idx -> getKey item = key)
-
                     let indexesToRemove = 
                         observableCollection
                         |> Seq.mapi (fun idx item -> idx, getKey item)
@@ -151,7 +160,6 @@ type ReactiveElmishViewModel() =
                     for idx = observableCollection.Count - 1 downto 0 do
                         if indexesToRemove.Contains(idx) then
                             observableCollection.RemoveAt(idx)
-
                 // Sort the observableCollection
                 sortBy
                 |> Option.iter (fun sortBy ->
@@ -177,18 +185,18 @@ type ReactiveElmishViewModel() =
         observableCollection
 
     /// Binds a model Map property to an ObservableCollection.
-    member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Value : not struct and 'Key : comparison>(
-            store: IStore<'Model, 'Msg>, 
-            modelProjection: 'Model -> Map<'Key, 'Value>,
-            getKey: 'Value -> 'Key,
-            ?sortBy: 'Value -> IComparable,
-            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
-        ) = 
-        match sortBy with 
-        | Some sortBy ->
-            this.BindMap(store, modelProjection, id, getKey, sortBy, vmPropertyName = vmPropertyName.Value)
-        | None ->
-            this.BindMap(store, modelProjection, id, getKey, vmPropertyName = vmPropertyName.Value)
+    //member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Value : not struct and 'Key : comparison>(
+    //        store: IStore<'Model, 'Msg>, 
+    //        modelProjection: 'Model -> Map<'Key, 'Value>,
+    //        getKey: 'Value -> 'Key,
+    //        ?sortBy: 'Value -> IComparable,
+    //        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+    //    ) = 
+    //    match sortBy with 
+    //    | Some sortBy ->
+    //        this.BindMap(store, modelProjection, id, getKey, sortBy, vmPropertyName = vmPropertyName.Value)
+    //    | None ->
+    //        this.BindMap(store, modelProjection, id, getKey, vmPropertyName = vmPropertyName.Value)
 
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
