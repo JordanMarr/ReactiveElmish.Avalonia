@@ -90,7 +90,15 @@ type ReactiveElmishViewModel() =
             this.AddDisposable(disposable)
         readOnlyList
 
+    /// <summary>
     /// Binds a model Map property to an ObservableCollection.
+    /// </summary>
+    /// <param name="store">The reactive store to bind to.</param>
+    /// <param name="modelProjection">The model projection.</param>
+    /// <param name="create">A function that transforms the item when it is added.</param>
+    /// <param name="getKey">A function that returns the identifier of the item.</param>
+    /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
+    /// <param name="sortBy">A function that returns a sort expression.</param>
     member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Value : equality and 'Transformed : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
@@ -191,7 +199,14 @@ type ReactiveElmishViewModel() =
             propertySubscriptions.Add(vmPropertyName, disposable)
         observableCollection
 
+    /// <summary>
     /// Binds a model Map property to an ObservableCollection.
+    /// </summary>
+    /// <param name="store">The reactive store to bind to.</param>
+    /// <param name="modelProjection">The model projection.</param>
+    /// <param name="getKey">A function that returns the identifier of the item.</param>
+    /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
+    /// <param name="sortBy">A function that returns a sort expression.</param>
     member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
