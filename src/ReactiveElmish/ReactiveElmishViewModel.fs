@@ -76,10 +76,34 @@ type ReactiveElmishViewModel() =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'ModelProjection> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
             readOnlyList <- this.BindSourceList(sourceList, vmPropertyName)
+
+            let disposable = 
+                store.Observable
+                    .Select(modelProjectionSeq)
+                    //.DistinctUntilChanged()
+                    .Subscribe(sourceList.EditDiff)
+
+            this.AddDisposable(sourceList)
+            this.AddDisposable(disposable)
+        readOnlyList
+
+        /// Binds a model collection property to a DynamicData.ISourceList<'T>.
+    member this.BindListWithTransform<'Model, 'Msg, 'ModelProjection, 'Transform>(
+            store: IStore<'Model, 'Msg>, 
+            modelProjectionSeq: 'Model -> 'ModelProjection seq,
+            map: 'ModelProjection -> 'Transform,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
+        let vmPropertyName = vmPropertyName.Value
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Transform> = Unchecked.defaultof<_>
+        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+            let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
+            readOnlyList <- this.BindSourceList(sourceList, map, vmPropertyName)
+
             let disposable = 
                 store.Observable
                     .Select(modelProjectionSeq)
@@ -235,13 +259,13 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
-    member this.BindSourceList<'T, 'Transformed>(
+    member this.BindSourceList<'T, 'Transform>(
             sourceList: ISourceList<'T>, 
-            map: 'T -> 'Transformed,
+            map: 'T -> 'Transform,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Transform> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 
