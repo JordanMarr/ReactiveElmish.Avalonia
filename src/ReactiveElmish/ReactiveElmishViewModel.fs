@@ -112,22 +112,22 @@ type ReactiveElmishViewModel() =
                 // Apply updates to existing items (excluding new or removed items)
                 update 
                 |> Option.iter (fun update -> 
-                    // Get items from the lastModelMap that exist in the currentModelMap
-                    let existingItems = 
+                    let existingItemVms = 
+                        // Get items from the lastModelMap that exist in the currentModelMap
                         observableCollection
                         |> Seq.map (fun item -> getKey item, item)
                         |> Seq.filter (fun (key, _) -> 
                             // Only include items that exist in the currentModelMap
                             currentModelMap.ContainsKey key
                         )
+                        |> Seq.toArray
 
-                    existingItems
-                    |> Seq.iter (fun (key, item) ->
+                    for idx = existingItemVms.Length - 1 downto 0 do
+                        let (key, itemVM) = existingItemVms[idx]
                         let newItem = currentModelMap[key]
                         let oldItem = lastModelMap[key]
                         if newItem <> oldItem then
-                            update newItem item
-                    )
+                            update newItem itemVM
                 )
 
                 // Get items from the currentModelMap that are missing from the lastModelMap
@@ -159,7 +159,14 @@ type ReactiveElmishViewModel() =
                     
                     for idx = observableCollection.Count - 1 downto 0 do
                         if indexesToRemove.Contains(idx) then
+                            let removedItem = observableCollection[idx]
                             observableCollection.RemoveAt(idx)
+                            match removedItem :> obj with
+                            | :? IDisposable as disposable -> 
+                                this.AddDisposable(disposable)
+                            | _ -> ()
+                            
+
                 // Sort the observableCollection
                 sortBy
                 |> Option.iter (fun sortBy ->
