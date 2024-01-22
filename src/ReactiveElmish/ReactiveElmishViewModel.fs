@@ -23,9 +23,11 @@ type ReactiveElmishViewModel() =
         this.RaisePropertyChanged(propertyName.Value)
 
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `modelProjection` value changes.
-    member this.Bind<'Model, 'Msg, 'ModelProjection>(store: IStore<'Model, 'Msg>, 
-                                                        modelProjection: 'Model -> 'ModelProjection, 
-                                                        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.Bind<'Model, 'Msg, 'ModelProjection>(
+            store: IStore<'Model, 'Msg>, 
+            modelProjection: 'Model -> 'ModelProjection, 
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
         let vmPropertyName = vmPropertyName.Value
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
@@ -47,10 +49,12 @@ type ReactiveElmishViewModel() =
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `onChanged` value changes.
     /// The `modelProjection` function will only be called when the `onChanged` value changes.
     /// `onChanged` usually returns a property value or a tuple of property values.
-    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(store: IStore<'Model, 'Msg>, 
-                                                        onChanged: 'Model -> 'OnChanged,
-                                                        modelProjection: 'Model -> 'ModelProjection, 
-                                                        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName) = 
+    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(
+            store: IStore<'Model, 'Msg>, 
+            onChanged: 'Model -> 'OnChanged,
+            modelProjection: 'Model -> 'ModelProjection, 
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
+        ) = 
         let vmPropertyName = vmPropertyName.Value
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
@@ -92,17 +96,17 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
         /// Binds a model collection property to a DynamicData.ISourceList<'T>.
-    member this.BindListWithTransform<'Model, 'Msg, 'ModelProjection, 'Transform>(
+    member this.BindListWithTransform<'Model, 'Msg, 'ModelProjection, 'Transformed>(
             store: IStore<'Model, 'Msg>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
-            map: 'ModelProjection -> 'Transform,
+            transform: 'ModelProjection -> 'Transformed,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Transform> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
-            readOnlyList <- this.BindSourceList(sourceList, map, vmPropertyName)
+            readOnlyList <- this.BindSourceList(sourceList, transform, vmPropertyName)
 
             let disposable = 
                 store.Observable
@@ -119,14 +123,14 @@ type ReactiveElmishViewModel() =
     /// </summary>
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjection">The model projection.</param>
-    /// <param name="create">A function that transforms the item when it is added.</param>
+    /// <param name="transform">A function that transforms the item when it is added.</param>
     /// <param name="getKey">A function that returns the identifier of the item.</param>
     /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
     /// <param name="sortBy">A function that returns a sort expression.</param>
     member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Value : equality and 'Transformed : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
-            create: 'Value -> 'Transformed,
+            transform: 'Value -> 'Transformed,
             getKey: 'Transformed -> 'Key,
             ?update: 'Value -> 'Transformed -> unit,
             ?sortBy: 'Transformed -> IComparable,
@@ -170,7 +174,7 @@ type ReactiveElmishViewModel() =
 
                 // Add new items to the observableCollection
                 newItems 
-                |> Seq.map (snd >> create)
+                |> Seq.map (snd >> transform)
                 |> Seq.iter observableCollection.Add
 
                 // Get items that have been removed from the currentModelMap
@@ -239,7 +243,7 @@ type ReactiveElmishViewModel() =
             ?sortBy: 'Value -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string
         ) = 
-        this.BindMap(store = store, modelProjection = modelProjection, create = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        this.BindMap(store = store, modelProjection = modelProjection, transform = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(
@@ -259,13 +263,13 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
-    member this.BindSourceList<'T, 'Transform>(
+    member this.BindSourceList<'T, 'Transformed>(
             sourceList: ISourceList<'T>, 
-            map: 'T -> 'Transform,
+            map: 'T -> 'Transformed,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Transform> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 

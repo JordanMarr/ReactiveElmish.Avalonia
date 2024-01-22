@@ -98,7 +98,7 @@ type TodoListViewModel() =
 
     member this.Todos = 
         this.BindMap(store, _.Todos
-            , create = fun todo -> new TodoViewModel(store, todo)
+            , transform = fun todo -> new TodoViewModel(store, todo)
             , getKey = fun todoVM -> todoVM.Id
             //, update = fun todo todoVM -> todoVM.Update(todo)
             //, sortBy = fun todo -> todo.Completed
