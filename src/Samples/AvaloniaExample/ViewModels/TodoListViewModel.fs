@@ -22,10 +22,8 @@ module TodoApp =
         if Design.IsDesignMode then 
             { Todos = 
                 Map [ 
-                    let guid1 = Guid.NewGuid()
-                    guid1, { Id = guid1; Description = "Todo 1"; Completed = false }
-                    let guid2 = Guid.NewGuid()
-                    guid2, { Id = guid2; Description = "Todo 2"; Completed = true }
+                    { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false } |> fun todo -> todo.Id, todo
+                    { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = false } |> fun todo -> todo.Id, todo
                 ]                
             }, Cmd.none
         else
@@ -37,8 +35,10 @@ module TodoApp =
         match msg with
         | AddTodo ->
             { Todos = 
-                let guid = Guid.NewGuid()
-                model.Todos.Add(guid, { Id = guid; Description = $"Todo {model.Todos.Count + 1}"; Completed = false })
+                let number = model.Todos.Count + 1
+                let paddedNumber = number.ToString().PadLeft(2, '0')
+                let todo = { Id = Guid.NewGuid(); Description = $"Todo {paddedNumber}"; Completed = false }
+                model.Todos.Add(todo.Id, todo)
             }, Cmd.none
 
         | RemoveTodo id ->
@@ -68,21 +68,23 @@ type TodoViewModel(store: IStore<Model, Msg>, todo: Todo) =
     member this.Description 
         with get () = description
         and set value = 
+            description <- value
             store.Dispatch(UpdateTodo { todo with Description = value })
             base.OnPropertyChanged()
 
     member this.Completed
         with get () = completed
         and set value = 
+            completed <- value
             store.Dispatch(UpdateTodo { todo with Completed = value })
             base.OnPropertyChanged()
 
     member this.RemoveTodo() = 
         store.Dispatch(RemoveTodo todo.Id)
 
-    member this.Update(todo: Todo) = 
-        completed <- todo.Completed
-        description <- todo.Description
+    //member this.Update(todo: Todo) = 
+    //    completed <- todo.Completed
+    //    description <- todo.Description
 
 
 type TodoListViewModel() =
@@ -93,13 +95,11 @@ type TodoListViewModel() =
         |> Program.mkStore
 
     member this.Todos = 
-        this.BindMap(
-            store
-            , _.Todos
+        this.BindMap(store, _.Todos
             , create = fun todo -> new TodoViewModel(store, todo)
-            , getKey = fun todo -> todo.Id
-            , update = fun todo todoVM -> todoVM.Update(todo)
-            , sortBy = fun todo -> todo.Completed, todo.Description
+            , getKey = fun todoVM -> todoVM.Id
+            //, update = fun todo todoVM -> todoVM.Update(todo)
+            //, sortBy = fun todo -> todo.Completed
         )
 
     member this.AddTodo() = store.Dispatch AddTodo

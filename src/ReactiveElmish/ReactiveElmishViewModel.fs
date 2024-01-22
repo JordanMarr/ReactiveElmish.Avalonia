@@ -96,7 +96,7 @@ type ReactiveElmishViewModel() =
             modelProjection: 'Model -> Map<'Key, 'Value>,
             create: 'Value -> 'Transformed,
             getKey: 'Transformed -> 'Key,
-            ?update,
+            ?update: 'Value -> 'Transformed -> unit,
             ?sortBy: 'Transformed -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
@@ -192,19 +192,15 @@ type ReactiveElmishViewModel() =
         observableCollection
 
     /// Binds a model Map property to an ObservableCollection.
-    //member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Value : not struct and 'Key : comparison>(
-    //        store: IStore<'Model, 'Msg>, 
-    //        modelProjection: 'Model -> Map<'Key, 'Value>,
-    //        getKey: 'Value -> 'Key,
-    //        ?sortBy: 'Value -> IComparable,
-    //        [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
-    //    ) = 
-    //    match sortBy with 
-    //    | Some sortBy ->
-    //        this.BindMap(store, modelProjection, id, getKey, sortBy, vmPropertyName = vmPropertyName.Value)
-    //    | None ->
-    //        this.BindMap(store, modelProjection, id, getKey, vmPropertyName = vmPropertyName.Value)
-
+    member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Key : comparison>(
+            store: IStore<'Model, 'Msg>, 
+            modelProjection: 'Model -> Map<'Key, 'Value>,
+            getKey: 'Value -> 'Key,
+            ?update: 'Value -> 'Value -> unit,
+            ?sortBy: 'Value -> IComparable,
+            [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string
+        ) = 
+        this.BindMap(store, modelProjection, getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(
