@@ -4,7 +4,6 @@ open System
 open ReactiveElmish
 open ReactiveElmish.Avalonia
 open Elmish
-open DynamicData
 
 module Counter = 
     type Model =  { Count: int; Actions: Action list }
@@ -40,7 +39,6 @@ module Counter =
             }
 
 open Counter
-open System.Collections.Generic
 
 type CounterViewModel() =
     inherit ReactiveElmishViewModel()
@@ -50,7 +48,7 @@ type CounterViewModel() =
         |> Program.mkStore
 
     member this.Count = this.Bind(local, _.Count)
-    member this.Actions = this.BindListWithTransform(local, _.Actions, fun a -> { a with Description = $"** {a.Description} **" })
+    member this.Actions = this.BindList'(local, _.Actions, fun a -> { a with Description = $"** {a.Description} **" })
     member this.Increment() = local.Dispatch Increment
     member this.Decrement() = local.Dispatch Decrement
     member this.Reset() = local.Dispatch Reset

@@ -73,7 +73,11 @@ type ReactiveElmishViewModel() =
 
         modelProjection store.Model
 
-    /// Binds a model collection property to a DynamicData.ISourceList<'T>.
+    /// <summary>
+    /// Binds a model colleciton property to a DynamicData SourceList.
+    /// </summary>
+    /// <param name="store">The reactive store to bind to.</param>
+    /// <param name="modelProjectionSeq">The model projection.</param>
     member this.BindList<'Model, 'Msg, 'ModelProjection>(
             store: IStore<'Model, 'Msg>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
@@ -95,8 +99,13 @@ type ReactiveElmishViewModel() =
             this.AddDisposable(disposable)
         readOnlyList
 
-        /// Binds a model collection property to a DynamicData.ISourceList<'T>.
-    member this.BindListWithTransform<'Model, 'Msg, 'ModelProjection, 'Mapped>(
+    /// <summary>
+    /// Binds a model colleciton property to a DynamicData SourceList.
+    /// </summary>
+    /// <param name="store">The reactive store to bind to.</param>
+    /// <param name="modelProjectionSeq">The model projection.</param>
+    /// <param name="map">A function that transforms each item in the collection when it is added to the SourceList.</param>
+    member this.BindList'<'Model, 'Msg, 'ModelProjection, 'Mapped>(
             store: IStore<'Model, 'Msg>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             map: 'ModelProjection -> 'Mapped,
@@ -119,7 +128,7 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// <summary>
-    /// Binds a model Map property to an ObservableCollection.
+    /// Binds a model Map<'Key, 'Value> property to an ObservableCollection.
     /// </summary>
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjection">The model projection.</param>
@@ -228,7 +237,7 @@ type ReactiveElmishViewModel() =
         observableCollection
 
     /// <summary>
-    /// Binds a model Map property to an ObservableCollection.
+    /// Binds a model Map<'Key, 'Value> property to an ObservableCollection.
     /// </summary>
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjection">The model projection.</param>
