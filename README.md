@@ -275,6 +275,62 @@ type MainViewModel(root: CompositionRoot) =
     static member DesignVM = new MainViewModel(Design.stub)
 ```
 
+### `BindList` and `BindList'`
+`BindList` binds a collection type on the model to a DynamicData.SourceList behind the scenes. Changes to the collection in the model are diffed and updated for you in the SourceList.
+`BindList'` also has a `map` parameter that allows you to transform items when they are added to the SourceList.
+
+```F#
+module Counter = 
+    type Model =  { Count: int; Actions: Action list }
+    // ...
+```
+```F#
+type CounterViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.Count = this.Bind(local, _.Count)
+    member this.Actions = this.BindList'(local, _.Actions, fun a -> { a with Description = $"** {a.Description} **" })
+```
+
+### `BindKeyedList`
+Binds a Map<'Key, 'Value> "keyed list" to an `ObservableCollection` behind the scenes. 
+Changes to the Map in the model are diffed based on the provided `getKey` function that returns the `'Key` for each item. 
+
+Also has an optional `update` parameter that allows you to provide a function to update the keyed item when a change is detected.
+Note that using the `update` parameter will cause every item in the list to be diffed for changes which will be more expensive.
+You can generally avoid having to use the `update` parameter by storing state changes on your mapped item (assuming you have mapped it to a view model that store its own state).
+
+Use `BindKeyedList` when you want to store a list of items that can be identified by one or more identifying keys.
+
+```F#
+module TodoApp = 
+    type Model = { Todos: Map<Guid, Todo> }
+    and Todo = { Id: Guid; Description: string; Completed: bool }
+    /// ...
+```
+
+```F#
+type TodoListViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let store = 
+        Program.mkAvaloniaProgram init update
+        |> Program.mkStore
+
+    member this.Todos = 
+        this.BindKeyedList(store, _.Todos
+            , map = fun todo -> new TodoViewModel(store, todo)
+            , getKey = fun todoVM -> todoVM.Id
+            //, update = fun todo todoVM -> todoVM.Update(todo)     // Optional
+            //, sortBy = fun todo -> todo.Completed                 // Optional
+        )
+
+```
+
 ### `BindSourceList`
 The `BindSourceList` method binds a `DynamicData` [`SourceList`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
 This provides list `Add` and `Removed` notifications to the view.
