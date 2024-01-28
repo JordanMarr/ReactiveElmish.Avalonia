@@ -29,6 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DynamicData" Version="8.3.27" />
 		<PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
 		<PackageReference Include="ReactiveUI" Version="19.5.1" />
 	</ItemGroup>

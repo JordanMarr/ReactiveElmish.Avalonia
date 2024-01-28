@@ -9,7 +9,7 @@ open Avalonia.Controls
 module TodoApp = 
     open Elmish
 
-    type Model = { Todos: DynamicData.SourceCache<Todo, Guid> }
+    type Model = { Todos: Map<Guid, Todo> }
     and Todo = { Id: Guid; Description: string; Completed: bool }
 
     type Msg = 
@@ -21,12 +21,15 @@ module TodoApp =
     let init() = 
         if Design.IsDesignMode then 
             { Todos = 
-                SourceCache.create(_.Id) 
-                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false }
-                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = true }
+                Map [
+                    { Id = Guid.NewGuid(); Description = "Todo 1"; Completed = false } |> fun todo -> todo.Id, todo
+                    { Id = Guid.NewGuid(); Description = "Todo 2"; Completed = false } |> fun todo -> todo.Id, todo
+                    { Id = Guid.NewGuid(); Description = "Todo 3"; Completed = true } |> fun todo -> todo.Id, todo
+                    { Id = Guid.NewGuid(); Description = "Todo 4"; Completed = false } |> fun todo -> todo.Id, todo
+                ]                
             }, Cmd.none
         else
-            { Todos = SourceCache.create(_.Id) 
+            { Todos = Map.empty
             }, Cmd.ofMsg AddTodo
 
 
@@ -34,40 +37,56 @@ module TodoApp =
         match msg with
         | AddTodo ->
             { Todos = 
-                model.Todos 
-                |> SourceCache.addOrUpdate { Id = Guid.NewGuid(); Description = $"Todo {model.Todos.Count + 1}"; Completed = false }
+                let number = model.Todos.Count + 1
+                let paddedNumber = number.ToString().PadLeft(2, '0')
+                let todo = { Id = Guid.NewGuid(); Description = $"Todo {paddedNumber}"; Completed = false }
+                model.Todos.Add(todo.Id, todo)
             }, Cmd.none
 
         | RemoveTodo id ->
-            { Todos = model.Todos |> SourceCache.removeKey id
+            { Todos = model.Todos.Remove(id)
             }, Cmd.none
 
         | UpdateTodo todo ->
-            { Todos = model.Todos |> SourceCache.addOrUpdate todo
+            { Todos = 
+                model.Todos.Add(todo.Id, todo)
             }, Cmd.none
 
         | Clear -> 
-            { Todos = model.Todos |> SourceCache.clear
+            { Todos = Map.empty
             }, Cmd.none
 
 
 open TodoApp
 
 type TodoViewModel(store: IStore<Model, Msg>, todo: Todo) = 
-    inherit ReactiveUI.ReactiveObject()
+    inherit ReactiveElmishViewModel()
+
+    let mutable completed = todo.Completed
+    let mutable description = todo.Description
 
     member this.Id with get () = todo.Id
 
     member this.Description 
-        with get () = todo.Description
-        and set value = store.Dispatch(UpdateTodo { todo with Description = value })
+        with get () = description
+        and set value = 
+            description <- value
+            store.Dispatch(UpdateTodo { todo with Description = value })
+            base.OnPropertyChanged()
 
     member this.Completed
-        with get () = todo.Completed
-        and set value = store.Dispatch(UpdateTodo { todo with Completed = value })
+        with get () = completed
+        and set value = 
+            completed <- value
+            store.Dispatch(UpdateTodo { todo with Completed = value })
+            base.OnPropertyChanged()
 
     member this.RemoveTodo() = 
         store.Dispatch(RemoveTodo todo.Id)
+
+    //member this.Update(todo: Todo) = 
+    //    completed <- todo.Completed
+    //    description <- todo.Description
 
 
 type TodoListViewModel() =
@@ -78,11 +97,13 @@ type TodoListViewModel() =
         |> Program.mkStore
 
     member this.Todos = 
-        this.BindSourceCache(
-            store.Model.Todos
-            , map = fun todo -> TodoViewModel(store, todo)
-            , sortBy = fun todo -> todo.Completed, todo.Description
+        this.BindKeyedList(store, _.Todos
+            , map = fun todo -> new TodoViewModel(store, todo)
+            , getKey = fun todoVM -> todoVM.Id
+            //, update = fun todo todoVM -> todoVM.Update(todo)
+            //, sortBy = fun todo -> todo.Completed
         )
+
     member this.AddTodo() = store.Dispatch AddTodo
     member this.Clear() = store.Dispatch Clear
 

@@ -40,6 +40,11 @@ module SourceCache =
     let create<'TObject, 'TKey> (keySelector: 'TObject -> 'TKey) = 
         new SourceCache<'TObject, 'TKey>(Func<_,_>(keySelector))
 
+    let createFrom<'TObject, 'TKey> (keySelector: 'TObject -> 'TKey) (collection: 'TObject seq) = 
+        let sourceCache = new SourceCache<'TObject, 'TKey>(Func<_,_>(keySelector))
+        sourceCache.AddOrUpdate collection
+        sourceCache
+
     let addOrUpdate<'TObject, 'TKey> (item: 'TObject) (sourceCache: SourceCache<'TObject, 'TKey>) =
         sourceCache.AddOrUpdate item |> ignore
         sourceCache
