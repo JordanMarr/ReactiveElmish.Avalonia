@@ -96,17 +96,17 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
         /// Binds a model collection property to a DynamicData.ISourceList<'T>.
-    member this.BindListWithTransform<'Model, 'Msg, 'ModelProjection, 'Transformed>(
+    member this.BindListWithTransform<'Model, 'Msg, 'ModelProjection, 'Mapped>(
             store: IStore<'Model, 'Msg>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
-            transform: 'ModelProjection -> 'Transformed,
+            map: 'ModelProjection -> 'Mapped,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
-            readOnlyList <- this.BindSourceList(sourceList, transform, vmPropertyName)
+            readOnlyList <- this.BindSourceList(sourceList, map, vmPropertyName)
 
             let disposable = 
                 store.Observable
@@ -123,22 +123,22 @@ type ReactiveElmishViewModel() =
     /// </summary>
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjection">The model projection.</param>
-    /// <param name="transform">A function that transforms the item when it is added.</param>
+    /// <param name="map">A function that transforms the item when it is added.</param>
     /// <param name="getKey">A function that returns the identifier of the item.</param>
     /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
     /// <param name="sortBy">A function that returns a sort expression.</param>
-    member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Transformed when 'Value : equality and 'Transformed : not struct and 'Key : comparison>(
+    member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Mapped when 'Value : equality and 'Mapped : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
-            transform: 'Value -> 'Transformed,
-            getKey: 'Transformed -> 'Key,
-            ?update: 'Value -> 'Transformed -> unit,
-            ?sortBy: 'Transformed -> IComparable,
+            map: 'Value -> 'Mapped,
+            getKey: 'Mapped -> 'Key,
+            ?update: 'Value -> 'Mapped -> unit,
+            ?sortBy: 'Mapped -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
         let mutable lastModelMap: Map<'Key, 'Value> = Unchecked.defaultof<_>
-        let mutable observableCollection: ObservableCollection<'Transformed> = Unchecked.defaultof<_>
+        let mutable observableCollection: ObservableCollection<'Mapped> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             observableCollection <- ObservableCollection()
             lastModelMap <- Map.empty
@@ -174,7 +174,7 @@ type ReactiveElmishViewModel() =
 
                 // Add new items to the observableCollection
                 newItems 
-                |> Seq.map (snd >> transform)
+                |> Seq.map (snd >> map)
                 |> Seq.iter observableCollection.Add
 
                 // Get items that have been removed from the currentModelMap
@@ -243,7 +243,7 @@ type ReactiveElmishViewModel() =
             ?sortBy: 'Value -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string
         ) = 
-        this.BindMap(store = store, modelProjection = modelProjection, transform = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        this.BindMap(store = store, modelProjection = modelProjection, map = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(
@@ -263,13 +263,13 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
-    member this.BindSourceList<'T, 'Transformed>(
+    member this.BindSourceList<'T, 'Mapped>(
             sourceList: ISourceList<'T>, 
-            map: 'T -> 'Transformed,
+            map: 'T -> 'Mapped,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 
@@ -306,14 +306,14 @@ type ReactiveElmishViewModel() =
         readOnlyList
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
-    member this.BindSourceCache<'Value, 'Key, 'Transformed>(
+    member this.BindSourceCache<'Value, 'Key, 'Mapped>(
             sourceCache: IObservableCache<'Value, 'Key>, 
-            map: 'Value -> 'Transformed,
-            ?sortBy: 'Transformed -> 'IComparable,
+            map: 'Value -> 'Mapped,
+            ?sortBy: 'Mapped -> 'IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Transformed> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a SourceCache and stores it in a dictionary.
             let disposable = 
