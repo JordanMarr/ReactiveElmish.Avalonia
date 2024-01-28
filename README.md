@@ -18,7 +18,8 @@ JetBrains Rider also supports Avalonia previews out-of-the-box!
 https://docs.avaloniaui.net/docs/getting-started/ide-support
 
 _This screenshot shows the Avalonia design preview in Visual Studio:_
-![image](https://user-images.githubusercontent.com/1030435/219173023-a47d5d9b-8926-4f9d-833b-1406661e1c82.png)
+![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/24553ccd-5aa0-41c4-b057-83894fab65a1)
+
 
 ### Benefits
 * Some people may prefer using static xaml views, and it can be an easier sell for some teams due familiarity, and the immediate availability of all community controls.
