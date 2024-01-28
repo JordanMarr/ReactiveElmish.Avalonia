@@ -3,7 +3,7 @@
 _Elmish Stores + Custom Bindings + Avalonia Static Views_
 
 ###  Elmish Stores +  Custom bindings
-* Create an [Elmish Store](#elmish-stores) to share global app state between views.
+* Create an [Elmish Store](#elmish-stores) to manage global app state between views.
 * Create an [Elmish Store](#elmish-stores) to manage local view state.
 * Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
 
@@ -33,7 +33,7 @@ _This screenshot shows the Avalonia design preview in Visual Studio:_
 * Works with Avalonia [Compiled bindings](https://docs.avaloniaui.net/docs/next/basics/data/data-binding/compiled-bindings#enable-and-disable-compiled-bindings) for better performance and compile-time type checking in the views. With Compiled bindings enabled, the build will fail if the view references a binding that doesn't exist in the VM! (The previous `DictionaryViewModel` brought over from Elmish.WPF was not able to take advantage of this because it relied on reflection-based bindings.)
 * More standard looking view model pattern while still maintaining the power of Elmish. For example, you can now create an instance of an Elmish view model and actually inspect its properties from the outside -- and even read / write to the properties in OOP fashion. (The fact that a view model is using Elmish internally should not matter because it's an implementation detail.) This is a perfect example of the benefits of OOP + FP side-by-side.
 * ReactiveElmish.Avalonia now takes a dependency on the Avalonia.ReactiveUI library. (The new `ReactiveElmishViewModel` class inherits from `ReactiveObject`.) Since this is the default view model library for Avalonia, this makes it easier to take advantage of existing patterns when needed.
-* ReactiveElmish.Avalonia integrates with `DynamicData` which provides a very simple way to  lists between the Elmish model and the view / view model.
+* ReactiveElmish.Avalonia integrates with `DynamicData` which provides a simple way to bind lists between the Elmish model and the view / view model. (DynamicData lists properly handle properly refreshing the view when adding and removing items from a bound list.)
 * Built-in dependency injection using `Microsoft.Extensions.DependencyInjection`.
 
 
@@ -105,7 +105,7 @@ type AboutViewModel() =
     static member DesignVM = new AboutViewModel()
 ```
 
-## View Model with its own Store
+## View Model with its own local Store
 In this example, a view model has its own local store, and it also accesses the global App store:
 ```F#
 namespace AvaloniaExample.ViewModels
@@ -224,9 +224,7 @@ let update (msg: Msg) (model: Model) =
         |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: {ex.Message}")
         |> Program.mkStoreWithTerminate this Terminate 
 ```
-## ReactiveElmishViewModel
-
-## View Model Bindings
+## ReactiveElmishViewModel Bindings
 The `ReactiveElmishViewModel` base class contains binding methods that are used to bind data between your Elmish model and your view model.
 All binding methods on the `ReactiveElmishViewModel` are disposed when the view model is diposed.
 
@@ -279,7 +277,7 @@ type MainViewModel(root: CompositionRoot) =
 ### `BindSourceList`
 The `BindSourceList` method binds a `DynamicData` [`SourceList`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
 This provides list `Add` and `Removed` notifications to the view.
-There is also a `SourceList` helper module that makes it a little nicer to work with.
+There is also a `SourceList` helper module that makes it a little nicer to work with by allowing you to _mutate_ the collection inline.
 
 ```F#
     let update (msg: Msg) (model: Model) = 
@@ -315,7 +313,7 @@ type CounterViewModel() =
 ### `BindSourceCache`
 The `BindSourceCache` method binds a `DynamicData` [`SourceCache`](https://www.reactiveui.net/docs/handbook/collections) property on the `Model` to a view model property. 
 This provides list `Add` and `Removed` notifications to the view for lists with items that have unique keys.
-There is also a `SourceCache` helper module that makes it a little nicer to work with.
+There is also a `SourceCache` helper module that makes it a little nicer to work with by allowing you to _mutate_ the collection inline.
 
 ```F#
     type Model =
@@ -388,7 +386,7 @@ Steps to create a new project:
 
 1) Create a new project using the [Avalonia .NET MVVM App Template for F#](https://github.com/AvaloniaUI/avalonia-dotnet-templates).
 2) Install the ReactiveElmish.Avalonia package from NuGet.
-3) Create an `AppCompositionRoot` that inherits from `CompositionRoot` to define your view/VM pairs and services.
+3) Create an `AppCompositionRoot` (see the [Composition Root](#composition-root) section above) that inherits from `CompositionRoot` to define your view/VM pairs (required) and any DI services (optional).
 4) Launch the startup window using your `CompositionRoot` class in the `App.axaml.fs` 
 
 Refer to the `AvaloniaExample` project in the `Samples` directory as a reference.
@@ -426,4 +424,4 @@ type App() =
 
 # Sample Project
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
-Please view the [AvaloniaExample project](https://github.com/JordanMarr/ReactiveElmish.Avalonia/tree/v2-beta/src/Samples/AvaloniaExample).
+Please view the [AvaloniaExample project](https://github.com/JordanMarr/ReactiveElmish.Avalonia/tree/main/src/Samples/AvaloniaExample).
