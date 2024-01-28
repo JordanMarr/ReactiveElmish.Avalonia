@@ -97,7 +97,7 @@ type TodoListViewModel() =
         |> Program.mkStore
 
     member this.Todos = 
-        this.BindMap(store, _.Todos
+        this.BindKeyedList(store, _.Todos
             , map = fun todo -> new TodoViewModel(store, todo)
             , getKey = fun todoVM -> todoVM.Id
             //, update = fun todo todoVM -> todoVM.Update(todo)

@@ -136,7 +136,7 @@ type ReactiveElmishViewModel() =
     /// <param name="getKey">A function that returns the identifier of the item.</param>
     /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
     /// <param name="sortBy">A function that returns a sort expression.</param>
-    member this.BindMap<'Model, 'Msg, 'Key, 'Value, 'Mapped when 'Value : equality and 'Mapped : not struct and 'Key : comparison>(
+    member this.BindKeyedList<'Model, 'Msg, 'Key, 'Value, 'Mapped when 'Value : equality and 'Mapped : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
             map: 'Value -> 'Mapped,
@@ -244,7 +244,7 @@ type ReactiveElmishViewModel() =
     /// <param name="getKey">A function that returns the identifier of the item.</param>
     /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
     /// <param name="sortBy">A function that returns a sort expression.</param>
-    member this.BindMap<'Model, 'Msg, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
+    member this.BindKeyedList<'Model, 'Msg, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
             getKey: 'Value -> 'Key,
@@ -252,7 +252,7 @@ type ReactiveElmishViewModel() =
             ?sortBy: 'Value -> IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string
         ) = 
-        this.BindMap(store = store, modelProjection = modelProjection, map = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        this.BindKeyedList(store = store, modelProjection = modelProjection, map = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T>(
