@@ -8,7 +8,7 @@ _Elmish Stores + Custom Bindings + Avalonia Static Views_
 * Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
 
 _This example shows using an Elmish Store to manage local view state:_
-![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/5278afe4-ce05-4548-b9e9-6a1703394fd7)
+![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/335a316c-485f-435b-96bd-7f30ace74a48)
 
 ### Avalonia Static Views
 Create views using Avalonia xaml.
