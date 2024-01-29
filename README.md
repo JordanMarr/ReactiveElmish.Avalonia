@@ -8,7 +8,7 @@ _Elmish Stores + Custom Bindings + Avalonia Static Views_
 * Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
 
 _This example shows using an Elmish Store to manage local view state:_
-![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/5278afe4-ce05-4548-b9e9-6a1703394fd7)
+![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/335a316c-485f-435b-96bd-7f30ace74a48)
 
 ### Avalonia Static Views
 Create views using Avalonia xaml.
@@ -18,7 +18,8 @@ JetBrains Rider also supports Avalonia previews out-of-the-box!
 https://docs.avaloniaui.net/docs/getting-started/ide-support
 
 _This screenshot shows the Avalonia design preview in Visual Studio:_
-![image](https://user-images.githubusercontent.com/1030435/219173023-a47d5d9b-8926-4f9d-833b-1406661e1c82.png)
+![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/24553ccd-5aa0-41c4-b057-83894fab65a1)
+
 
 ### Benefits
 * Some people may prefer using static xaml views, and it can be an easier sell for some teams due familiarity, and the immediate availability of all community controls.
@@ -272,6 +273,62 @@ type MainViewModel(root: CompositionRoot) =
     member this.ShowFilePicker() = app.Dispatch(SetView FilePickerView)
 
     static member DesignVM = new MainViewModel(Design.stub)
+```
+
+### `BindList` and `BindList'`
+`BindList` binds a collection type on the model to a DynamicData.SourceList behind the scenes. Changes to the collection in the model are diffed and updated for you in the SourceList.
+`BindList'` also has a `map` parameter that allows you to transform items when they are added to the SourceList.
+
+```F#
+module Counter = 
+    type Model =  { Count: int; Actions: Action list }
+    // ...
+```
+```F#
+type CounterViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let local = 
+        Program.mkAvaloniaSimple init update
+        |> Program.mkStore
+
+    member this.Count = this.Bind(local, _.Count)
+    member this.Actions = this.BindList'(local, _.Actions, fun a -> { a with Description = $"** {a.Description} **" })
+```
+
+### `BindKeyedList`
+Binds a Map<'Key, 'Value> "keyed list" to an `ObservableCollection` behind the scenes. 
+Changes to the Map in the model are diffed based on the provided `getKey` function that returns the `'Key` for each item. 
+
+Also has an optional `update` parameter that allows you to provide a function to update the keyed item when a change is detected.
+Note that using the `update` parameter will cause every item in the list to be diffed for changes which will be more expensive.
+You can generally avoid having to use the `update` parameter by storing state changes on your mapped item (assuming you have mapped it to a view model that store its own state).
+
+Use `BindKeyedList` when you want to store a list of items that can be identified by one or more identifying keys.
+
+```F#
+module TodoApp = 
+    type Model = { Todos: Map<Guid, Todo> }
+    and Todo = { Id: Guid; Description: string; Completed: bool }
+    /// ...
+```
+
+```F#
+type TodoListViewModel() =
+    inherit ReactiveElmishViewModel()
+
+    let store = 
+        Program.mkAvaloniaProgram init update
+        |> Program.mkStore
+
+    member this.Todos = 
+        this.BindKeyedList(store, _.Todos
+            , map = fun todo -> new TodoViewModel(store, todo)
+            , getKey = fun todoVM -> todoVM.Id
+            //, update = fun todo todoVM -> todoVM.Update(todo)     // Optional
+            //, sortBy = fun todo -> todo.Completed                 // Optional
+        )
+
 ```
 
 ### `BindSourceList`
