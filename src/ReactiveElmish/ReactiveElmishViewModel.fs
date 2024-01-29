@@ -135,7 +135,7 @@ type ReactiveElmishViewModel() =
     /// <param name="map">A function that transforms the item when it is added.</param>
     /// <param name="getKey">A function that returns the identifier of the item.</param>
     /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
-    /// <param name="sortBy">A function that returns a sort expression.</param>
+    /// <param name="sortBy">An optional function that returns a sort expression.</param>
     member this.BindKeyedList<'Model, 'Msg, 'Key, 'Value, 'Mapped when 'Value : equality and 'Mapped : not struct and 'Key : comparison>(
             store: IStore<'Model, 'Msg>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
@@ -314,10 +314,17 @@ type ReactiveElmishViewModel() =
             propertySubscriptions.Add(vmPropertyName, disposable)
         readOnlyList
 
+    /// <summary>
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
-    member this.BindSourceCache<'Value, 'Key, 'Mapped>(
+    /// </summary>
+    /// <param name="sourceCache">A SourceCache to bind.</param>
+    /// <param name="map">A function that transforms the item when it is added.</param>
+    /// <param name="update">An optional function that updates the transformed item when it is updated in the model.</param>
+    /// <param name="sortBy">An optional function that returns a sort expression.</param>
+    member this.BindSourceCache<'Value, 'Key, 'Mapped when 'Value : not struct and 'Mapped : not struct>(
             sourceCache: IObservableCache<'Value, 'Key>, 
             map: 'Value -> 'Mapped,
+            ?update: 'Value -> 'Mapped -> unit,
             ?sortBy: 'Mapped -> 'IComparable,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
@@ -328,7 +335,12 @@ type ReactiveElmishViewModel() =
             let disposable = 
                 sourceCache
                     .Connect()
-                    .Transform(map)
+                    |> fun x -> 
+                        match update with
+                        | Some update ->
+                            x.TransformWithInlineUpdate(map, fun mapped value -> update value mapped)
+                        | None ->
+                            x.Transform(map)
                     |> fun x -> 
                         match sortBy with
                         | Some sortBy ->
