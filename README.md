@@ -409,7 +409,7 @@ This library gives you a multiple options for binding lists.
 
 #### `BindList` and `BindKeyedList`
 These methods allow you to use regular F# collections like `list` and `Map` in your model.
-These bindings will diff your collections for changes and then update the MVVM collection class (`SourceList` or `ObservableCollection`) for you.
+These bindings will diff your collection for changes and then update the backing MVVM collection class (`SourceList` or `ObservableCollection`) for you.
 * Pros: Allows you to use regular F# collections in your model.
 * Cons: Has to diff the collections to detect changes.
 
