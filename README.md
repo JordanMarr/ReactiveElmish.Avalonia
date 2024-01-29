@@ -400,6 +400,27 @@ type MainWindowViewModel() as this =
     member this.FileQueue = this.BindSourceCache(store.Model.FileQueue)
 ```
 
+## Tips for Binding Collections
+When binding a collection from your model to the view, special binding events must be raised to notify the view when an item has been added, removed or edited.
+These events make it possible to incrementally update a list without having to replace (and refresh) the entire list in the view everytime the contents of the list change.
+Examples of collection types that utilize these events are `ObservableCollection`, `DynamicData.SourceList` and `DynamicData.SourceCache`. 
+
+This library gives you a multiple options for binding lists.
+
+#### `BindList` and `BindKeyedList`
+These methods allow you to use regular F# collections like `list` and `Map` in your model.
+These bindings will diff your collections for changes and then update the MVVM collection class (`SourceList` or `ObservableCollection`) for you.
+* Pros: Allows you to use regular F# collections in your model.
+* Cons: Has to diff the collections to detect changes.
+
+#### `BindSourceList` and `BindSourceCache`
+These methods allow you to use the `DynamicData` MVVM collections directly in your model.
+* Pros: Utilizing these collections directly in your model is more performant because it does not require diffing for changes.
+* Cons: Some people may not want to "pollute" their Elmish model with MVVM specific classes. May also be unfamiliar to many users (which is why `BindList` and `BindKeyedList` were added).
+
+
+Personally, I would recommend using regular F# collections with `BindList` and `BindKeyedList` by default and only switching to `BindSourceList` and `BindSourceCache` if performance becomes an issue for a given form.
+
 # Composition Root
 The composition root is where you register your views/vms as well as any injected services.
 
