@@ -74,7 +74,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                     )
             
             match store with
-            | :? ISubject<'Model> as subject ->
+            | :? IHasSubject<'Model> as subject ->
                 subject.Subject.OnNext(store.Model) // prime the pump
             | _ ->
                 failwith "BindOnChanged requires the store to implement ISubject<'Model>"

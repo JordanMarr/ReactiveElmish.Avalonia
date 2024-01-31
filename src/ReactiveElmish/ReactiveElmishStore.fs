@@ -14,13 +14,14 @@ type IStore<'Model, 'Msg> =
     inherit IStore<'Model>
     abstract member Dispatch: 'Msg -> unit
 
-type ISubject<'Model> =
+type IHasSubject<'Model> =
     abstract member Subject: Subject<'Model> with get
 
 module Design = 
     /// Stubs a constructor injected dependency in design mode.
     let stub<'T> = Unchecked.defaultof<'T>
 
+/// An Elmish reactive store that can be used to store and update a model and send out an Rx stream of the model.
 type ReactiveElmishStore<'Model, 'Msg> () =
     let _modelSubject = new Subject<'Model>()
     let mutable _model: 'Model = Unchecked.defaultof<'Model>
@@ -32,7 +33,7 @@ type ReactiveElmishStore<'Model, 'Msg> () =
         member this.Model = _model
         member this.Observable = _modelSubject.AsObservable()        
     
-    interface ISubject<'Model> with
+    interface IHasSubject<'Model> with
         member this.Subject = _modelSubject
     
     member this.Dispatcher
@@ -58,4 +59,3 @@ type ReactiveElmishStore<'Model, 'Msg> () =
     interface IDisposable with
         member this.Dispose() =
             _modelSubject.Dispose()
-    
