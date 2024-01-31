@@ -28,7 +28,7 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = vm.BindList(store, modelProjectionSeq.Invoke, ?vmPropertyName = vmPropertyName)
 
-    member this.BindList'<'Model, 'ModelProjection, 'Mapped>(
+    member this.BindList<'Model, 'ModelProjection, 'Mapped>(
             store: IStore<'Model>, 
             modelProjectionSeq: Func<'Model, 'ModelProjection seq>,
             map: Func<'ModelProjection, 'Mapped>,
@@ -40,19 +40,19 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
             modelProjection: Func<'Model, Map<'Key, 'Value>>,
             map: Func<'Value, 'Mapped>,
             getKey: Func<'Mapped, 'Key>,
-            ?update: Action<'Value, 'Mapped>,
-            ?sortBy: Func<'Mapped, IComparable>,
+            [<Optional>] update: Action<'Value, 'Mapped>,
+            [<Optional>] sortBy: Func<'Mapped, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
-        ) = vm.BindKeyedList(store, modelProjection.Invoke, map.Invoke, getKey.Invoke, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        ) = vm.BindKeyedList(store, modelProjection.Invoke, map.Invoke, getKey.Invoke, update = update, sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     member this.BindKeyedList<'Model, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
             store: IStore<'Model>, 
             modelProjection: Func<'Model, Map<'Key, 'Value>>,
             getKey: Func<'Value, 'Key>,
-            ?update: Action<'Value, 'Value>,
-            ?sortBy: Func<'Value, IComparable>,
+            [<Optional>] update: Action<'Value, 'Value>,
+            [<Optional>] sortBy: Func<'Value, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string
-        ) = vm.BindKeyedList(store, modelProjection.Invoke, getKey.Invoke, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        ) = vm.BindKeyedList(store, modelProjection.Invoke, getKey.Invoke, update = update, sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     member this.BindSourceList<'T>(
             sourceList: ISourceList<'T>,
@@ -67,17 +67,17 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
 
     member this.BindSourceCache<'Value, 'Key>(
             sourceCache: IObservableCache<'Value, 'Key>, 
-            ?sortBy,
+            [<Optional>] sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
-        ) = vm.BindSourceCache(sourceCache, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        ) = vm.BindSourceCache(sourceCache, sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     member this.BindSourceCache<'Value, 'Key, 'Mapped when 'Value : not struct and 'Mapped : not struct>(
             sourceCache: IObservableCache<'Value, 'Key>, 
             map: Func<'Value, 'Mapped>,
-            ?update: Action<'Value, 'Mapped>,
-            ?sortBy,
+            [<Optional>] update: Action<'Value, 'Mapped>,
+            [<Optional>] sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
-        ) = vm.BindSourceCache(sourceCache, map.Invoke, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
+        ) = vm.BindSourceCache(sourceCache, map.Invoke, update = update, sortBy = sortBy, ?vmPropertyName = vmPropertyName)
 
     member this.Subscribe(observable, handler) = 
         vm.Subscribe(observable, handler)
