@@ -8,8 +8,9 @@ let src = __SOURCE_DIRECTORY__
 
 pipeline "Publish" {
 
-    stage "Build ReactiveElmish.Avalonia" {
+    stage "Restore and Build" {
         run $"dotnet restore {src}/ReactiveElmish.Avalonia/ReactiveElmish.Avalonia.fsproj"
+        run $"dotnet build {src}/ReactiveElmish/ReactiveElmish.fsproj --configuration Release"
         run $"dotnet build {src}/ReactiveElmish.Avalonia/ReactiveElmish.Avalonia.fsproj --configuration Release"
     }
 
