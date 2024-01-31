@@ -39,8 +39,9 @@ namespace WpfExample.ViewModels
 
     public class CounterViewModel : ReactiveObject
     {
-        private readonly CounterStore store = new CounterStore();
-        private ReactiveBindingsCS Rx => new ReactiveBindingsCS(this.RaisePropertyChanged);
+        readonly CounterStore store = new CounterStore();
+        public CounterViewModel() => Rx = new ReactiveBindingsCS(this.RaisePropertyChanged);                
+        ReactiveBindingsCS Rx { get; }
 
         public int Count => Rx.Bind(store, s => s.Count);
         public ReadOnlyCollection<Action> Actions => Rx.BindList(store, s => s.Actions);
