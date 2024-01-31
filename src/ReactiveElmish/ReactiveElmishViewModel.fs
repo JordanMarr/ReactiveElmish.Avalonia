@@ -23,8 +23,8 @@ type ReactiveElmishViewModel() =
         this.RaisePropertyChanged(propertyName.Value)
 
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `modelProjection` value changes.
-    member this.Bind<'Model, 'Msg, 'ModelProjection>(
-            store: IStore<'Model, 'Msg>, 
+    member this.Bind<'Model, 'ModelProjection>(
+            store: IStore<'Model>, 
             modelProjection: 'Model -> 'ModelProjection, 
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
@@ -49,8 +49,8 @@ type ReactiveElmishViewModel() =
     /// Binds a VM property to a `modelProjection` value and refreshes the VM property when the `onChanged` value changes.
     /// The `modelProjection` function will only be called when the `onChanged` value changes.
     /// `onChanged` usually returns a property value or a tuple of property values.
-    member this.BindOnChanged<'Model, 'Msg, 'OnChanged, 'ModelProjection>(
-            store: IStore<'Model, 'Msg>, 
+    member this.BindOnChanged<'Model, 'OnChanged, 'ModelProjection>(
+            store: IStore<'Model>, 
             onChanged: 'Model -> 'OnChanged,
             modelProjection: 'Model -> 'ModelProjection, 
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
@@ -68,7 +68,13 @@ type ReactiveElmishViewModel() =
                         printfn $"PropertyChanged: {vmPropertyName} by {this}"
                         #endif
                     )
-            (store :?> ReactiveElmishStore<'Model, 'Msg>).Subject.OnNext(store.Model) // prime the pump
+            
+            match store with
+            | :? ISubject<'Model> as subject ->
+                subject.Subject.OnNext(store.Model) // prime the pump
+            | _ ->
+                failwith "BindOnChanged requires the store to implement ISubject<'Model>"
+
             propertySubscriptions.Add(vmPropertyName, disposable)
 
         modelProjection store.Model
@@ -78,8 +84,8 @@ type ReactiveElmishViewModel() =
     /// </summary>
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjectionSeq">The model projection.</param>
-    member this.BindList<'Model, 'Msg, 'ModelProjection>(
-            store: IStore<'Model, 'Msg>, 
+    member this.BindList<'Model, 'ModelProjection>(
+            store: IStore<'Model>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
@@ -105,8 +111,8 @@ type ReactiveElmishViewModel() =
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjectionSeq">The model projection.</param>
     /// <param name="map">A function that transforms each item in the collection when it is added to the SourceList.</param>
-    member this.BindList'<'Model, 'Msg, 'ModelProjection, 'Mapped>(
-            store: IStore<'Model, 'Msg>, 
+    member this.BindList'<'Model, 'ModelProjection, 'Mapped>(
+            store: IStore<'Model>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             map: 'ModelProjection -> 'Mapped,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
@@ -136,8 +142,8 @@ type ReactiveElmishViewModel() =
     /// <param name="getKey">A function that returns the identifier of the item.</param>
     /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
     /// <param name="sortBy">An optional function that returns a sort expression.</param>
-    member this.BindKeyedList<'Model, 'Msg, 'Key, 'Value, 'Mapped when 'Value : equality and 'Mapped : not struct and 'Key : comparison>(
-            store: IStore<'Model, 'Msg>, 
+    member this.BindKeyedList<'Model, 'Key, 'Value, 'Mapped when 'Value : equality and 'Mapped : not struct and 'Key : comparison>(
+            store: IStore<'Model>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
             map: 'Value -> 'Mapped,
             getKey: 'Mapped -> 'Key,
@@ -244,8 +250,8 @@ type ReactiveElmishViewModel() =
     /// <param name="getKey">A function that returns the identifier of the item.</param>
     /// <param name="update">An optional function that updates the transformed item when it is updated in the model. NOTE: This is expensive as it requires all items to be compared.</param>
     /// <param name="sortBy">A function that returns a sort expression.</param>
-    member this.BindKeyedList<'Model, 'Msg, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
-            store: IStore<'Model, 'Msg>, 
+    member this.BindKeyedList<'Model, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
+            store: IStore<'Model>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
             getKey: 'Value -> 'Key,
             ?update: 'Value -> 'Value -> unit,

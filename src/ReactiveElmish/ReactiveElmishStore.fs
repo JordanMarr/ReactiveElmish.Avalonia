@@ -5,11 +5,17 @@ open System.Reactive.Subjects
 open System.Reactive.Linq
 open System
 
-type IStore<'Model, 'Msg> =
+type IStore<'Model> =
     inherit IDisposable       
-    abstract member Dispatch: 'Msg -> unit
     abstract member Model: 'Model with get
     abstract member Observable: IObservable<'Model>
+
+type IStore<'Model, 'Msg> =
+    inherit IStore<'Model>
+    abstract member Dispatch: 'Msg -> unit
+
+type ISubject<'Model> =
+    abstract member Subject: Subject<'Model> with get
 
 module Design = 
     /// Stubs a constructor injected dependency in design mode.
@@ -26,7 +32,8 @@ type ReactiveElmishStore<'Model, 'Msg> () =
         member this.Model = _model
         member this.Observable = _modelSubject.AsObservable()        
     
-    member internal this.Subject = _modelSubject
+    interface ISubject<'Model> with
+        member this.Subject = _modelSubject
     
     member this.Dispatcher
         with get() = _dispatch
