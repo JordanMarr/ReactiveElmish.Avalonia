@@ -1,4 +1,4 @@
-﻿#nowarn "0064" // FS0064: This construct causes code to be less generic than indicated by the type annotations.
+﻿
 namespace ReactiveElmish
 
 open System.ComponentModel
@@ -93,11 +93,16 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
-        let vmPropertyName = vmPropertyName.Value
         let mutable readOnlyList: ReadOnlyObservableCollection<'ModelProjection> = Unchecked.defaultof<_>
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+        if not (propertySubscriptions.ContainsKey vmPropertyName.Value) then
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
-            readOnlyList <- this.BindSourceList(sourceList, vmPropertyName)
+            // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
+            let disposable = 
+                sourceList
+                    .Connect()
+                    .Bind(&readOnlyList)
+                    .Subscribe()
+            propertySubscriptions.Add(vmPropertyName.Value, disposable)
 
             let disposable = 
                 store.Observable
@@ -115,7 +120,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjectionSeq">The model projection.</param>
     /// <param name="map">A function that transforms each item in the collection when it is added to the SourceList.</param>
-    member this.BindList'<'Model, 'ModelProjection, 'Mapped>(
+    member this.BindList<'Model, 'ModelProjection, 'Mapped>(
             store: IStore<'Model>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             map: 'ModelProjection -> 'Mapped,
@@ -125,7 +130,14 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
         let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = Unchecked.defaultof<_>
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
-            readOnlyList <- this.BindSourceList(sourceList, map, vmPropertyName)
+            // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
+            let disposable = 
+                sourceList
+                    .Connect()
+                    .Transform(map)
+                    .Bind(&readOnlyList)
+                    .Subscribe()
+            propertySubscriptions.Add(vmPropertyName, disposable)
 
             let disposable = 
                 store.Observable
@@ -151,8 +163,8 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             modelProjection: 'Model -> Map<'Key, 'Value>,
             map: 'Value -> 'Mapped,
             getKey: 'Mapped -> 'Key,
-            ?update: 'Value -> 'Mapped -> unit,
-            ?sortBy: 'Mapped -> IComparable,
+            ?update: Action<'Value, 'Mapped>,
+            ?sortBy: Func<'Mapped, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
@@ -182,7 +194,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                         let newItem = currentModelMap[key]
                         let oldItem = lastModelMap[key]
                         if newItem <> oldItem then
-                            update newItem itemVM
+                            update.Invoke(newItem, itemVM)
                 )
 
                 // Get items from the currentModelMap that are missing from the lastModelMap
@@ -226,7 +238,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                 sortBy
                 |> Option.iter (fun sortBy ->
                     observableCollection
-                    |> Seq.sortBy sortBy
+                    |> Seq.sortBy sortBy.Invoke
                     |> Seq.iteri (fun idx item -> observableCollection[idx] <- item)
                 )
 
@@ -258,8 +270,8 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             store: IStore<'Model>, 
             modelProjection: 'Model -> Map<'Key, 'Value>,
             getKey: 'Value -> 'Key,
-            ?update: 'Value -> 'Value -> unit,
-            ?sortBy: 'Value -> IComparable,
+            ?update: Action<'Value, 'Value>,
+            ?sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName: string
         ) = 
         this.BindKeyedList(store = store, modelProjection = modelProjection, map = id, getKey = getKey, ?update = update, ?sortBy = sortBy, ?vmPropertyName = vmPropertyName)
@@ -303,7 +315,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
     member this.BindSourceCache<'Value, 'Key>(
             sourceCache: IObservableCache<'Value, 'Key>, 
-            ?sortBy: 'Value -> 'IComparable,
+            ?sortBy: Func<'Value, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
@@ -334,8 +346,8 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
     member this.BindSourceCache<'Value, 'Key, 'Mapped when 'Value : not struct and 'Mapped : not struct>(
             sourceCache: IObservableCache<'Value, 'Key>, 
             map: 'Value -> 'Mapped,
-            ?update: 'Value -> 'Mapped -> unit,
-            ?sortBy: 'Mapped -> 'IComparable,
+            ?update: Action<'Value, 'Mapped>,
+            ?sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
@@ -348,7 +360,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                     |> fun x -> 
                         match update with
                         | Some update ->
-                            x.TransformWithInlineUpdate(map, fun mapped value -> update value mapped)
+                            x.TransformWithInlineUpdate(map, fun mapped value -> update.Invoke(value, mapped))
                         | None ->
                             x.Transform(map)
                     |> fun x -> 

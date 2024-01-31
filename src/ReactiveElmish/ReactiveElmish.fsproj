@@ -27,7 +27,7 @@
 		<Compile Include="ReactiveElmishStore.fs" />
 		<Compile Include="ReactiveStore.fs" />
 		<Compile Include="ReactiveElmishViewModel.fs" />
-		<Compile Include="CSharpSubscriptions.fs" />
+		<Compile Include="ReactiveBindingsCS.fs" />
 	</ItemGroup>
 
 	<ItemGroup>
