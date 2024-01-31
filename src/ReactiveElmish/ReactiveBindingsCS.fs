@@ -8,6 +8,7 @@ open DynamicData
 /// Allows using an IStore<'Model> + ReactiveElmishViewModel binding methods from an existing view model using C# Action and Func delegates.
 type ReactiveBindingsCS(onPropertyChanged: Action<string>) = 
     let vm = new ReactiveElmishViewModel(onPropertyChanged.Invoke)
+    let opt = Option.ofObj
 
     member this.Bind<'Model, 'ModelProjection>(
             store: IStore<'Model>, 
@@ -43,7 +44,7 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
             [<Optional>] update: Action<'Value, 'Mapped>,
             [<Optional>] sortBy: Func<'Mapped, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] vmPropertyName
-        ) = vm.BindKeyedList(store, modelProjection.Invoke, map.Invoke, getKey.Invoke, update = update, sortBy = sortBy, vmPropertyName = vmPropertyName)
+        ) = vm.BindKeyedList(store, modelProjection.Invoke, map.Invoke, getKey.Invoke, ?update = opt update, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
 
     member this.BindKeyedList<'Model, 'Key, 'Value when 'Value: equality and 'Value : not struct and 'Key : comparison>(
             store: IStore<'Model>, 
@@ -52,7 +53,7 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
             [<Optional>] update: Action<'Value, 'Value>,
             [<Optional>] sortBy: Func<'Value, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] vmPropertyName: string
-        ) = vm.BindKeyedList(store, modelProjection.Invoke, getKey.Invoke, update = update, sortBy = sortBy, vmPropertyName = vmPropertyName)
+        ) = vm.BindKeyedList(store, modelProjection.Invoke, getKey.Invoke, ?update = opt update, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
 
     member this.BindSourceList<'T>(
             sourceList: ISourceList<'T>,
@@ -69,7 +70,7 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
             sourceCache: IObservableCache<'Value, 'Key>, 
             [<Optional>] sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] vmPropertyName
-        ) = vm.BindSourceCache(sourceCache, sortBy = sortBy, vmPropertyName = vmPropertyName)
+        ) = vm.BindSourceCache(sourceCache, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
 
     member this.BindSourceCache<'Value, 'Key, 'Mapped when 'Value : not struct and 'Mapped : not struct>(
             sourceCache: IObservableCache<'Value, 'Key>, 
@@ -77,7 +78,7 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
             [<Optional>] update: Action<'Value, 'Mapped>,
             [<Optional>] sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] vmPropertyName
-        ) = vm.BindSourceCache(sourceCache, map.Invoke, update = update, sortBy = sortBy, vmPropertyName = vmPropertyName)
+        ) = vm.BindSourceCache(sourceCache, map.Invoke, ?update = opt update, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
 
     member this.Subscribe(observable, handler) = 
         vm.Subscribe(observable, handler)
