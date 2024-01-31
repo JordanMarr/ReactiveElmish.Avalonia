@@ -1,5 +1,4 @@
-﻿
-namespace ReactiveElmish
+﻿namespace ReactiveElmish
 
 open System.ComponentModel
 open System.Reactive.Linq
@@ -14,13 +13,15 @@ open ReactiveUI
 
 [<AutoOpen>]
 module private Utils = 
-    let readOnlyCollection<'T>() = new ReadOnlyObservableCollection<'T>(new ObservableCollection<'T>())
+    let readOnlyCollection<'T>() = 
+        new ReadOnlyObservableCollection<'T>(new ObservableCollection<'T>())
 
 type ReactiveElmishViewModel(onPropertyChanged: string -> unit) = 
     inherit ReactiveUI.ReactiveObject()
 
     let disposables = ResizeArray<IDisposable>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
+    let propertyCollections = Dictionary<string, obj>()
 
     new() as this =
         let opc propertyName = this.RaisePropertyChanged(propertyName)
@@ -97,26 +98,26 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
-        let mutable readOnlyList: ReadOnlyObservableCollection<'ModelProjection> = readOnlyCollection()
-        if not (propertySubscriptions.ContainsKey vmPropertyName.Value) then
+        if not (propertyCollections.ContainsKey vmPropertyName.Value) then
+            let mutable readOnlyList = readOnlyCollection<'ModelProjection>()
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
-            // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
-            let disposable = 
-                sourceList
-                    .Connect()
-                    .Bind(&readOnlyList)
-                    .Subscribe()
-            propertySubscriptions.Add(vmPropertyName.Value, disposable)
+            sourceList
+                .Connect()
+                .Bind(&readOnlyList)
+                .Subscribe()
+                |> this.AddDisposable
 
-            let disposable = 
-                store.Observable
-                    .Select(modelProjectionSeq)
-                    //.DistinctUntilChanged()
-                    .Subscribe(sourceList.EditDiff)
+            store.Observable
+                .Select(modelProjectionSeq)
+                //.DistinctUntilChanged()
+                .Subscribe(sourceList.EditDiff)
+                |> this.AddDisposable
 
             this.AddDisposable(sourceList)
-            this.AddDisposable(disposable)
-        readOnlyList
+            propertyCollections.Add(vmPropertyName.Value, readOnlyList)
+            readOnlyList
+        else 
+            propertyCollections[vmPropertyName.Value] :?> ReadOnlyObservableCollection<'ModelProjection>
 
     /// <summary>
     /// Binds a model colleciton property to a DynamicData SourceList.
@@ -131,27 +132,28 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = readOnlyCollection()
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+        if not (propertyCollections.ContainsKey vmPropertyName) then
+            let mutable readOnlyList = readOnlyCollection<'Mapped>()
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
-            // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
-            let disposable = 
-                sourceList
-                    .Connect()
-                    .Transform(map)
-                    .Bind(&readOnlyList)
-                    .Subscribe()
-            propertySubscriptions.Add(vmPropertyName, disposable)
+            
+            sourceList
+                .Connect()
+                .Transform(map)
+                .Bind(&readOnlyList)
+                .Subscribe()
+                |> this.AddDisposable
 
-            let disposable = 
-                store.Observable
-                    .Select(modelProjectionSeq)
-                    //.DistinctUntilChanged()
-                    .Subscribe(sourceList.EditDiff)
+            store.Observable
+                .Select(modelProjectionSeq)
+                //.DistinctUntilChanged()
+                .Subscribe(sourceList.EditDiff)
+                |> this.AddDisposable
 
             this.AddDisposable(sourceList)
-            this.AddDisposable(disposable)
-        readOnlyList
+            propertyCollections.Add(vmPropertyName, readOnlyList)
+            readOnlyList
+        else 
+            propertyCollections[vmPropertyName] :?> ReadOnlyObservableCollection<'Mapped>
 
     /// <summary>
     /// Binds a model Map<'Key, 'Value> property to an ObservableCollection.
@@ -172,12 +174,9 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable lastModelMap: Map<'Key, 'Value> = Unchecked.defaultof<_>
-        let mutable observableCollection = new ObservableCollection<'Mapped>()
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
-            observableCollection <- ObservableCollection()
-            lastModelMap <- Map.empty
-            
+        if not (propertyCollections.ContainsKey vmPropertyName) then
+            let mutable lastModelMap: Map<'Key, 'Value> = Map.empty
+            let mutable observableCollection = ObservableCollection()
             let mapToObservableCollection (currentModelMap: Map<'Key, 'Value>) = 
 
                 // Apply updates to existing items (excluding new or removed items)
@@ -259,8 +258,11 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                     .DistinctUntilChanged()
                     .Subscribe(mapToObservableCollection)
 
-            propertySubscriptions.Add(vmPropertyName, disposable)
-        observableCollection
+            this.AddDisposable disposable
+            propertyCollections.Add(vmPropertyName, observableCollection)
+            observableCollection
+        else 
+            propertyCollections[vmPropertyName] :?> ObservableCollection<'Mapped>
 
     /// <summary>
     /// Binds a model Map<'Key, 'Value> property to an ObservableCollection.
@@ -286,16 +288,19 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'T> = readOnlyCollection()
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+        if not (propertyCollections.ContainsKey vmPropertyName) then
+            let mutable readOnlyList = readOnlyCollection<'T>()
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 
                 sourceList
                     .Connect()
                     .Bind(&readOnlyList)
                     .Subscribe()
-            propertySubscriptions.Add(vmPropertyName, disposable)
-        readOnlyList
+            this.AddDisposable disposable
+            propertyCollections.Add(vmPropertyName, readOnlyList)
+            readOnlyList
+        else
+            propertyCollections[vmPropertyName] :?> ReadOnlyObservableCollection<'T>
 
     /// Binds a VM property to a 'Model DynamicData.ISourceList<'T> property.
     member this.BindSourceList<'T, 'Mapped>(
@@ -304,8 +309,8 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = readOnlyCollection()
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+        if not (propertyCollections.ContainsKey vmPropertyName) then
+            let mutable readOnlyList = readOnlyCollection<'Mapped>()
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 
                 sourceList
@@ -313,8 +318,11 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                     .Transform(map)
                     .Bind(&readOnlyList)
                     .Subscribe()
-            propertySubscriptions.Add(vmPropertyName, disposable)
-        readOnlyList
+            this.AddDisposable disposable
+            propertyCollections.Add(vmPropertyName, readOnlyList)
+            readOnlyList
+        else
+            propertyCollections[vmPropertyName] :?> ReadOnlyObservableCollection<'Mapped>
 
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
     member this.BindSourceCache<'Value, 'Key>(
@@ -323,8 +331,8 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Value> = readOnlyCollection()
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+        if not (propertyCollections.ContainsKey vmPropertyName) then
+            let mutable readOnlyList = readOnlyCollection<'Value>()
             // Creates a subscription to a SourceCache and stores it in a dictionary.
             let disposable = 
                 sourceCache
@@ -337,8 +345,11 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                             x.Sort(Comparer.Create(fun _ _ -> 0))
                     |> _.Bind(&readOnlyList)
                     |> _.Subscribe()
-            propertySubscriptions.Add(vmPropertyName, disposable)
-        readOnlyList
+            this.AddDisposable disposable
+            propertyCollections.Add(vmPropertyName, readOnlyList)
+            readOnlyList
+        else
+            propertyCollections[vmPropertyName] :?> ReadOnlyObservableCollection<'Value>
 
     /// <summary>
     /// Binds a VM property to a 'Model DynamicData.IObservableCache<'Value, 'Key> property.
@@ -354,9 +365,9 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             ?sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
-        let vmPropertyName = vmPropertyName.Value        
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = readOnlyCollection()
-        if not (propertySubscriptions.ContainsKey vmPropertyName) then
+        let vmPropertyName = vmPropertyName.Value
+        if not (propertyCollections.ContainsKey vmPropertyName) then
+            let mutable readOnlyList = readOnlyCollection<'Mapped>()
             // Creates a subscription to a SourceCache and stores it in a dictionary.
             let disposable = 
                 sourceCache
@@ -375,8 +386,11 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                             x.Sort(Comparer.Create(fun _ _ -> 0))
                     |> _.Bind(&readOnlyList)
                     |> _.Subscribe()
-            propertySubscriptions.Add(vmPropertyName, disposable)
-        readOnlyList
+            this.AddDisposable disposable
+            propertyCollections.Add(vmPropertyName, readOnlyList)
+            readOnlyList
+        else 
+            propertyCollections[vmPropertyName] :?> ReadOnlyObservableCollection<'Mapped>
 
     /// Subscribes to an IObservable<> and adds the subscription to the list of disposables.
     member this.Subscribe(observable: IObservable<'T>, handler: 'T -> unit) =
