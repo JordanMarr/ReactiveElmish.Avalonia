@@ -58,3 +58,4 @@ type ReactiveElmishStore<'Model, 'Msg> () =
     interface IDisposable with
         member this.Dispose() =
             _modelSubject.Dispose()
+    

@@ -12,11 +12,15 @@ open DynamicData
 open System.Collections.ObjectModel
 open ReactiveUI
 
-type ReactiveElmishViewModel() = 
+type ReactiveElmishViewModel(onPropertyChanged: string -> unit) = 
     inherit ReactiveUI.ReactiveObject()
 
     let disposables = ResizeArray<IDisposable>()
     let propertySubscriptions = Dictionary<string, IDisposable>()
+
+    new() as this =
+        let opc propertyName = this.RaisePropertyChanged(propertyName)
+        new ReactiveElmishViewModel(opc)
 
     /// Fires the `PropertyChanged` event for the given property name. Uses the caller's name if no property name is given.
     member this.OnPropertyChanged([<CallerMemberName; Optional; DefaultParameterValue("")>] ?propertyName: string) =
@@ -36,7 +40,7 @@ type ReactiveElmishViewModel() =
                     .DistinctUntilChanged(modelProjection)
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
-                        this.OnPropertyChanged(vmPropertyName)
+                        onPropertyChanged(vmPropertyName)
                         #if DEBUG
                         printfn $"PropertyChanged: {vmPropertyName} by {this}"
                         #endif
@@ -63,7 +67,7 @@ type ReactiveElmishViewModel() =
                     .DistinctUntilChanged(onChanged)
                     .Subscribe(fun x -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
-                        this.OnPropertyChanged(vmPropertyName)
+                        onPropertyChanged(vmPropertyName)
                         #if DEBUG
                         printfn $"PropertyChanged: {vmPropertyName} by {this}"
                         #endif
@@ -372,3 +376,4 @@ type ReactiveElmishViewModel() =
             disposables |> Seq.iter _.Dispose()
             propertySubscriptions.Values |> Seq.iter _.Dispose()
             propertySubscriptions.Clear()
+

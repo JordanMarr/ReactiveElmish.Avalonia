@@ -26,6 +26,7 @@
 		<Compile Include="DynamicData.fs" />
 		<Compile Include="ReactiveElmishStore.fs" />
 		<Compile Include="ReactiveElmishViewModel.fs" />
+		<Compile Include="CSharpSubscriptions.fs" />
 	</ItemGroup>
 
 	<ItemGroup>
