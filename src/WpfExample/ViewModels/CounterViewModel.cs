@@ -29,7 +29,7 @@ namespace WpfExample.ViewModels
         Action[] Actions
     )
     {
-        public static CounterModel Init() => new CounterModel(0, []);
+        public static CounterModel Init() => new CounterModel(0, [new Action("Initialized", DateTime.Now)]);
     }
 
     public record Action(

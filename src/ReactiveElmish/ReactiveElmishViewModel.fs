@@ -12,6 +12,10 @@ open DynamicData
 open System.Collections.ObjectModel
 open ReactiveUI
 
+[<AutoOpen>]
+module private Utils = 
+    let readOnlyCollection<'T>() = new ReadOnlyObservableCollection<'T>(new ObservableCollection<'T>())
+
 type ReactiveElmishViewModel(onPropertyChanged: string -> unit) = 
     inherit ReactiveUI.ReactiveObject()
 
@@ -93,7 +97,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
-        let mutable readOnlyList: ReadOnlyObservableCollection<'ModelProjection> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'ModelProjection> = readOnlyCollection()
         if not (propertySubscriptions.ContainsKey vmPropertyName.Value) then
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
@@ -127,7 +131,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = readOnlyCollection()
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
@@ -169,7 +173,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
         ) = 
         let vmPropertyName = vmPropertyName.Value
         let mutable lastModelMap: Map<'Key, 'Value> = Unchecked.defaultof<_>
-        let mutable observableCollection: ObservableCollection<'Mapped> = Unchecked.defaultof<_>
+        let mutable observableCollection = new ObservableCollection<'Mapped>()
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             observableCollection <- ObservableCollection()
             lastModelMap <- Map.empty
@@ -282,7 +286,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'T> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'T> = readOnlyCollection()
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 
@@ -300,7 +304,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = readOnlyCollection()
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a ISourceList<'T> and stores it in a dictionary.
             let disposable = 
@@ -319,7 +323,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Value> = Unchecked.defaultof<_>
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Value> = readOnlyCollection()
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a SourceCache and stores it in a dictionary.
             let disposable = 
@@ -350,8 +354,8 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             ?sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
-        let vmPropertyName = vmPropertyName.Value
-        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = Unchecked.defaultof<_>
+        let vmPropertyName = vmPropertyName.Value        
+        let mutable readOnlyList: ReadOnlyObservableCollection<'Mapped> = readOnlyCollection()
         if not (propertySubscriptions.ContainsKey vmPropertyName) then
             // Creates a subscription to a SourceCache and stores it in a dictionary.
             let disposable = 
