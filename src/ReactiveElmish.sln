@@ -19,6 +19,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ReactiveElmish", "ReactiveE
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ReactiveElmish.Wpf", "ReactiveElmish.Wpf\ReactiveElmish.Wpf.fsproj", "{8E7D1F76-A45C-4151-96BD-BFEAECAA4419}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfExample", "WpfExample\WpfExample.csproj", "{E612993E-238C-40C7-A39C-DA021DBF6D9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,12 +43,17 @@ Global
 		{8E7D1F76-A45C-4151-96BD-BFEAECAA4419}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E7D1F76-A45C-4151-96BD-BFEAECAA4419}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E7D1F76-A45C-4151-96BD-BFEAECAA4419}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E612993E-238C-40C7-A39C-DA021DBF6D9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E612993E-238C-40C7-A39C-DA021DBF6D9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E612993E-238C-40C7-A39C-DA021DBF6D9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E612993E-238C-40C7-A39C-DA021DBF6D9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B5F6F996-01DD-410D-9D3B-A1E91A3D5CF4} = {B1F3D2D8-D07C-4115-ACAD-5CD90ED1A04A}
+		{E612993E-238C-40C7-A39C-DA021DBF6D9F} = {B1F3D2D8-D07C-4115-ACAD-5CD90ED1A04A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E4A43E5C-8FF0-434B-8C5E-AB656A275C4F}
