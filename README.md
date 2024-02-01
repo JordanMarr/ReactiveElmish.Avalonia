@@ -6,6 +6,7 @@ _Elmish Stores + Custom Bindings + Avalonia Static Views_
 * Create an [Elmish Store](#elmish-stores) to manage global app state between views.
 * Create an [Elmish Store](#elmish-stores) to manage local view state.
 * Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
+* Works with F# and C#
 
 _This example shows using an Elmish Store to manage local view state:_
 ![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/d624f11b-1caf-4a41-a7a2-3ee343516405)
@@ -503,3 +504,47 @@ type App() =
 # Sample Project
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
 Please view the [AvaloniaExample project](https://github.com/JordanMarr/ReactiveElmish.Avalonia/tree/main/src/Samples/AvaloniaExample).
+
+
+# C# Support
+* The `ReactiveElmish` package can be used by F# or C# in other MVVM platforms such as WPF.
+* C# can use an `ReactiveElmishStore` in F#, or a more simple `ReactiveStore` in C#.
+
+Here is a sample `CounterViewModel` in C#:
+
+```C#
+namespace WpfExample.ViewModels;
+
+public class CounterStore() : ReactiveStore<CounterModel>(CounterModel.Init())
+{
+    public void Increment() => 
+        Update(m => m with { Count = m.Count + 1, Actions = m.Actions.Append(new Action("Increment", DateTime.Now)).ToArray() });
+
+    public void Decrement() => 
+        Update(m => m with { Count = m.Count - 1, Actions = m.Actions.Append(new Action("Decrement", DateTime.Now)).ToArray() });
+
+    public void Reset() => 
+        Update(m => CounterModel.Init());
+}
+
+public record CounterModel(int Count, Action[] Actions) 
+{
+    public static CounterModel Init() => new CounterModel(0, [new Action("Initialized", DateTime.Now)]);
+}
+
+public record Action(string Description, DateTime Timestamp);
+
+public class CounterViewModel : ReactiveObject
+{
+    readonly CounterStore store = new CounterStore();
+    public CounterViewModel() => Rx = new ReactiveBindingsCS(this.RaisePropertyChanged);                
+    ReactiveBindingsCS Rx { get; }
+
+    public int Count => Rx.Bind(store, s => s.Count);
+    public ReadOnlyCollection<Action> Actions => Rx.BindList(store, s => s.Actions);
+    public IRelayCommand Increment { get => new RelayCommand(store.Increment); }
+    public IRelayCommand Decrement { get => new RelayCommand(store.Decrement); }
+    public IRelayCommand Reset { get => new RelayCommand(store.Reset); }
+}
+```
+
