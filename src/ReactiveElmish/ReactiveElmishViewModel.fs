@@ -16,6 +16,7 @@ module private Utils =
     let readOnlyCollection<'T>() = 
         new ReadOnlyObservableCollection<'T>(new ObservableCollection<'T>())
 
+[<AllowNullLiteral>]
 type ReactiveElmishViewModel(onPropertyChanged: string -> unit) = 
     inherit ReactiveUI.ReactiveObject()
 
