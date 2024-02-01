@@ -16,8 +16,8 @@
 		<Description>F# bindings for using Elmish in Avalonia</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/JordanMarr/ReactiveElmish</PackageProjectUrl>
-		<PackageTags>F# fsharp Elmish MVU MVVM</PackageTags>
-		<Version>1.1.0-beta.5</Version>
+		<PackageTags>F# C# fsharp Elmish MVU MVVM</PackageTags>
+		<Version>1.2.0</Version>
 		<!--Turn on warnings for unused values (arguments and let bindings) -->
 		<OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
 	</PropertyGroup>
