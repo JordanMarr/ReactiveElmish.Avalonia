@@ -6,7 +6,7 @@ _Elmish Stores + Custom Bindings + Avalonia Static Views_
 * Create an [Elmish Store](#elmish-stores) to manage global app state between views.
 * Create an [Elmish Store](#elmish-stores) to manage local view state.
 * Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
-* Works with F# and C#
+* Also [supports C#](#c-support)
 
 _This example shows using an Elmish Store to manage local view state:_
 ![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/d624f11b-1caf-4a41-a7a2-3ee343516405)
