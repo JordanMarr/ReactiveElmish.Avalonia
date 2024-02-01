@@ -509,6 +509,15 @@ Please view the [AvaloniaExample project](https://github.com/JordanMarr/Reactive
 # C# Support
 * The `ReactiveElmish` package can be used by F# or C# in other MVVM platforms such as WPF.
 * C# can use an `ReactiveElmishStore` in F#, or a more simple `ReactiveStore` in C#.
+* Can be easily added to any `ViewModelBase` class (see `Rx` property in view model example below) by initializing an instance of `ReactiveBindingsCS`
+  * If using a ReactiveUI view model base class, such as `ReactiveObject`, initialize like this:
+    ```C#
+    new ReactiveBindingsCS(this.RaisePropertyChanged);
+    ```
+  * If using a standard INotifyPropertyChanged, pass in a `OnPropertyChanged` method:
+    ```C#
+    new ReactiveBindingsCS(this.OnPropertyChanged);
+    ```
 
 Here is a sample `CounterViewModel` in C#:
 
