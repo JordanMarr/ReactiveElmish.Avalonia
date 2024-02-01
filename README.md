@@ -8,7 +8,7 @@ _Elmish Stores + Custom Bindings + Avalonia Static Views_
 * Use the [Custom Bindings](#view-model-bindings) in the `ReactiveElmishViewModel` base class to bind data from your Elmish Stores to your Views.
 
 _This example shows using an Elmish Store to manage local view state:_
-![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/335a316c-485f-435b-96bd-7f30ace74a48)
+![image](https://github.com/JordanMarr/ReactiveElmish.Avalonia/assets/1030435/d624f11b-1caf-4a41-a7a2-3ee343516405)
 
 ### Avalonia Static Views
 Create views using Avalonia xaml.
@@ -275,9 +275,9 @@ type MainViewModel(root: CompositionRoot) =
     static member DesignVM = new MainViewModel(Design.stub)
 ```
 
-### `BindList` and `BindList'`
+### `BindList`
 `BindList` binds a collection type on the model to a DynamicData.SourceList behind the scenes. Changes to the collection in the model are diffed and updated for you in the SourceList.
-`BindList'` also has a `map` parameter that allows you to transform items when they are added to the SourceList.
+`BindList` also has an optional `map` parameter that allows you to transform items when they are added to the SourceList.
 
 ```F#
 module Counter = 
@@ -293,7 +293,7 @@ type CounterViewModel() =
         |> Program.mkStore
 
     member this.Count = this.Bind(local, _.Count)
-    member this.Actions = this.BindList'(local, _.Actions, fun a -> { a with Description = $"** {a.Description} **" })
+    member this.Actions = this.BindList(local, _.Actions, map = fun a -> { a with Description = $"** {a.Description} **" })
 ```
 
 ### `BindKeyedList`
