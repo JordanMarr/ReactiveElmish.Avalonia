@@ -17,7 +17,7 @@ type App() =
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->         
-            let appRoot = AppCompositionRoot()
+            let appRoot = Root.Current
             desktop.MainWindow <- appRoot.GetView<ViewModels.MainViewModel>() :?> Window
         | _ -> 
             // leave this here for design view re-renders
