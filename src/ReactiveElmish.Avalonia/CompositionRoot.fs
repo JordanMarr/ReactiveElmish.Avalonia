@@ -76,4 +76,22 @@ type CompositionRoot() as this =
         | None ->
             failwithf $"No view registered for VM type {vmType.FullName}"
 
-    
+    ///Check to see if a view has been registered for the given view model
+    member this.HasViewFor(vm: 'ViewModel & #ReactiveElmishViewModel) =
+        let vmType = vm.GetType()
+        viewRegistry.Value |> Map.tryFind(VM.Key vmType) |> Option.isSome
+
+    ///Gets or creates a view for a given view model instance and binds it
+    member this.GetViewFor(vm: 'ViewModel & #ReactiveElmishViewModel) =
+        let vmType = vm.GetType()
+        match viewRegistry.Value |> Map.tryFind (VM.Key vmType) with
+        | Some registration -> 
+            match registration with
+            | SingletonView view ->
+                if view.DataContext = null then
+                    ViewBinder.bind (vm, view) |> snd
+                else
+                    view
+            | TransientView createView -> ViewBinder.bindWithDisposeOnViewUnload (vm, createView()) |> snd
+        | None ->
+            failwithf $"No view registered for VM type {vmType.FullName}"

@@ -24,3 +24,7 @@ type AppCompositionRoot() =
             VM.Key<FilePickerViewModel>(), View.Singleton<FilePickerView>()
         ]
         
+module Root =
+    let private current = lazy AppCompositionRoot()
+    let public Current = current.Value         
+        
