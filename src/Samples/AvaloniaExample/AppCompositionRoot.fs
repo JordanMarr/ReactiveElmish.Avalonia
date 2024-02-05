@@ -23,8 +23,8 @@ type AppCompositionRoot() =
             VM.Key<ChartViewModel>(), View.Singleton<ChartView>()
             VM.Key<FilePickerViewModel>(), View.Singleton<FilePickerView>()
         ]
+
+    static member private instanceLazy = lazy AppCompositionRoot()
+    static member Instance = AppCompositionRoot.instanceLazy.Value
         
-module Root =
-    let private current = lazy AppCompositionRoot()
-    let public Current = current.Value         
         

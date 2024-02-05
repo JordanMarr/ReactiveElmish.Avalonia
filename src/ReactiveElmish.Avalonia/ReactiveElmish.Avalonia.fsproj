@@ -17,7 +17,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/JordanMarr/ReactiveElmish.Avalonia</PackageProjectUrl>
 		<PackageTags>Avalonia F# fsharp Elmish Elm</PackageTags>
-		<Version>1.2.0</Version>
+		<Version>1.2.1</Version>
 		<!--Turn on warnings for unused values (arguments and let bindings) -->
 		<OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>

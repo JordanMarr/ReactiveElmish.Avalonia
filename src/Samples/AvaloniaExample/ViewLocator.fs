@@ -12,7 +12,7 @@ type ViewLocator() =
         
         member this.Build(data) =
             match data with
-            | :? ReactiveElmishViewModel as reactiveViewModel -> Root.Current.GetViewFor(reactiveViewModel)
+            | :? ReactiveElmishViewModel as reactiveViewModel -> AppCompositionRoot.Instance.GetViewFor(reactiveViewModel)
             | _ ->
                 let t = data.GetType()
                 let viewName = t.FullName.Replace("ViewModels", "Views").Replace("ViewModel", "View")
@@ -34,7 +34,7 @@ type ViewLocator() =
                 
         member this.Match(data) = 
             match data with
-            | :? ReactiveElmishViewModel as reactiveViewModel -> Root.Current.HasViewFor(reactiveViewModel)
+            | :? ReactiveElmishViewModel as vm -> AppCompositionRoot.Instance.HasViewFor(vm)
             | :? ReactiveUI.ReactiveObject -> true
             | _ -> false
 
