@@ -362,6 +362,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
     member this.BindSourceCache<'Value, 'Key, 'Mapped when 'Value : not struct and 'Mapped : not struct>(
             sourceCache: IObservableCache<'Value, 'Key>, 
             map: 'Value -> 'Mapped,
+            ?filter: Func<'Value, bool>,
             ?update: Action<'Value, 'Mapped>,
             ?sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
@@ -373,6 +374,12 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             let disposable = 
                 sourceCache
                     .Connect()
+                    |> fun x -> 
+                        match filter with
+                        | Some filter ->
+                            x.Filter(filter)
+                        | None -> 
+                            x
                     |> fun x -> 
                         match update with
                         | Some update ->

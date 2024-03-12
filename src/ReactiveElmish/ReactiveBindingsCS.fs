@@ -75,10 +75,11 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
     member this.BindSourceCache<'Value, 'Key, 'Mapped when 'Value : not struct and 'Mapped : not struct>(
             sourceCache: IObservableCache<'Value, 'Key>, 
             map: Func<'Value, 'Mapped>,
+            [<Optional>] filter: Func<'Value, bool>,
             [<Optional>] update: Action<'Value, 'Mapped>,
             [<Optional>] sortBy,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] vmPropertyName
-        ) = vm.BindSourceCache(sourceCache, map.Invoke, ?update = opt update, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
+        ) = vm.BindSourceCache(sourceCache, map.Invoke, ?filter = opt filter, ?update = opt update, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
 
     member this.Subscribe(observable, handler) = 
         vm.Subscribe(observable, handler)
