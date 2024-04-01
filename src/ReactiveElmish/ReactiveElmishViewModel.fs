@@ -97,6 +97,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
     member this.BindList<'Model, 'ModelProjection>(
             store: IStore<'Model>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
+            ?sortBy: Func<'ModelProjection, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         if not (propertyCollections.ContainsKey vmPropertyName.Value) then
@@ -104,7 +105,11 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             let sourceList = SourceList.createFrom (modelProjectionSeq store.Model)
             sourceList
                 .Connect()
-                .Bind(&readOnlyList)
+                |> fun x -> 
+                    match sortBy with
+                    | Some sortBy -> x.Sort(DynamicData.Binding.SortExpressionComparer.Ascending(sortBy))
+                    | None -> x.Sort(Comparer.Create(fun _ _ -> 0))
+                |> _.Bind(&readOnlyList)
                 .Subscribe()
                 |> this.AddDisposable
 
@@ -130,6 +135,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             store: IStore<'Model>, 
             modelProjectionSeq: 'Model -> 'ModelProjection seq,
             map: 'ModelProjection -> 'Mapped,
+            ?sortBy: Func<'Mapped, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] ?vmPropertyName
         ) = 
         let vmPropertyName = vmPropertyName.Value
@@ -140,7 +146,11 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             sourceList
                 .Connect()
                 .Transform(map)
-                .Bind(&readOnlyList)
+                |> fun x -> 
+                    match sortBy with
+                    | Some sortBy -> x.Sort(DynamicData.Binding.SortExpressionComparer.Ascending(sortBy))
+                    | None -> x.Sort(Comparer.Create(fun _ _ -> 0))
+                |> _.Bind(&readOnlyList)
                 .Subscribe()
                 |> this.AddDisposable
 

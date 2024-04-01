@@ -48,7 +48,13 @@ type CounterViewModel() =
         |> Program.mkStore
 
     member this.Count = this.Bind(local, _.Count)
-    member this.Actions = this.BindList(local, _.Actions, map = fun a -> { a with Description = $"** {a.Description} **" })
+    member this.Actions = 
+        this.BindList(
+        local
+        , _.Actions 
+        , map = fun a -> { a with Description = $"** {a.Description} **" }
+        , sortBy = _.Timestamp
+    )
     member this.Increment() = local.Dispatch Increment
     member this.Decrement() = local.Dispatch Decrement
     member this.Reset() = local.Dispatch Reset

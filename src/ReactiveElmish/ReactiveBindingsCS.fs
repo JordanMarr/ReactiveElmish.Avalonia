@@ -26,15 +26,17 @@ type ReactiveBindingsCS(onPropertyChanged: Action<string>) =
     member this.BindList<'Model, 'ModelProjection>(
             store: IStore<'Model>, 
             modelProjectionSeq: Func<'Model, 'ModelProjection seq>,
+            [<Optional>] sortBy: Func<'ModelProjection, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] vmPropertyName
-        ) = vm.BindList(store, modelProjectionSeq.Invoke, vmPropertyName)
+        ) = vm.BindList(store, modelProjectionSeq.Invoke, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
 
     member this.BindList<'Model, 'ModelProjection, 'Mapped>(
             store: IStore<'Model>, 
             modelProjectionSeq: Func<'Model, 'ModelProjection seq>,
             map: Func<'ModelProjection, 'Mapped>,
+            [<Optional>] sortBy: Func<'Mapped, IComparable>,
             [<CallerMemberName; Optional; DefaultParameterValue("")>] vmPropertyName
-        ) = vm.BindList(store, modelProjectionSeq.Invoke, map.Invoke, vmPropertyName)
+        ) = vm.BindList(store, modelProjectionSeq.Invoke, map.Invoke, ?sortBy = opt sortBy, vmPropertyName = vmPropertyName)
 
     member this.BindKeyedList<'Model, 'Key, 'Value, 'Mapped when 'Value : equality and 'Mapped : not struct and 'Key : comparison>(
             store: IStore<'Model>, 
