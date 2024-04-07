@@ -16,11 +16,12 @@
 		<Authors>JordanMarr</Authors>
 		<Description>F# C# ReactiveElmishStore and ViewModel for WPF.</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/JordanMarr/ReactiveElmish.Wpf</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/JordanMarr/ReactiveElmish.Avalonia</PackageProjectUrl>
 		<PackageTags>F# C# fsharp Elmish MVU MVVM</PackageTags>
-		<Version>1.0.0-beta.1</Version>
+		<Version>1.0.1</Version>
 		<!--Turn on warnings for unused values (arguments and let bindings) -->
 		<OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -37,8 +38,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\ReactiveElmish\ReactiveElmish.fsproj" />
+	  <ProjectReference Include="..\ReactiveElmish\ReactiveElmish.fsproj" PrivateAssets="All" />
 	</ItemGroup>
+
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+		<ItemGroup>
+			<!-- Filter out unnecessary files -->
+			<_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
+		</ItemGroup>
+
+		<!-- Print batches for debug purposes -->
+		<Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)" Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
+
+		<ItemGroup>
+			<!-- Add file to package with consideration of sub folder. If empty, the root folder is chosen. -->
+			<BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)" />
+		</ItemGroup>
+	</Target>
 
 	<ItemGroup>
 	  <Reference Include="PresentationCore" />
