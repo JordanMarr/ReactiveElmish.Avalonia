@@ -500,16 +500,16 @@ type App() =
 
 ```
 
-
-# Sample Project
+## Sample Project
 The included sample app shows a obligatory Elmish counter app, and also the Avalonia DataGrid control.
 Please view the [AvaloniaExample project](https://github.com/JordanMarr/ReactiveElmish.Avalonia/tree/main/src/Samples/AvaloniaExample).
 
+## ReactiveElmish.Wpf [![NuGet version (ReactiveElmish.Wpf)](https://img.shields.io/nuget/v/ReactiveElmish.Wpf.svg?style=flat-square)](https://www.nuget.org/packages/ReactiveElmish.Wpf/)
+**Features**:
+* The `ReactiveElmishStore` allows you to create a store from an Elmish loop that can be bound in a C# or F# view model.
+* The `ReactiveStore` is a simplified (non-Elmish) store that you can create in C# (if you don't want to use F# or Elmish for you model).
 
-# C# Support
-* The `ReactiveElmish` package can be used by F# or C# in other MVVM platforms such as WPF.
-* C# can use an `ReactiveElmishStore` in F#, or a more simple `ReactiveStore` in C#.
-* Can be easily added to any `ViewModelBase` class (see `Rx` property in view model example below) by initializing an instance of `ReactiveBindingsCS`
+* The Rx bindings can be easily added to any `ViewModelBase` class (see `Rx` property in view model example below) by initializing an instance of `ReactiveBindingsCS`
   * If using a ReactiveUI view model base class, such as `ReactiveObject`, initialize like this:
     ```C#
     new ReactiveBindingsCS(this.RaisePropertyChanged);
