@@ -43,12 +43,12 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             // Creates a subscription to the 'Model projection and stores it in a dictionary.
             let disposable = 
                 store.Observable
-                    .DistinctUntilChanged(modelProjection)
+                    .DistinctUntilChanged(modelProjection)                    
                     .Subscribe(fun _ -> 
                         // Alerts the view that the 'Model projection / VM property has changed.
                         onPropertyChanged(vmPropertyName)
                         #if DEBUG
-                        printfn $"PropertyChanged: {vmPropertyName} by {this}"
+                        printfn $"PropertyChanged: {vmPropertyName}"
                         #endif
                     )
             propertySubscriptions.Add(vmPropertyName, disposable)
@@ -75,16 +75,10 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                         // Alerts the view that the 'Model projection / VM property has changed.
                         onPropertyChanged(vmPropertyName)
                         #if DEBUG
-                        printfn $"PropertyChanged: {vmPropertyName} by {this}"
+                        printfn $"PropertyChanged: {vmPropertyName}"
                         #endif
                     )
             
-            match store with
-            | :? IHasSubject<'Model> as subject ->
-                subject.Subject.OnNext(store.Model) // prime the pump
-            | _ ->
-                failwith "BindOnChanged requires the store to implement ISubject<'Model>"
-
             propertySubscriptions.Add(vmPropertyName, disposable)
 
         modelProjection store.Model

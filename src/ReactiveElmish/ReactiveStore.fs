@@ -26,9 +26,6 @@ type ReactiveStore<'Model>(init: 'Model) =
         _model <- fn _model
         _modelSubject.OnNext(_model)
 
-    interface IHasSubject<'Model> with
-        member this.Subject = _modelSubject
-
     interface IDisposable with
         member this.Dispose() =
             _modelSubject.Dispose()

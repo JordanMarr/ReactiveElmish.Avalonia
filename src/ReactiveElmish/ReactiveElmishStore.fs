@@ -14,9 +14,6 @@ type IStore<'Model, 'Msg> =
     inherit IStore<'Model>
     abstract member Dispatch: 'Msg -> unit
 
-type IHasSubject<'Model> =
-    abstract member Subject: Subject<'Model> with get
-
 module Design = 
     /// Stubs a constructor injected dependency in design mode.
     let stub<'T> = Unchecked.defaultof<'T>
@@ -32,10 +29,7 @@ type ReactiveElmishStore<'Model, 'Msg> () =
         member this.Dispatch msg = _dispatch msg
         member this.Model = _model
         member this.Observable = _modelSubject.AsObservable()        
-    
-    interface IHasSubject<'Model> with
-        member this.Subject = _modelSubject
-    
+        
     member this.Dispatcher
         with get() = _dispatch
         and set(dispatch) = _dispatch <- dispatch
