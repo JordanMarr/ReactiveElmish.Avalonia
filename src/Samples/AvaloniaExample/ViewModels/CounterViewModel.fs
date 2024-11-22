@@ -40,19 +40,35 @@ module Counter =
 
 open Counter
 
-type CounterViewModel() =
+type ActionVM(action: Action) =
+    inherit ReactiveElmishViewModel()
+    
+    member this.Timestamp = action.Timestamp
+    member this.Description = $"** {action.Description} **"
+
+    interface IDisposable with
+        member this.Dispose() =
+            printfn "Disposing ActionVM"
+
+
+type CounterViewModel() as this =
     inherit ReactiveElmishViewModel()
 
     let local = 
         Program.mkAvaloniaSimple init update
         |> Program.mkStore
 
+    let mkAction action = 
+        let vm = new ActionVM(action)
+        this.AddDisposable(vm) // Dispose child vms when parent vm is disposed
+        vm
+
     member this.Count = this.Bind(local, _.Count)
     member this.Actions = 
         this.BindList(
         local
         , _.Actions 
-        , map = fun a -> { a with Description = $"** {a.Description} **" }
+        , map = mkAction
         , sortBy = _.Timestamp
     )
     member this.Increment() = local.Dispatch Increment
