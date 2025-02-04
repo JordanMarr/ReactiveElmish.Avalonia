@@ -84,7 +84,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
         modelProjection store.Model
 
     /// <summary>
-    /// Binds a model colleciton property to a DynamicData SourceList.
+    /// Binds a model collection property to a DynamicData SourceList.
     /// </summary>
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjectionSeq">The model projection.</param>
@@ -120,7 +120,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
             propertyCollections[vmPropertyName.Value] :?> ReadOnlyObservableCollection<'ModelProjection>
 
     /// <summary>
-    /// Binds a model colleciton property to a DynamicData SourceList.
+    /// Binds a model collection property to a DynamicData SourceList.
     /// </summary>
     /// <param name="store">The reactive store to bind to.</param>
     /// <param name="modelProjectionSeq">The model projection.</param>
