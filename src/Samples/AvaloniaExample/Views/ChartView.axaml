@@ -31,8 +31,8 @@
                 MinWidth="600"
                 MaxWidth="2400"
                 Series="{Binding Series}" 
-                XAxes="{Binding XAxes}"
-                EasingFunction="{Binding Source={x:Null}}">
+                XAxes="{Binding XAxes}">
+                <!--EasingFunction="{Binding Source={x:Null}}">-->
             </lvc:CartesianChart>
         </Grid>
         <DataGrid ItemsSource="{Binding Actions}" AutoGenerateColumns="True" Height="200">

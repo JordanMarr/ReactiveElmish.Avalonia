@@ -40,7 +40,7 @@
 		<DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Todos}" AutoGenerateColumns="False" Height="400" HorizontalAlignment="Center" SelectedIndex="-1">
 			<DataGrid.Columns>
 				<!-- Remove Button -->
-				<DataGridTemplateColumn Header="Remove">
+				<DataGridTemplateColumn Header="Remove" x:DataType="vm:TodoListViewModel">
 					<DataTemplate>
 						<Button i:Attached.Icon="fa-trash-can" FontSize="18" Command="{Binding RemoveTodo}" />
 					</DataTemplate>
