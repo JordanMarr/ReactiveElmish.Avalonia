@@ -40,10 +40,14 @@ module Chart =
     // create time labeling for the X axis in the Chart visual
     let XAxes : IEnumerable<ICartesianAxis> =
         [| Axis (
-                Labeler = (fun value -> DateTime(int64 value).ToString("HH:mm:ss")),
+                Labeler = (fun value ->
+                    if value < 0 then
+                        DateTime.MinValue.ToString("HH:mm:ss")
+                    else
+                        DateTime(int64 value).ToString("HH:mm:ss")),
                 LabelsRotation = 15,
-                UnitWidth = float(TimeSpan.FromSeconds(1).Ticks),
-                MinStep = float(TimeSpan.FromSeconds(1).Ticks)
+                UnitWidth = float(TimeSpan.FromSeconds(seconds = 1).Ticks),
+                MinStep = float(TimeSpan.FromSeconds(seconds = 1).Ticks)
             )
         |]
 
@@ -125,7 +129,7 @@ module Chart =
     let subscriptions (model: Model) : Sub<Msg> =
         let autoUpdateSub (dispatch: Msg -> unit) = 
             Observable
-                .Interval(TimeSpan.FromSeconds(1))
+                .Interval(TimeSpan.FromSeconds(seconds = 1))
                 .Subscribe(fun _ -> 
                     printfn "AutoUpdate"
                     // similar to newSeries create null entry in 1% of cases
@@ -145,26 +149,26 @@ module Chart =
 
 open Chart
 
-type ChartViewModel() as this =
+type ChartViewModel() =
     inherit ReactiveElmishViewModel()
 
     let app = App.app
 
     let local = 
         Program.mkAvaloniaSimple init update
-        |> Program.withErrorHandler (fun (_, ex) -> printfn "Error: %s" ex.Message)
+        |> Program.withErrorHandler (fun (_, ex) -> printfn $"Error: %s{ex.Message}")
         //|> Program.withConsoleTrace
         |> Program.withSubscription subscriptions
         |> Program.mkStore
         //Terminate all Elmish subscriptions on dispose (view is registered as Transient).
         //|> Program.mkStoreWithTerminate this Terminate 
 
-    do  // Manually disable AutoUpdate (when view is registered as Singleton).
-        this.Subscribe(app.Observable, fun m -> 
-            if m.View <> App.ChartView && this.IsAutoUpdateChecked then
-                printfn "Disabling Chart AutoUpdate"
-                local.Dispatch (SetIsAutoUpdateChecked false)
-        )
+    // do  // Manually disable AutoUpdate (when view is registered as Singleton).
+    //     this.Subscribe(app.Observable, fun m -> 
+    //         if m.View <> App.ChartView && this.IsAutoUpdateChecked then
+    //             printfn "Disabling Chart AutoUpdate"
+    //             local.Dispatch (SetIsAutoUpdateChecked false)
+    //     )
 
     member this.Series = local.Model.Series
     member this.Actions = this.BindSourceList(local.Model.Actions)
