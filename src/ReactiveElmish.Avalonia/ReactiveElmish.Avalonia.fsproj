@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0;net48</TargetFrameworks>
+		<TargetFrameworks>net6.0;net48</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -41,15 +41,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="11.2.5" />
-		<PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+		<PackageReference Include="Avalonia" Version="11.0.5" />
+		<PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="Elmish" Version="[4.0.1, 4.99]" />
-		<PackageReference Include="ReactiveUI" Version="20.2.45" />
+		<PackageReference Include="ReactiveUI" Version="19.5.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Update="FSharp.Core" Version="9.0.201" />
+		<PackageReference Update="FSharp.Core" Version="6.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
