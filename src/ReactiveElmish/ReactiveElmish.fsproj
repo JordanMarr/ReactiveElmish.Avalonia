@@ -6,7 +6,7 @@
 	</PropertyGroup>
 	
 	<PropertyGroup>
-		<TargetFrameworks>net9.0;net48</TargetFrameworks>
+		<TargetFrameworks>net8.0;net48</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -37,7 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Update="FSharp.Core" Version="9.0.201" />
+		<PackageReference Update="FSharp.Core" Version="6.0.7" />
 	</ItemGroup>
 
 </Project>
