@@ -14,7 +14,13 @@ pipeline "CI Build" {
     stage "Build AvaloniaXPlatExample.sln" {
         run "dotnet workload install android"
         run "dotnet workload install wasm-tools"
-        run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
+        
+        //run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
+        run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.Android/AvaloniaXPlatExample.Android.fsproj"
+        run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.Desktop/AvaloniaXPlatExample.Desktop.fsproj"
+        run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.iOS/AvaloniaXPlatExample.iOS.csproj"
+        run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.Web/AvaloniaXPlatExample.Web.fsproj"
+
         run $"dotnet restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
         run $"dotnet build {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln --configuration Debug"
     }

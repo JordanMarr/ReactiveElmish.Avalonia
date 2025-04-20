@@ -22,7 +22,6 @@
 		<!--Turn on warnings for unused values (arguments and let bindings) -->
 		<OtherFlags>$(OtherFlags) --warnon:1182</OtherFlags>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-		<EnableWindowsTargeting>true</EnableWindowsTargeting>
 	</PropertyGroup>
 
 	<ItemGroup>
