@@ -14,8 +14,9 @@ pipeline "CI Build" {
     stage "Build AvaloniaXPlatExample.sln" {
         run "dotnet workload install android"
         run "dotnet workload install wasm-tools"
-        
+
         //run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.sln"
+        // Restore projects individually because the CI build recently started deriving incorrect project paths when restoring at the sln level.
         run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.Android/AvaloniaXPlatExample.Android.fsproj"
         run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.Desktop/AvaloniaXPlatExample.Desktop.fsproj"
         run $"dotnet workload restore {src}/Samples/AvaloniaXPlatExample/AvaloniaXPlatExample.iOS/AvaloniaXPlatExample.iOS.csproj"
