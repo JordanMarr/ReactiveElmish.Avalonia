@@ -5,7 +5,7 @@ open AvaloniaExample.ViewModels
 open AvaloniaExample.Views
 open ReactiveElmish.Avalonia
 
-type AppCompositionRoot() =
+type AppCompositionRoot private () =
     inherit CompositionRoot()
 
     let mainView = MainView()
@@ -24,7 +24,6 @@ type AppCompositionRoot() =
             VM.Key<FilePickerViewModel>(), View.Singleton<FilePickerView>()
         ]
 
-    static member private instanceLazy = lazy AppCompositionRoot()
-    static member Instance = AppCompositionRoot.instanceLazy.Value
+    static member val Instance = AppCompositionRoot()
         
         
