@@ -4,6 +4,11 @@ open Microsoft.Extensions.DependencyInjection
 open AvaloniaExample.ViewModels
 open AvaloniaExample.Views
 open ReactiveElmish.Avalonia
+open ReactiveElmish
+
+type MainViewFacade(root: CompositionRoot) =
+    interface IMainViewFacade with
+        member this.GetView<'VM & #ReactiveElmishViewModel>(): Avalonia.Controls.Control = root.GetView<'VM>()
 
 type AppCompositionRoot private () =
     inherit CompositionRoot()
@@ -13,6 +18,7 @@ type AppCompositionRoot private () =
     override this.RegisterServices services = 
         base.RegisterServices(services)
             .AddSingleton<FileService>(FileService(mainView))
+            .AddTransient<IMainViewFacade, MainViewFacade>()
 
     override this.RegisterViews() = 
         Map [
