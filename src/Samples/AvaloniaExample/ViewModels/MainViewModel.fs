@@ -4,17 +4,17 @@ open ReactiveElmish
 open ReactiveElmish.Avalonia
 open App
 
-type MainViewModel(root: CompositionRoot) =
+type MainViewModel(getView: CompositionRoot.GetView) =
     inherit ReactiveElmishViewModel()
     
     member this.ContentView = 
         this.BindOnChanged (app, _.View, fun m -> 
             match m.View with
-            | TodoListView -> root.GetView<TodoListViewModel>()
-            | CounterView -> root.GetView<CounterViewModel>()
-            | AboutView -> root.GetView<AboutViewModel>()
-            | ChartView -> root.GetView<ChartViewModel>()
-            | FilePickerView -> root.GetView<FilePickerViewModel>()
+            | TodoListView -> getView (typeof<TodoListViewModel>)
+            | CounterView -> getView (typeof<CounterViewModel>)
+            | AboutView -> getView (typeof<AboutViewModel>)
+            | ChartView -> getView (typeof<ChartViewModel>)
+            | FilePickerView -> getView (typeof<FilePickerViewModel>)
         )
 
     member this.ShowTodoList() = app.Dispatch (SetView TodoListView)
@@ -23,4 +23,6 @@ type MainViewModel(root: CompositionRoot) =
     member this.ShowAbout() = app.Dispatch (SetView AboutView)
     member this.ShowFilePicker() = app.Dispatch (SetView FilePickerView)
 
-    static member DesignVM = new MainViewModel(Design.stub)
+    static member DesignVM = 
+        let getViewStub = fun _ -> new AvaloniaExample.Views.CounterView() :> Avalonia.Controls.Control
+        new MainViewModel(getViewStub)

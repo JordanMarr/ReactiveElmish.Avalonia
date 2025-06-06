@@ -11,6 +11,9 @@ type VM =
         static member Key(vmType: Type) = VMKey vmType.FullName
         static member Key<'ViewModel & #IReactiveObject>() = VMKey typeof<'ViewModel>.FullName
 
+module CompositionRoot = 
+    type GetView = Type -> Avalonia.Controls.Control
+
 type View = 
     | SingletonView of view: Control
     | TransientView of view: (unit -> Control)
@@ -44,6 +47,7 @@ type CompositionRoot() as this =
     default this.RegisterServices(services: IServiceCollection) = 
         // Add the composition root instance as a singleton service.
         services.AddSingleton(this) |> ignore
+        services.AddSingleton<CompositionRoot.GetView>(this.GetView) |> ignore
         // Scan for IReactiveObject VM types and add them as transient services.
         let vmType = typeof<IReactiveObject>
         this.GetType().Assembly.GetTypes() // Get types in the CompositionRoot subtype assembly.
