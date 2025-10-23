@@ -238,7 +238,7 @@ type ReactiveElmishViewModel(onPropertyChanged: string -> unit) =
                             observableCollection.RemoveAt(idx)
                             match removedItem :> obj with
                             | :? IDisposable as disposable -> 
-                                this.AddDisposable(disposable)
+                                disposable.Dispose()
                             | _ -> ()
                             
 
