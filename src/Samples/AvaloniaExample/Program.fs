@@ -3,7 +3,7 @@
 open System
 open Avalonia
 open AvaloniaExample
-open Avalonia.ReactiveUI
+open ReactiveUI.Avalonia
 open Projektanker.Icons.Avalonia
 open Projektanker.Icons.Avalonia.MaterialDesign
 open Projektanker.Icons.Avalonia.FontAwesome

@@ -39,11 +39,10 @@ module Chart =
     
     // create time labeling for the X axis in the Chart visual
     let XAxes : IEnumerable<ICartesianAxis> =
-        [| Axis (
-                Labeler = (fun value -> DateTime(int64 value).ToString("HH:mm:ss")),
-                LabelsRotation = 15,
-                UnitWidth = float(TimeSpan.FromSeconds(1).Ticks),
-                MinStep = float(TimeSpan.FromSeconds(1).Ticks)
+        [|
+            DateTimeAxis(
+                TimeSpan.FromSeconds(1),
+                fun value -> value.ToString("HH:mm:ss")
             )
         |]
 
