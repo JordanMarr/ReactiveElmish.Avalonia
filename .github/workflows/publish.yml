@@ -1,0 +1,45 @@
+# Publishes to nuget.org using Trusted Publishing (OIDC).
+# No stored API key: NuGet/login exchanges a GitHub-issued OIDC token for a
+# short-lived (1 hour) API key, validated against the trusted publishing policy
+# configured on nuget.org for this repository + workflow file.
+#
+# Packages published: ReactiveElmish, ReactiveElmish.Avalonia, ReactiveElmish.Wpf
+#
+# Trigger manually from the Actions tab (Run workflow) after bumping the version(s).
+
+name: Publish to NuGet
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    # Windows is required: ReactiveElmish.Wpf targets net48 and references WPF assemblies.
+    runs-on: windows-2022
+
+    permissions:
+      id-token: write # required for GitHub OIDC token issuance (Trusted Publishing)
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Pack
+        run: |
+          dotnet pack src/ReactiveElmish/ReactiveElmish.fsproj --configuration Release --output packages
+          dotnet pack src/ReactiveElmish.Avalonia/ReactiveElmish.Avalonia.fsproj --configuration Release --output packages
+          dotnet pack src/ReactiveElmish.Wpf/ReactiveElmish.Wpf.fsproj --configuration Release --output packages
+
+      - name: NuGet login (OIDC -> temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: "jordan marr" # nuget.org profile name (not email)
+
+      - name: Push
+        run: dotnet nuget push packages\*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
